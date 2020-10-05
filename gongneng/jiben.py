@@ -17,6 +17,7 @@ class JiBen:
         self.sum_names = locals()
         self.hwnd = 0
         self.xc_sum = 1
+        self.dqzifu_sum = -1
         "--------------------------------------------"
         self.find_word_data_coord = []
         self.find_word_data_name = ""
@@ -71,10 +72,10 @@ class JiBen:
         else:
             print(self.xm_data + "绑定失败")
 
-    def leidiandxcbd(self, data, xc_sum):
-        self.sum_xiancheng(xc_sum)
-        for temp1 in range(xc_sum):
-            self.leidianbang(data, temp1 + 1)
+    def leidiandxcbd(self):
+        self.sum_xiancheng(self.xc_data)
+        for temp1 in range(self.xc_data):
+            self.leidianbang(self.mz_data, temp1 + 1)
 
     def jiebang(self, xc_sum):  # 雷电模拟器解绑
         if xc_sum == "":
@@ -251,7 +252,7 @@ class JiBen:
     @staticmethod
     def shujuchuli2(data:str):
         if data == "":
-            return -1
+            return [-1]
         temp1 = data.find("|")
         temp2 = []
         if temp1 != -1:
@@ -260,10 +261,29 @@ class JiBen:
                 temp1[x] = temp1[x][2:]
             return [1,temp1]
         else:
-            temp1 = temp1[2:]
+            temp1 = data[2:]
             return [1,[temp1]]
 
     '''格式为：[第一个数据,第二个数据]'''
+
+    @staticmethod
+    def shujuchuli3(data:str):
+        if data == "":
+            return [-1]
+        temp1 = data.find("|")
+        temp2 = []
+        if temp1 != -1:
+            temp1 = data.split("|")
+            for x in range(len(temp1)):
+                temp2[x] = temp1[x].split(",")
+
+        else:
+            temp2[0] = data.split(",")
+        if len(temp2) == 0:
+            return [0]
+        else:
+            return [1,temp2]
+    '''格式为：[[第一个数据],[第二个数据]]'''
 
 
 class MyThread(threading.Thread):

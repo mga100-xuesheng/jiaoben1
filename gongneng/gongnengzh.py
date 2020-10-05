@@ -4,11 +4,8 @@ import random
 
 
 class FindWord(gongneng.jiben.JiBen):
-    def find_data_shezhi(self, data, xc_sum):
-        if xc_sum == "":
-            self.xc_sum = 1
-        else:
-            self.xc_sum = xc_sum
+    def find_data_shezhi(self, data):
+        rwxc_sum = 1
         self.find_word_data_coord = data[0]
         self.find_word_data_name = data[1]
         self.find_word_data_col = data[2]
@@ -18,19 +15,19 @@ class FindWord(gongneng.jiben.JiBen):
         self.find_word_data_x = -1
         self.find_word_data_y = -1
 
-    def find_word(self):
+    def find_word(self,xc_sum):
         find_word_temp1 = 1
         time_process = 0
         while find_word_temp1 == 1:
             time_start = time.time()
-            find_word_temp2 = self.sum_names[self.xm_data + str(self.xc_sum)].FindStr(self.find_word_data_coord[0],
-                                                                                      self.find_word_data_coord[1],
-                                                                                      self.find_word_data_coord[2],
-                                                                                      self.find_word_data_coord[3],
-                                                                                      self.find_word_data_name,
-                                                                                      self.find_word_data_col,
-                                                                                      self.find_word_data_sim,
-                                                                                      self.find_word_data_back)
+            find_word_temp2 = self.sum_names[self.xm_data + str(xc_sum)].FindStr(self.find_word_data_coord[0],
+                                                                                 self.find_word_data_coord[1],
+                                                                                 self.find_word_data_coord[2],
+                                                                                 self.find_word_data_coord[3],
+                                                                                 self.find_word_data_name,
+                                                                                 self.find_word_data_col,
+                                                                                 self.find_word_data_sim,
+                                                                                 self.find_word_data_back)
             if find_word_temp2 == 1:
                 self.find_word_data_x = self.sum_names[self.xm_data + str(self.xc_sum)].x
                 self.find_word_data_y = self.sum_names[self.xm_data + str(self.xc_sum)].y
@@ -43,19 +40,19 @@ class FindWord(gongneng.jiben.JiBen):
                     self.find_word_data_y = -1
                     return 0
 
-    def find_word_ex(self):
+    def find_word_ex(self,xc_sum):
         find_word_ex_temp1 = 1
         ex_time_process = 0
         while find_word_ex_temp1 == 1:
             ex_time_start = time.time()
-            find_word_ex_temp2 = self.sum_names[self.xm_data + str(self.xc_sum)].FindStrEx(self.find_word_data_coord[0],
-                                                                                           self.find_word_data_coord[1],
-                                                                                           self.find_word_data_coord[2],
-                                                                                           self.find_word_data_coord[3],
-                                                                                           self.find_word_data_name,
-                                                                                           self.find_word_data_col,
-                                                                                           self.find_word_data_sim,
-                                                                                           self.find_word_data_back)
+            find_word_ex_temp2 = self.sum_names[self.xm_data + str(xc_sum)].FindStrEx(self.find_word_data_coord[0],
+                                                                                      self.find_word_data_coord[1],
+                                                                                      self.find_word_data_coord[2],
+                                                                                      self.find_word_data_coord[3],
+                                                                                      self.find_word_data_name,
+                                                                                      self.find_word_data_col,
+                                                                                      self.find_word_data_sim,
+                                                                                      self.find_word_data_back)
             if find_word_ex_temp2 is not None:
                 find_word_ex_temp3 = find_word_ex_temp2.find("|")
             else:
@@ -72,12 +69,35 @@ class FindWord(gongneng.jiben.JiBen):
                 ex_time_end = time.time()
                 ex_time_process = ex_time_process + ex_time_end - ex_time_start
                 if ex_time_process == self.find_word_data_time or ex_time_process > self.find_word_data_time:
-                    self.x = -1
-                    self.y = -1
+                    self.find_word_data_x = -1
+                    self.find_word_data_y = -1
+                    return [0]
+
+    def find_word_ex1(self,xc_sum):
+        find_word_ex_temp1 = 1
+        ex_time_process = 0
+        while find_word_ex_temp1 == 1:
+            ex_time_start = time.time()
+            find_word_ex_temp2 = self.sum_names[self.xm_data + str(xc_sum)].FindStrEx(self.find_word_data_coord[0],
+                                                                                      self.find_word_data_coord[1],
+                                                                                      self.find_word_data_coord[2],
+                                                                                      self.find_word_data_coord[3],
+                                                                                      self.find_word_data_name,
+                                                                                      self.find_word_data_col,
+                                                                                      self.find_word_data_sim,
+                                                                                      self.find_word_data_back)
+            if find_word_ex_temp2 is not None:
+                return [1,find_word_ex_temp2]
+            else:
+                ex_time_end = time.time()
+                ex_time_process = ex_time_process + ex_time_end - ex_time_start
+                if ex_time_process == self.find_word_data_time or ex_time_process > self.find_word_data_time:
+                    self.find_word_data_x = -1
+                    self.find_word_data_y = -1
                     return [0]
 
 
-class FindPic(gongneng.gongnengzh.FindWord):
+class FindPic(FindWord):
     def find_pic_data_shezhi(self, config, data, xc_sum):
         if xc_sum == "":
             self.xc_sum = 1
@@ -166,7 +186,7 @@ class FindPic(gongneng.gongnengzh.FindWord):
         return find_pic_ex_temp1
 
 
-class FindCol(gongneng.gongnengzh.FindPic):
+class FindCol(FindPic):
     def find_col_data_chuli(self,data,time_out,xc_sum):
         if xc_sum == "":
             self.xc_sum = 1
