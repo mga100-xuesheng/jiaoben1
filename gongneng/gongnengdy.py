@@ -21,12 +21,31 @@ class GongNengdy:
     "--------------------------------------------------------------------"
 
     def find_pic(self,config,data,xc_sum):
-        self.xm_gn.find_pic_data_shezhi(config,data,xc_sum)
-        return self.xm_gn.find_pic()
+        self.xm_gn.find_pic_data_shezhi(config,data)
+        return self.xm_gn.find_pic(xc_sum)
 
     def find_pic_ex(self,config,data,xc_sum):
-        self.xm_gn.find_pic_data_shezhi(config, data, xc_sum)
-        return self.xm_gn.find_pic_ex()
+        self.xm_gn.find_pic_data_shezhi(config, data)
+        return self.xm_gn.find_pic_ex(xc_sum)
+
+    def find_pic_click(self,config,data,click,xc_sum):
+        temp1 = self.find_pic(config,data,xc_sum)
+        if temp1 == 1:
+            self.xm_gn.random_time(1,2)
+            self.xm_gn.click(click,xc_sum)
+            return 1
+        else:
+            return -1
+
+    def find_pic_click1(self,config,data,click,xc_sum):
+        temp1 = self.find_pic(config,data,xc_sum)
+        if temp1 == 1:
+
+            return -1
+        else:
+            self.xm_gn.random_time(1,2)
+            self.xm_gn.click(click,xc_sum)
+            return 1
 
     "--------------------------------------------------------------------"
 
@@ -46,6 +65,25 @@ class GongNengdy:
     def find_word(self,data, xc_sum):
         self.xm_gn.find_data_shezhi(data)
         return self.xm_gn.find_word(xc_sum)
+
+    def find_word_click(self,data,click,xc_sum):
+        temp1 = self.find_word(data,xc_sum)
+        if temp1 == 1:
+            self.xm_gn.random_time(1, 2)
+            self.xm_gn.click(click, xc_sum)
+            return 1
+        else:
+            return -1
+
+    def find_word_click1(self,data,click,xc_sum):
+        temp1 = self.find_word(data,xc_sum)
+        if temp1 == 1:
+
+            return -1
+        else:
+            self.xm_gn.random_time(1, 2)
+            self.xm_gn.click(click, xc_sum)
+            return 1
 
     def find_word_ex(self,data, xc_sum):
         self.xm_gn.find_data_shezhi(data)

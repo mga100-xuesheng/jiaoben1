@@ -5,7 +5,6 @@ import random
 
 class FindWord(gongneng.jiben.JiBen):
     def find_data_shezhi(self, data):
-        rwxc_sum = 1
         self.find_word_data_coord = data[0]
         self.find_word_data_name = data[1]
         self.find_word_data_col = data[2]
@@ -98,11 +97,7 @@ class FindWord(gongneng.jiben.JiBen):
 
 
 class FindPic(FindWord):
-    def find_pic_data_shezhi(self, config, data, xc_sum):
-        if xc_sum == "":
-            self.xc_sum = 1
-        else:
-            self.xc_sum = xc_sum
+    def find_pic_data_shezhi(self, config, data):
         self.find_pic_data_path = config[0]
         self.find_pic_data_format = config[1]
         self.find_pic_data_col_cast = config[2]
@@ -139,24 +134,26 @@ class FindPic(FindWord):
         self.find_pic_data_x = -1
         self.find_pic_data_y = -1
 
-    def find_pic(self):
+    def find_pic(self,xc_sum):
+        if xc_sum == "":
+            xc_sum = 1
         find_pic_temp1 = 0
         for z in range(int(self.find_pic_data_sum)):
-            find_pic_temp1 = self.sum_names[self.xm_data + str(self.xc_sum)].findpic(self.find_pic_data_coord[0],
-                                                                                     self.find_pic_data_coord[1],
-                                                                                     self.find_pic_data_coord[2],
-                                                                                     self.find_pic_data_coord[3],
-                                                                                     self.find_pic_data_path +
-                                                                                     self.find_pic_data_name +
-                                                                                     str(z + 1) +
-                                                                                     self.find_pic_data_format,
-                                                                                     self.find_pic_data_col_cast,
-                                                                                     self.find_pic_data_sim, 0,
-                                                                                     self.find_pic_data_time_out,
-                                                                                     self.find_pic_data_click,
-                                                                                     self.find_pic_data_x_cast,
-                                                                                     self.find_pic_data_y_cast,
-                                                                                     self.find_pic_data_Delay_time)
+            find_pic_temp1 = self.sum_names[self.xm_data + str(xc_sum)].findpic(self.find_pic_data_coord[0],
+                                                                                self.find_pic_data_coord[1],
+                                                                                self.find_pic_data_coord[2],
+                                                                                self.find_pic_data_coord[3],
+                                                                                self.find_pic_data_path +
+                                                                                self.find_pic_data_name +
+                                                                                str(z + 1) +
+                                                                                self.find_pic_data_format,
+                                                                                self.find_pic_data_col_cast,
+                                                                                self.find_pic_data_sim, 0,
+                                                                                self.find_pic_data_time_out,
+                                                                                self.find_pic_data_click,
+                                                                                self.find_pic_data_x_cast,
+                                                                                self.find_pic_data_y_cast,
+                                                                                self.find_pic_data_Delay_time)
             if find_pic_temp1 == 1:
                 self.find_pic_data_x = self.sum_names[self.xm_data + str(self.xc_sum)].x
                 self.find_pic_data_y = self.sum_names[self.xm_data + str(self.xc_sum)].y
@@ -164,34 +161,32 @@ class FindPic(FindWord):
         if find_pic_temp1 == 0:
             return 0
 
-    def find_pic_ex(self):
+    def find_pic_ex(self,xc_sum):
+        if xc_sum == "":
+            xc_sum = 1
         find_pic_ex_temp1 = 0
         find_pic_ex_temp2 = ""
         for x in range(self.find_pic_data_sum):
             find_pic_ex_temp2 = find_pic_ex_temp2 + str(
                 self.find_pic_data_path + self.find_pic_data_name + str(x + 1) + self.find_pic_data_format + "|")
         find_pic_ex_temp2 = find_pic_ex_temp2.strip('|')
-        find_pic_ex_temp1 = self.sum_names[self.xm_data + str(self.xc_sum)].FindPicEx(self.find_pic_data_coord[0],
-                                                                                      self.find_pic_data_coord[1],
-                                                                                      self.find_pic_data_coord[2],
-                                                                                      self.find_pic_data_coord[3],
-                                                                                      find_pic_ex_temp2,
-                                                                                      self.find_pic_data_col_cast,
-                                                                                      self.find_pic_data_sim, 0,
-                                                                                      self.find_pic_data_time_out,
-                                                                                      self.find_pic_data_click,
-                                                                                      self.find_pic_data_x_cast,
-                                                                                      self.find_pic_data_y_cast,
-                                                                                      self.find_pic_data_Delay_time)
+        find_pic_ex_temp1 = self.sum_names[self.xm_data + str(xc_sum)].FindPicEx(self.find_pic_data_coord[0],
+                                                                                 self.find_pic_data_coord[1],
+                                                                                 self.find_pic_data_coord[2],
+                                                                                 self.find_pic_data_coord[3],
+                                                                                 find_pic_ex_temp2,
+                                                                                 self.find_pic_data_col_cast,
+                                                                                 self.find_pic_data_sim, 0,
+                                                                                 self.find_pic_data_time_out,
+                                                                                 self.find_pic_data_click,
+                                                                                 self.find_pic_data_x_cast,
+                                                                                 self.find_pic_data_y_cast,
+                                                                                 self.find_pic_data_Delay_time)
         return find_pic_ex_temp1
 
 
 class FindCol(FindPic):
-    def find_col_data_chuli(self,data,time_out,xc_sum):
-        if xc_sum == "":
-            self.xc_sum = 1
-        else:
-            self.xc_sum = xc_sum
+    def find_col_data_chuli(self,data,time_out):
         self.find_col_data_coord = data[0]
         self.find_col_data_find_color = data[1]
         self.find_col_data_sim = data[2]
@@ -204,54 +199,62 @@ class FindCol(FindPic):
         self.find_col_data_x = -1
         self.find_col_data_y = -1
 
-    def find_col1(self):
-        temp1 = self.sum_names[self.xm_data + str(self.xc_sum)].FindColor(self.find_col_data_coord[0],
+    def find_col1(self,xc_sum):
+        if xc_sum == "":
+            xc_sum = 1
+        temp1 = self.sum_names[self.xm_data + str(xc_sum)].FindColor(self.find_col_data_coord[0],
+                                                                     self.find_col_data_coord[1],
+                                                                     self.find_col_data_coord[2]
+                                                                     , self.find_col_data_coord[3],
+                                                                     self.find_col_data_find_color,
+                                                                     self.find_col_data_sim,
+                                                                     self.find_col_data_dire,
+                                                                     self.find_col_data_time_out)
+        if temp1 == 1:
+            return 1
+        else:
+            return 0
+
+    def find_multi_color1(self, xc_sum):
+        if xc_sum == "":
+            xc_sum = 1
+        temp1 = self.sum_names[self.xm_data + str(xc_sum)].FindMultiColor(self.find_col_data_coord[0],
                                                                           self.find_col_data_coord[1],
                                                                           self.find_col_data_coord[2]
                                                                           , self.find_col_data_coord[3],
                                                                           self.find_col_data_find_color,
+                                                                          self.find_col_data_offset_color,
                                                                           self.find_col_data_sim,
-                                                                          self.find_col_data_dire,
-                                                                          self.find_col_data_time_out)
+                                                                          self.find_col_data_dire
+                                                                          , self.find_col_data_time_out)
         if temp1 == 1:
             return 1
         else:
             return 0
 
-    def find_multi_color1(self):
-        temp1 = self.sum_names[self.xm_data + str(self.xc_sum)].FindMultiColor(self.find_col_data_coord[0],
-                                                                               self.find_col_data_coord[1],
-                                                                               self.find_col_data_coord[2]
-                                                                               , self.find_col_data_coord[3],
-                                                                               self.find_col_data_find_color,
-                                                                               self.find_col_data_offset_color,
-                                                                               self.find_col_data_sim,
-                                                                               self.find_col_data_dire
-                                                                               , self.find_col_data_time_out)
-        if temp1 == 1:
-            return 1
-        else:
-            return 0
-
-    def find_col2(self):
-        temp1 = self.sum_names[self.xm_data + str(self.xc_sum)].FindColorEx(self.find_col_data_coord[0],
-                                                                            self.find_col_data_coord[1],
-                                                                            self.find_col_data_coord[2]
-                                                                            , self.find_col_data_coord[3],
-                                                                            self.find_col_data_find_color,
-                                                                            self.find_col_data_sim,
-                                                                            self.find_col_data_dire,
-                                                                            self.find_col_data_time_out)
+    def find_col2(self, xc_sum):
+        if xc_sum == "":
+            xc_sum = 1
+        temp1 = self.sum_names[self.xm_data + str(xc_sum)].FindColorEx(self.find_col_data_coord[0],
+                                                                       self.find_col_data_coord[1],
+                                                                       self.find_col_data_coord[2]
+                                                                       , self.find_col_data_coord[3],
+                                                                       self.find_col_data_find_color,
+                                                                       self.find_col_data_sim,
+                                                                       self.find_col_data_dire,
+                                                                       self.find_col_data_time_out)
         return temp1
 
-    def find_multi_color2(self):
-        temp1 = self.sum_names[self.xm_data + str(self.xc_sum)].FindMultiColor(self.find_col_data_coord[0],
-                                                                               self.find_col_data_coord[1],
-                                                                               self.find_col_data_coord[2]
-                                                                               , self.find_col_data_coord[3],
-                                                                               self.find_col_data_find_color,
-                                                                               self.find_col_data_offset_color,
-                                                                               self.find_col_data_sim,
-                                                                               self.find_col_data_dire
-                                                                               , self.find_col_data_time_out)
+    def find_multi_color2(self,xc_sum):
+        if xc_sum == "":
+            xc_sum = 1
+        temp1 = self.sum_names[self.xm_data + str(xc_sum)].FindMultiColor(self.find_col_data_coord[0],
+                                                                          self.find_col_data_coord[1],
+                                                                          self.find_col_data_coord[2]
+                                                                          , self.find_col_data_coord[3],
+                                                                          self.find_col_data_find_color,
+                                                                          self.find_col_data_offset_color,
+                                                                          self.find_col_data_sim,
+                                                                          self.find_col_data_dire
+                                                                          , self.find_col_data_time_out)
         return temp1
