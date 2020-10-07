@@ -40,7 +40,6 @@ class GongNengdy:
     def find_pic_click1(self,config,data,click,xc_sum):
         temp1 = self.find_pic(config,data,xc_sum)
         if temp1 == 1:
-
             return -1
         else:
             self.xm_gn.random_time(1,2)

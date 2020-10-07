@@ -4,6 +4,7 @@ import random
 import time
 import threading
 import math
+import datetime
 
 
 class JiBen:
@@ -316,3 +317,39 @@ class MyThread(threading.Thread):
     def stop(self):
         self.__flag.set()  # 将线程从暂停状态恢复, 如何已经暂停的话
         self.__running.clear()  # 设置为False
+
+
+class RiZhi:
+    rizhi1 = []
+    shijian = ""
+    renwu = 0
+    gonghuizhijia = 0
+    taisuo = 0
+    dxc = 0
+
+    def __init__(self, dizhi, mingcheng):
+        self.dizhi = dizhi
+        self.mingcheng = mingcheng
+
+    def prcduqu1(self):
+        f = open(self.dizhi + self.mingcheng, "r")
+        data = f.readlines()
+        for x in range(len(data)):
+            temp1 = data[x].strip('\n')
+            RiZhi.rizhi1.append(temp1)
+        RiZhi.shijian = RiZhi.rizhi1[0]
+        RiZhi.renwu = RiZhi.rizhi1[1]
+        RiZhi.gonghuizhijia = RiZhi.rizhi1[2]
+        RiZhi.taisuo = RiZhi.rizhi1[3]
+        RiZhi.dxc = RiZhi.rizhi1[4]
+        f.close()
+
+    def prcxieru(self):
+        RiZhi.rizhi1[0] = datetime.datetime.now().strftime('%Y-%m-%d') + "\n"
+        RiZhi.rizhi1[1] = str(str(RiZhi.renwu) + "\n")
+        RiZhi.rizhi1[2] = str(str(RiZhi.gonghuizhijia) + "\n")
+        RiZhi.rizhi1[3] = str(str(RiZhi.taisuo) + "\n")
+        RiZhi.rizhi1[4] = str(str(RiZhi.dxc) + "\n")
+        f = open(self.dizhi + self.mingcheng, "w")
+        f.writelines(RiZhi.rizhi1)
+        f.close()
