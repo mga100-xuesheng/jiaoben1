@@ -11,7 +11,7 @@ class Pcr:
         self.pcr = gongneng.gongnengdy.GongNengdy(mz_data, xm_data, xc_sum_data, pic_config)
         self.pcr_find_pic_config = ["", "", ""]
 
-    def zikusz(self, path: list):
+    def zikusz(self, path: list):  # 绑定字库
         self.pcr.zikubd(path)
 
     def pcrjiemianduqugn(self, data1, data2):  # Pcr界面转页读取过程功能
@@ -56,7 +56,10 @@ class Pcr:
     def pcr_dianji(self, data, min_time, max_time, xc_sum):  # Pcr点击
         self.pcr.dianji(data, min_time, max_time, xc_sum)
 
-    '''--------------------------------------------------------------------------------------------------'''
+    def tili_sum(self,xc_sum):  # 体力数查询
+        return self.pcr.find_word_sum1(PcrData.sd_sum, 0, xc_sum)
+
+    '''==================================================================================================='''
 
     def saodangcsqr(self, data):  # 扫荡次数确认
         temp1 = self.pcr_find_pic(self.pcr_find_pic_config, PcrData.sdjmqr, "")
@@ -68,6 +71,8 @@ class Pcr:
             elif temp2 > data:
                 for x in range(temp2 - data):
                     self.pcr_dianji(PcrData.sdsumjs, 0.5, 1, "")
+            return 1
+        return 0
 
     def saodangtc(self):  # 扫荡弹窗确认
         temp1 = MyThread(self.pcr_find_pic, (tuple(self.pcr_find_pic_config), tuple(PcrData.sdtg), 1))
@@ -134,6 +139,93 @@ class Pcr:
         if self.pcr_find_pic_click(self.pcr_find_pic_config,PcrData.sdcz2,PcrData.sdcz3,"") == 1:
             self.pcr_dianji(PcrData.sdcz4,2,4,"")
             self.pcr_dianji(PcrData.sdcz5,2,4,"")
-            return 3
+            return self.xiandingsccs()
         else:
             return 0
+
+    '''------------------------------------------------------------------------------------------------------'''
+
+    def putongsd(self,data):  # 普通扫荡
+        if self.tili_sum("") <= 40:
+            self.saodangjs(0)
+            return -1
+        temp1 = self.saodangcsqr(data)
+        if temp1 == 1:
+            self.saodangks()
+            time.sleep(0.5)
+            temp1 = self.saodangtc()
+            self.saodangjs(temp1)
+
+    def wuquxiaosd(self,data):  # 无取消扫荡
+        if self.tili_sum("") <= 40:
+            self.saodangjs(0)
+            return -1
+        temp1 = self.saodangcsqr(data)
+        if temp1 == 1:
+            self.saodangks()
+            time.sleep(0.5)
+            temp1 = self.saodangtc()
+
+    def wuquxiaowutilisd(self,data):  # 无取消无体力扫荡
+        temp1 = self.saodangcsqr(data)
+        if temp1 == 1:
+            self.saodangks()
+            time.sleep(0.5)
+            temp1 = self.saodangtc()
+
+    def xiandingcssd(self,data):  # 限定次数扫荡
+        temp1 = self.xiandingsccs()
+        if self.tili_sum("") <= 40:
+            self.saodangjs(0)
+            return -1
+        if temp1 == 0 and data == 1:
+            sdcs = self.saodangcz()
+            if sdcs == 0:
+                self.saodangjs(0)
+                return -1
+            else:
+                self.putongsd(sdcs)
+        elif temp1 != 0 and data == 1:
+            self.wuquxiaosd(temp1)
+            temp1 = self.saodangcz()
+            if temp1 != 0:
+                self.putongsd(temp1)
+            else:
+                return -1
+        elif temp1 != 0 and data == 0:
+            self.putongsd(temp1)
+            return 1
+        elif temp1 == 0 and data == 0:
+            self.saodangjs(0)
+            return 2
+
+    def tansuosd(self):
+        temp1 = self.xiandingsccs()
+        if temp1 == 0:
+            self.saodangjs(0)
+            return 2
+        else:
+            self.wuquxiaowutilisd(temp1)
+
+    '''==================================================================================================='''
+
+    def dxc_sum(self):
+        dxc_sum_temp1 = self.pcr.find_word_sum1(PcrData.worddxc,0,"")
+        if dxc_sum_temp1 != -1:
+            print("当前层数为："+str(dxc_sum_temp1))
+            return dxc_sum_temp1
+        else:
+            print("没有找到层数")
+            return -1
+
+    def dxc_sum_csxz(self,data):
+        temp1 = self.dxc_sum()
+        if temp1 != -1:
+            self.pcr_find_pic(self.pcr_find_pic_config,data[temp1-1],"")
+            return 1
+        else:
+            print("箱子没有找到")
+            return -1
+
+    def dxc_zdks(self):
+        return self.pcr_find_pic(self.pcr_find_pic_config,PcrData.dxctz,"")
