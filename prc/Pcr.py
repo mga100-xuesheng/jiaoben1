@@ -61,6 +61,31 @@ class Pcr:
 
     '''==================================================================================================='''
 
+    def pcr_bianzuxz(self,bianzu_sum:int,data1:list,data1cgdj:list,data2:list,leixing:int):
+        temp1 = 0
+        if leixing == 1:
+            temp1 = self.pcr_find_word_click(data1[bianzu_sum-1],data1cgdj[bianzu_sum-1],"")
+        elif leixing == 2:
+            temp1 = self.pcr_find_pic(self.pcr_find_pic_config,data2[bianzu_sum-1],"")
+        if temp1 == 1:
+            print("编组切换成功")
+            return 1
+        else:
+            print("编组切换失败")
+            return 0
+
+    def pcr_duiwuxz(self, duiwu_sum: int, duiwu_data: list, duiwu_dianji_data: list, duiwu_pic_data,
+                    duiwu_pic_dianji_data, leixing: int):
+        temp1 = 0
+        if leixing == 1:
+            temp1 = self.pcr_find_word_click(duiwu_data[duiwu_sum-1],duiwu_dianji_data[duiwu_sum-1],"")
+        elif leixing == 2:
+            temp1 = self.pcr_find_pic_click(self.pcr_find_pic_config,duiwu_dianji_data)
+
+
+
+    '''==================================================================================================='''
+
     def saodangcsqr(self, data):  # 扫荡次数确认
         temp1 = self.pcr_find_pic(self.pcr_find_pic_config, PcrData.sdjmqr, "")
         if temp1 == 1:
