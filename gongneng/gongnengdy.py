@@ -26,10 +26,14 @@ class GongNengdy:
 
     def find_pic(self,config,data,xc_sum):
         self.xm_gn.find_pic_data_shezhi(config,data)
+        if xc_sum == "":
+            xc_sum = 1
         return self.xm_gn.find_pic(xc_sum)
 
     def find_pic_ex(self,config,data,xc_sum):
         self.xm_gn.find_pic_data_shezhi(config, data)
+        if xc_sum == "":
+            xc_sum = 1
         return self.xm_gn.find_pic_ex(xc_sum)
 
     def find_pic_click(self,config,data,click,xc_sum):
@@ -67,6 +71,8 @@ class GongNengdy:
 
     def find_word(self,data, xc_sum):
         self.xm_gn.find_data_shezhi(data)
+        if xc_sum == "":
+            xc_sum = 1
         return self.xm_gn.find_word(xc_sum)
 
     def find_word_click(self,data,click,xc_sum):
@@ -90,10 +96,14 @@ class GongNengdy:
 
     def find_word_ex(self,data, xc_sum):
         self.xm_gn.find_data_shezhi(data)
+        if xc_sum == "":
+            xc_sum = 1
         return self.xm_gn.find_word_ex(xc_sum)
 
     def find_word_ex1(self,data, xc_sum):
         self.xm_gn.find_data_shezhi(data)
+        if xc_sum == "":
+            xc_sum = 1
         return self.xm_gn.find_word_ex1(xc_sum)
 
     def find_word_ex1_shujucl2(self,data, xc_sum):
@@ -137,7 +147,7 @@ class GongNengdy:
     def find_word_sumzh(self, data: list, dizhi: list, sim: list, fangxian: int):
         temp1 = []
         temp4 = ""
-        zifu1 = gongneng.jiben.MyThread(self.find_word_sum, (data[0], 1, dizhi, sim[0], 1))
+        zifu1 = gongneng.jiben.MyThread(self.find_word_sum, (tuple(data[0]), 1, tuple(dizhi), sim[0], 1))
         zifu2 = gongneng.jiben.MyThread(self.find_word_sum, (data[1], 2, dizhi, sim[1], 2))
         zifu3 = gongneng.jiben.MyThread(self.find_word_sum, (data[2], 3, dizhi, sim[2], 3))
         zifu4 = gongneng.jiben.MyThread(self.find_word_sum, (data[3], 4, dizhi, sim[3], 4))
@@ -202,10 +212,10 @@ class GongNengdy:
         temp1 = []
         temp4 = ""
         zifu1 = gongneng.jiben.MyThread(self.find_word_sum1, (data[0], 1, 1))
-        zifu2 = gongneng.jiben.MyThread(self.find_word_sum, (data[1], 2, 2))
-        zifu3 = gongneng.jiben.MyThread(self.find_word_sum, (data[2], 3, 3))
-        zifu4 = gongneng.jiben.MyThread(self.find_word_sum, (data[3], 4, 4))
-        zifu5 = gongneng.jiben.MyThread(self.find_word_sum, (data[4], 5, 5))
+        zifu2 = gongneng.jiben.MyThread(self.find_word_sum1, (data[1], 2, 2))
+        zifu3 = gongneng.jiben.MyThread(self.find_word_sum1, (data[2], 3, 3))
+        zifu4 = gongneng.jiben.MyThread(self.find_word_sum1, (data[3], 4, 4))
+        zifu5 = gongneng.jiben.MyThread(self.find_word_sum1, (data[4], 5, 5))
         zifu1.start()
         zifu2.start()
         zifu3.start()
@@ -221,11 +231,11 @@ class GongNengdy:
             if temp2[x][0][0] != -1:
                 for y in range(len(temp2[x])):
                     temp1.append(temp2[x][y])
-        zifu1 = gongneng.jiben.MyThread(self.find_word_sum, (data[5], 6, 1))
-        zifu2 = gongneng.jiben.MyThread(self.find_word_sum, (data[6], 7, 2))
-        zifu3 = gongneng.jiben.MyThread(self.find_word_sum, (data[7], 8, 3))
-        zifu4 = gongneng.jiben.MyThread(self.find_word_sum, (data[8], 9, 4))
-        zifu5 = gongneng.jiben.MyThread(self.find_word_sum, (data[9], 0, 5))
+        zifu1 = gongneng.jiben.MyThread(self.find_word_sum1, (data[5], 6, 1))
+        zifu2 = gongneng.jiben.MyThread(self.find_word_sum1, (data[6], 7, 2))
+        zifu3 = gongneng.jiben.MyThread(self.find_word_sum1, (data[7], 8, 3))
+        zifu4 = gongneng.jiben.MyThread(self.find_word_sum1, (data[8], 9, 4))
+        zifu5 = gongneng.jiben.MyThread(self.find_word_sum1, (data[9], 0, 5))
         zifu1.start()
         zifu2.start()
         zifu3.start()

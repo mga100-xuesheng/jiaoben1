@@ -14,6 +14,16 @@ class Pcr:
     def zikusz(self, path: list):  # 绑定字库
         self.pcr.zikubd(path)
 
+    def dqzikusz(self,data:int):  # 当前字库选择
+        self.pcr.dqzifuku(data)
+
+    def bangding(self):  # 雷电绑定
+        self.pcr.ldbangding()
+
+    def jiebang(self):  #雷电解绑
+        self.pcr.ldjiebang()
+        print("雷电解绑完毕")
+
     def pcrjiemianduqugn(self, data1, data2):  # Pcr界面转页读取过程功能
         for x in range(1000):
             temp1 = MyThread(self.pcr.find_word, (tuple(data1), 1))
@@ -244,7 +254,7 @@ class Pcr:
             self.saodangjs(0)
             return 2
 
-    def tansuosd(self):
+    def tansuosd(self):  # 探索
         temp1 = self.xiandingsccs()
         if temp1 == 0:
             self.saodangjs(0)
@@ -340,7 +350,7 @@ class Pcr:
     '''==================================================================================================='''
 
     def guanqia_sum(self):  # 查询主线章节数
-        return self.pcr_find_word_sum1(PcrData,0)
+        return self.pcr_find_word_sum1(PcrData.gklist,0)
 
     '''------------------------------------------------------------------------------------------------------'''
     def zhangjie_xuanze(self,data):  # 选择主线章节
@@ -361,8 +371,10 @@ class Pcr:
     def guanqia_nandu(self,data):  # 主线难度选择
         if data == 1:
             temp1 = self.pcr_find_word_click1(PcrData.gk_normal, PcrData.gk_normal_dj, "")
+            print("选择简单模式")
         if data == 2:
             temp1 = self.pcr_find_word_click1(PcrData.gk_hard,PcrData.gk_hard_dj,"")
+            print("选择困难模式")
 
     def guanqia_xuanze(self,nandu_data,zhangjie,guanka):  # 关卡选择
         if nandu_data == 1:
@@ -372,7 +384,7 @@ class Pcr:
 
     '''------------------------------------------------------------------------------------------------------'''
 
-    def zhuxian(self,data:str):
+    def zhuxian(self,data:str):  # 主线章节关卡选择
         if self.pcr_find_word(PcrData.zhuxian,"") == 1:
             temp1 = data.split("-")
             temp2 = int(temp1[0])
@@ -383,3 +395,5 @@ class Pcr:
             self.zhangjie_xuanze(temp3)
             time.sleep(1)
             self.guanqia_xuanze(temp2,temp3,temp4)
+
+    '''==================================================================================================='''
