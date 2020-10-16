@@ -1,11 +1,15 @@
 from jichu.gnzh import FindCol
+from jichu.jichu import MyThread
 
 
 class GongNengdy:
     def __init__(self, xm_data, pic_comfig, xc_sum_data):
         self.sum_names = locals()
         self.xm_data = xm_data
-        self.xc_sum_data = xm_data
+        if xc_sum_data < 5:
+            self.xc_sum_data = 5
+        elif xc_sum_data > 5 or xc_sum_data == 5:
+            self.xc_sum_data = xm_data
         self.dqzk = -1
         for x in range(xc_sum_data):
             self.sum_names[self.xm_data + str(x)] = FindCol(pic_comfig)
@@ -113,8 +117,169 @@ class GongNengdy:
         else:
             return [0]
     '''---------------------------------------------------------------------------------------------------'''
-    def find_word_sum(self, data, find_sum, dizhi, sim: int, xc_sum):
+    def find_word_sum(self, data, find_sum, dizhi, sim: int, xc_sum):  # 文字数字查找
+        temp1 = []
+        for x in range(len(data)):
+            data[x][0] = dizhi
+            data[x][3] = sim
+            temp2 = self.find_word_ex1_shujucl2(data[x], xc_sum)
+            if temp2[0] == 1:
+                for x in range(len(temp2[1])):
+                    temp2[1][x] = temp2[1][x].split(",")
+                    temp2[1][x].append(find_sum)
+                    temp1.append(temp2[1][x])
+        if len(temp1) == 0:
+            return [[-1]]
+        else:
+            return temp1
+
+    def find_word_sum1(self, data, find_sum, xc_sum):  # 文字数字查找1
+        temp1 = []
+        for x in range(len(data)):
+            temp2 = self.find_word_ex1_shujucl2(data[x], xc_sum)
+            if temp2[0] == 1:
+                for x in range(len(temp2[1])):
+                    temp2[1][x] = temp2[1][x].split(",")
+                    temp2[1][x].append(find_sum)
+                    temp1.append(temp2[1][x])
+        if len(temp1) == 0:
+            return [[-1]]
+        else:
+            return temp1
+
+    def find_word_sumzh(self, data: list, dizhi: list, sim: list, fangxian: int):
+        temp1 = []
+        temp4 = ""
+        zifu1 = MyThread(self.find_word_sum, (tuple(data[0]), 1, tuple(dizhi), sim[0], 1))
+        zifu2 = MyThread(self.find_word_sum, (data[1], 2, dizhi, sim[1], 2))
+        zifu3 = MyThread(self.find_word_sum, (data[2], 3, dizhi, sim[2], 3))
+        zifu4 = MyThread(self.find_word_sum, (data[3], 4, dizhi, sim[3], 4))
+        zifu5 = MyThread(self.find_word_sum, (data[4], 5, dizhi, sim[4], 5))
+        zifu1.start()
+        zifu2.start()
+        zifu3.start()
+        zifu4.start()
+        zifu5.start()
+        zifu1.join()
+        zifu2.join()
+        zifu3.join()
+        zifu4.join()
+        zifu5.join()
+        temp2 = [zifu1.get_result(), zifu2.get_result(), zifu3.get_result(), zifu4.get_result(), zifu5.get_result()]
+        for x in range(len(temp2)):
+            if temp2[x][0][0] != -1:
+                for y in range(len(temp2[x])):
+                    temp1.append(temp2[x][y])
+        zifu1 = MyThread(self.find_word_sum, (data[5], 6, dizhi, sim[5], 1))
+        zifu2 = MyThread(self.find_word_sum, (data[6], 7, dizhi, sim[6], 2))
+        zifu3 = MyThread(self.find_word_sum, (data[7], 8, dizhi, sim[7], 3))
+        zifu4 = MyThread(self.find_word_sum, (data[8], 9, dizhi, sim[8], 4))
+        zifu5 = MyThread(self.find_word_sum, (data[9], 0, dizhi, sim[9], 5))
+        zifu1.start()
+        zifu2.start()
+        zifu3.start()
+        zifu4.start()
+        zifu5.start()
+        zifu1.join()
+        zifu2.join()
+        zifu3.join()
+        zifu4.join()
+        zifu5.join()
+        temp2 = [zifu1.get_result(), zifu2.get_result(), zifu3.get_result(), zifu4.get_result(), zifu5.get_result()]
+        for x in range(len(temp2)):
+            if temp2[x][0][0] != -1:
+                for y in range(len(temp2[x])):
+                    temp1.append(temp2[x][y])
+        if fangxian == 0:
+            for x in range(len(temp1)):
+                for y in range(len(temp1) - x - 1):
+                    if int(temp1[y][0]) > int(temp1[y + 1][0]):
+                        temp3 = temp1[y]
+                        temp1[y + 1] = temp1[y]
+                        temp1[y + 1] = temp3
+        else:
+            for x in range(len(temp1)):
+                for y in range(len(temp1) - x - 1):
+                    if int(temp1[y][1]) > int(temp1[y + 1][1]):
+                        temp3 = temp1[y]
+                        temp1[y + 1] = temp1[y]
+                        temp1[y + 1] = temp3
+        for x in range(len(temp1)):
+            temp4 = temp4 + str(temp1[x][2])
+        if temp4 != "":
+            return int(temp4)
+        else:
+            return -1
+
+    def find_word_sumzh1(self, data: list, fangxian: int):
+        temp1 = []
+        temp4 = ""
+        zifu1 = MyThread(self.find_word_sum1, (data[0], 1, 1))
+        zifu2 = MyThread(self.find_word_sum1, (data[1], 2, 2))
+        zifu3 = MyThread(self.find_word_sum1, (data[2], 3, 3))
+        zifu4 = MyThread(self.find_word_sum1, (data[3], 4, 4))
+        zifu5 = MyThread(self.find_word_sum1, (data[4], 5, 5))
+        zifu1.start()
+        zifu2.start()
+        zifu3.start()
+        zifu4.start()
+        zifu5.start()
+        zifu1.join()
+        zifu2.join()
+        zifu3.join()
+        zifu4.join()
+        zifu5.join()
+        temp2 = [zifu1.get_result(), zifu2.get_result(), zifu3.get_result(), zifu4.get_result(), zifu5.get_result()]
+        for x in range(len(temp2)):
+            if temp2[x][0][0] != -1:
+                for y in range(len(temp2[x])):
+                    temp1.append(temp2[x][y])
+        zifu1 = MyThread(self.find_word_sum1, (data[5], 6, 1))
+        zifu2 = MyThread(self.find_word_sum1, (data[6], 7, 2))
+        zifu3 = MyThread(self.find_word_sum1, (data[7], 8, 3))
+        zifu4 = MyThread(self.find_word_sum1, (data[8], 9, 4))
+        zifu5 = MyThread(self.find_word_sum1, (data[9], 0, 5))
+        zifu1.start()
+        zifu2.start()
+        zifu3.start()
+        zifu4.start()
+        zifu5.start()
+        zifu1.join()
+        zifu2.join()
+        zifu3.join()
+        zifu4.join()
+        zifu5.join()
+        temp2 = [zifu1.get_result(), zifu2.get_result(), zifu3.get_result(), zifu4.get_result(), zifu5.get_result()]
+        for x in range(len(temp2)):
+            if temp2[x][0][0] != -1:
+                for y in range(len(temp2[x])):
+                    temp1.append(temp2[x][y])
+        if fangxian == 0:
+            for x in range(len(temp1)):
+                for y in range(len(temp1) - x - 1):
+                    if int(temp1[y][0]) > int(temp1[y + 1][0]):
+                        temp3 = temp1[y]
+                        temp1[y + 1] = temp1[y]
+                        temp1[y + 1] = temp3
+        else:
+            for x in range(len(temp1)):
+                for y in range(len(temp1) - x - 1):
+                    if int(temp1[y][1]) > int(temp1[y + 1][1]):
+                        temp3 = temp1[y]
+                        temp1[y + 1] = temp1[y]
+                        temp1[y + 1] = temp3
+        for x in range(len(temp1)):
+            temp4 = temp4 + str(temp1[x][2])
+        if temp4 != "":
+            return int(temp4)
+        else:
+            return -1
     '''==================================================================================================='''
+    '''==================================================================================================='''
+    def duoxc(self,data:list):
+        temp1 = locals()
+        for x in range(len(data)):
+
 
 
 
