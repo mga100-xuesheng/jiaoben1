@@ -277,6 +277,19 @@ class GongNengdy:
             return -1
     '''==================================================================================================='''
     '''==================================================================================================='''
+    def duoxianc(self,data):
+        temp1 = locals()
+        temp2 = []
+        for x in range(len(data)):
+            temp1["duoxc"+str(x)] = MyThread(data[x][0],data[x][1])
+        for x in range(len(data)):
+            temp1["duoxc"+str(x)].start()
+        for x in range(len(data)):
+            temp1["duoxc"+str(x)].join()
+        for x in range(len(data)):
+            temp2.append(temp1["duoxc"+str(x)].get_result())
+        return temp2
+
     def duoxc_2(self,fun1,data1,fun2,data2):
         temp1 = MyThread(fun1,data1)
         temp2 = MyThread(fun2,data2)
@@ -292,17 +305,11 @@ class GongNengdy:
         temp2 = MyThread(fun2,data2)
         temp3 = MyThread(fun3, data3)
         temp1.start()
-        print(1)
         temp2.start()
-        print(2)
         temp3.start()
-        print(3)
         temp1.join()
         temp2.join()
         temp3.join()
-        print(temp1.get_result())
-        print(temp2.get_result())
-        print(temp3.get_result())
         temp4 = [temp1.get_result(),temp2.get_result(),temp3.get_result()]
         return temp4
 
