@@ -1,6 +1,7 @@
 import gongneng.gongnengdy
 import zh_data
 from prc.Pcr import Pcr
+from jichu.gndy import GongNengdy
 
 
 class PcrCeshi:
