@@ -7,18 +7,15 @@ import math
 import datetime
 
 
-class JiBen:
-    def __init__(self, mz_data, xm_data, xc_sum_data, pic_comfig):
+class JiChu:
+    def __init__(self, pic_comfig):
         self.pic_path = pic_comfig[0]
         self.pic_format = pic_comfig[1]
         self.pic_col = pic_comfig[2]
-        self.xc_data = xc_sum_data
-        self.xm_data = xm_data
-        self.mz_data = mz_data
-        self.sum_names = locals()
         self.hwnd = 0
         self.xc_sum = 1
         self.dqzifu_sum = -1
+        self.lw = client.CreateObject('lw.lwsoft3')
         "--------------------------------------------"
         self.find_word_data_coord = []
         self.find_word_data_name = ""
@@ -56,39 +53,21 @@ class JiBen:
         self.find_col_data_x = -1
         self.find_col_data_y = -1
 
-    def sum_xiancheng(self, data):  # 线程对象循环定义
-        for temp1 in range(data):
-            self.sum_names[self.xm_data + str(temp1 + 1)] = client.CreateObject('lw.lwsoft3')
-
-    def sum_xiancheng1(self,data):  # 多线程对象直接定义
-        self.sum_names[self.xm_data + str(data)] = client.CreateObject('lw.lwsoft3')
-
-    def leidianbang(self, data, xc_sum):  # 雷电模拟器绑定
-        if xc_sum == "":
-            xc_sum = 1
+    def leidianbang(self, data, mingzi):  # 雷电模拟器绑定
         hwnd = win32gui.FindWindow("LDPlayerMainFrame", data)
         ch_hwnd = win32gui.FindWindowEx(hwnd, 0, "RenderWindow", "TheRender")
         self.hwnd = ch_hwnd
         print('句柄为：' + str(ch_hwnd))
-        leidianbang_temp = self.sum_names[self.xm_data + str(xc_sum)].BindWindow(ch_hwnd, 5, 4, 4, 1, 0)
+        leidianbang_temp = self.lw.BindWindow(ch_hwnd, 5, 4, 4, 1, 0)
         if leidianbang_temp == 1:
-            print(self.xm_data + "绑定成功")
+            print(mingzi+"绑定成功")
         else:
-            print(self.xm_data + "绑定失败")
+            print(mingzi+"绑定失败")
 
-    def leidiandxcbd(self):  # 雷电多线程循环绑定
-        self.sum_xiancheng(self.xc_data)
-        for temp1 in range(self.xc_data):
-            self.leidianbang(self.mz_data, temp1 + 1)
+    def jiebang(self):  # 雷电模拟器解绑
+        self.lw.ForceUnBindWindow(self.hwnd)
 
-    def jiebang(self, xc_sum):  # 雷电模拟器解绑
-        if xc_sum == "":
-            xc_sum = 1
-        self.sum_names[self.xm_data + str(xc_sum)].ForceUnBindWindow(self.hwnd)
-
-    def click(self, data, xc_sum):
-        if xc_sum == "":
-            xc_sum = 1
+    def click(self, data):  # 点击
         x1 = data[0]
         y1 = data[1]
         click_temp2 = len(data)
@@ -118,8 +97,8 @@ class JiBen:
             x3 = random.randint(x1, x2)
             y3 = random.randint(y1, y2)
         if x3 > 0 and y3 > 0:
-            self.sum_names[self.xm_data + str(xc_sum)].MoveTo(x3, y3)
-            click_temp3 = self.sum_names[self.xm_data + str(xc_sum)].LeftClick()
+            self.lw.MoveTo(x3, y3)
+            click_temp3 = self.lw.LeftClick()
         else:
             return 0
         if click_temp3 > 0:
@@ -127,9 +106,7 @@ class JiBen:
         else:
             return 0
 
-    def locus1(self, data, xc_sum):  # 坐标移动
-        if xc_sum == "":
-            xc_sum = 1
+    def locus1(self, data):  # 坐标移动
         x1 = data[0]
         y1 = data[1]
         x2 = data[2]
@@ -148,19 +125,17 @@ class JiBen:
                 locus_temp1 = random.randint(3, 6)
                 y1 = y1 - locus_temp1
             print("x:" + str(x1) + "   " + "y:" + str(y1))  # daying
-            self.sum_names[self.xm_data + str(xc_sum)].MoveTo(x1, y1)
+            self.lw.MoveTo(x1, y1)
             self.random_time(0.001, 0.005)
 
-    def huaping1(self,data,xc_sum):  # 滑屏1
-        if xc_sum == "":
-            xc_sum = 1
+    def huaping1(self,data):  # 滑屏1
         self.random_time(0.5, 1)
-        self.sum_names["lw" + str(xc_sum)].MoveTo(data[0], data[1])
+        self.lw.MoveTo(data[0], data[1])
         self.random_time(0.5, 1)
-        self.sum_names["lw" + str(xc_sum)].LeftDown()
-        self.locus1(data, xc_sum)
+        self.lw.LeftDown()
+        self.locus1(data)
         self.random_time(0.5, 1)
-        self.sum_names["lw" + str(xc_sum)].LeftUp()
+        self.lw.LeftUp()
 
     @staticmethod
     def random_time(min_data, max_data):  # 时间随机
@@ -175,8 +150,8 @@ class JiBen:
     @staticmethod
     def block(bl, data):  # 平均分块
         block_temp1 = bl.split("|")
-        x = data[2]-data[0]
-        y = data[3]-data[1]
+        x = data[2] - data[0]
+        y = data[3] - data[1]
         block_x1 = x / int(block_temp1[0])
         block_y1 = y / int(block_temp1[1])
         block_x3 = []
@@ -202,7 +177,7 @@ class JiBen:
         print(block_y3)
         for i in range(int(block_temp1[0])):
             for k in range(int(block_temp1[1])):
-                block_temp3 = [block_x3[i], block_y3[k], block_x3[i+1], block_y3[k+1]]
+                block_temp3 = [block_x3[i], block_y3[k], block_x3[i + 1], block_y3[k + 1]]
                 block_temp2.append(block_temp3)
         return block_temp2
 
@@ -223,19 +198,19 @@ class JiBen:
             return 0
 
     @staticmethod
-    def dianjuli(datax1,datay1,datax2,datay2):
+    def dianjuli(datax1, datay1, datax2, datay2):
         tempx = int(datax1) - int(datax2)
         tempy = int(datay1) - int(datay2)
         if tempx < 0:
             tempx = 0 - tempx
         if tempy < 0:
             tempy = 0 - tempy
-        temp1 = (tempx*tempx)+(tempy*tempy)
+        temp1 = (tempx * tempx) + (tempy * tempy)
         tempzuobiao = math.sqrt(temp1)
         return tempzuobiao
 
     @staticmethod
-    def shujuchuli1(data:str):
+    def shujuchuli1(data: str):
         if data == "":
             return -1
         temp1 = data.find("|")
@@ -254,7 +229,7 @@ class JiBen:
             return temp2
 
     @staticmethod
-    def shujuchuli2(data:str):
+    def shujuchuli2(data: str):
         if data == "":
             return [-1]
         temp1 = data.find("|")
@@ -263,15 +238,15 @@ class JiBen:
             temp1 = data.split("|")
             for x in range(len(temp1)):
                 temp1[x] = temp1[x][2:]
-            return [1,temp1]
+            return [1, temp1]
         else:
             temp1 = data[2:]
-            return [1,[temp1]]
+            return [1, [temp1]]
 
     '''格式为：[第一个数据,第二个数据]'''
 
     @staticmethod
-    def shujuchuli3(data:str):
+    def shujuchuli3(data: str):
         if data == "":
             return [-1]
         temp1 = data.find("|")
@@ -286,7 +261,8 @@ class JiBen:
         if len(temp2) == 0:
             return [0]
         else:
-            return [1,temp2]
+            return [1, temp2]
+
     '''格式为：[[第一个数据],[第二个数据]]'''
 
 

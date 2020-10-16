@@ -4,10 +4,17 @@ import gongneng.jiben
 
 class GongNengdy:
     def __init__(self, mz_data, xm_data, xc_sum_data, pic_config):
+        self.mz_data = mz_data
         self.xm_gn = gongneng.gongnengzh.FindCol(mz_data, xm_data, xc_sum_data, pic_config)
+
+    def dxc_dingyi(self,data):  # 多线程对象直接定义
+        self.xm_gn.sum_xiancheng1(data)
 
     def ldbangding(self):
         self.xm_gn.leidiandxcbd()
+
+    def ldnamgding1(self,data):
+        self.xm_gn.leidianbang(self.mz_data,data)
 
     def ldjiebang(self):
         self.xm_gn.jiebang("")

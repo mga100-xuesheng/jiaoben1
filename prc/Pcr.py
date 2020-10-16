@@ -8,26 +8,33 @@ from random import shuffle
 
 class Pcr:
     def __init__(self, mz_data, xm_data, xc_sum_data, pic_config: list):
-        self.pcr = gongneng.gongnengdy.GongNengdy(mz_data, xm_data, xc_sum_data, pic_config)
+        self.pcr = locals()
+        self.xc_sum_data = xc_sum_data
+
+        for x in range(xc_sum_data):
+            self.pcr["pcr"+str(x)] = gongneng.gongnengdy.GongNengdy(mz_data, xm_data, 5, pic_config)
         self.pcr_find_pic_config = ["", "", ""]
 
     def zikusz(self, path: list):  # 绑定字库
-        self.pcr.zikubd(path)
+        for x in range(self.xc_sum_data):
+            self.pcr["pcr"+str(x)].zikubd(path)
 
     def dqzikusz(self,data:int):  # 当前字库选择
-        self.pcr.dqzifuku(data)
+        for x in range(self.xc_sum_data):
+            self.pcr["pcr"+str(x)].dqzifuku(data)
 
     def bangding(self):  # 雷电绑定
-        self.pcr.ldbangding()
+        for x in range(self.xc_sum_data):
+            self.pcr["pcr"+str(x)].ldbangding()
 
     def jiebang(self):  #雷电解绑
-        self.pcr.ldjiebang()
+        self.pcr["1"].ldjiebang()
         print("雷电解绑完毕")
 
     def pcrjiemianduqugn(self, data1, data2):  # Pcr界面转页读取过程功能
         for x in range(1000):
-            temp1 = MyThread(self.pcr.find_word, (tuple(data1), 1))
-            temp2 = MyThread(self.pcr.find_word, (tuple(data2), 2))
+            temp1 = MyThread(self.pcr["pcr1"].find_word, (tuple(data1), 1))
+            temp2 = MyThread(self.pcr["pcr2"].find_word, (tuple(data2), 2))
             temp1.start()
             temp2.start()
             temp1.join()
@@ -40,40 +47,58 @@ class Pcr:
         self.pcrjiemianduqugn(PcrData.dqgc1, PcrData.dqgc2)
 
     def pcr_find_pic(self, config, data, xc_sum):  # Pcr找图
+        if xc_sum == "":
+            xc_sum = 1
         self.pcrjmdq()
-        return self.pcr.find_pic(config, data, xc_sum)
+        return self.pcr["pcr"+str(xc_sum)].find_pic(config, data, xc_sum)
 
     def pcr_find_pic_click(self, config, data, click, xc_sum):  # Pcr找图成功点击
+        if xc_sum == "":
+            xc_sum = 1
         self.pcrjmdq()
-        return self.pcr.find_pic_click(config, data, click, xc_sum)
+        return self.pcr["pcr"+str(xc_sum)].find_pic_click(config, data, click, xc_sum)
 
     def pcr_find_pic_click1(self, config, data, click, xc_sum):  # Pcr找图失败点击
+        if xc_sum == "":
+            xc_sum = 1
         self.pcrjmdq()
-        return self.pcr.find_pic_click1(config, data, click, xc_sum)
+        return self.pcr["pcr"+str(xc_sum)].find_pic_click1(config, data, click, xc_sum)
 
     def pcr_find_word(self, data, xc_sum):  # Pcr找字
+        if xc_sum == "":
+            xc_sum = 1
         self.pcrjmdq()
-        return self.pcr.find_word(data, xc_sum)
+        return self.pcr["pcr"+str(xc_sum)].find_word(data, xc_sum)
 
     def pcr_find_word_click(self, data, click, xc_sum):  # Pcr找字成功点击
+        if xc_sum == "":
+            xc_sum = 1
         self.pcrjmdq()
-        return self.pcr.find_word_click(data, click, xc_sum)
+        return self.pcr["pcr"+str(xc_sum)].find_word_click(data, click, xc_sum)
 
     def pcr_find_word_click1(self, data, click, xc_sum):  # Pcr找字失败点击
+        if xc_sum == "":
+            xc_sum = 1
         self.pcrjmdq()
-        return self.pcr.find_word_click1(data, click, xc_sum)
+        return self.pcr["pcr"+str(xc_sum)].find_word_click1(data, click, xc_sum)
 
     def pcr_dianji(self, data, min_time, max_time, xc_sum):  # Pcr点击
+        if xc_sum == "":
+            xc_sum = 1
         self.pcrjmdq()
-        self.pcr.dianji(data, min_time, max_time, xc_sum)
+        self.pcr["pcr"+str(xc_sum)].dianji(data, min_time, max_time, xc_sum)
 
     def tili_sum(self,xc_sum):  # 体力数查询
+        if xc_sum == "":
+            xc_sum = 1
         self.pcrjmdq()
-        return self.pcr.find_word_sum1(PcrData.sd_sum, 0, xc_sum)
+        return self.pcr["pcr"+str(xc_sum)].find_word_sum1(PcrData.sd_sum, 0, xc_sum)
 
-    def pcr_find_word_sum1(self,data,fangxian):  # pcr文字找数
+    def pcr_find_word_sum1(self,data,fangxian,xc_sum):  # pcr文字找数
+        if xc_sum == "":
+            xc_sum = 1
         self.pcrjmdq()
-        return self.pcr.find_word_sumzh1(data,fangxian)
+        return self.pcr["pcr"+str(xc_sum)].find_word_sumzh1(data,fangxian)
 
     '''==================================================================================================='''
 
@@ -116,10 +141,12 @@ class Pcr:
 
     '''==================================================================================================='''
 
-    def saodangcsqr(self, data):  # 扫荡次数确认
+    def saodangcsqr(self, data,xc_sum):  # 扫荡次数确认
+        if xc_sum == "":
+            xc_sum = 1
         temp1 = self.pcr_find_pic(self.pcr_find_pic_config, PcrData.sdjmqr, "")
         if temp1 == 1:
-            temp2 = self.pcr.find_word_sumzh1(PcrData.sd_sum, 0)
+            temp2 = self.pcr["pcr"+str(xc_sum)].find_word_sumzh1(PcrData.sd_sum, 0)
             if temp2 < data:
                 for x in range(data - temp2):
                     self.pcr_dianji(PcrData.sdsumzj, 0.5, 1, "")
@@ -175,17 +202,26 @@ class Pcr:
         temp2 = MyThread(self.pcr_find_word, (tuple(PcrData.knsd1), 2))
         temp3 = MyThread(self.pcr_find_word, (tuple(PcrData.knsd2), 3))
         temp4 = MyThread(self.pcr_find_word, (tuple(PcrData.knsd3), 4))
+        temp5 = MyThread(self.pcr_find_word, (tuple(PcrData.knsd4), 5))
+        temp6 = MyThread(self.pcr_find_word, (tuple(PcrData.knsd5), 6))
         temp1.start()
         temp2.start()
         temp3.start()
         temp4.start()
+        temp5.start()
+        temp6.start()
         temp1.join()
         temp2.join()
         temp3.join()
         temp4.join()
-        temp1_sum = [temp1.get_result(),temp2.get_result(),temp3.get_result(),temp4.get_result()]
+        temp5.join()
+        temp6.join()
+        temp1_sum = [temp1.get_result(), temp2.get_result(), temp3.get_result(), temp4.get_result(), temp5.get_result(),
+                     temp6.get_result()]
+        print(temp1_sum)
         for x in range(len(temp1_sum)):
             if temp1_sum[x] == 1:
+                print(x)
                 return x
         return -1
 
@@ -204,7 +240,7 @@ class Pcr:
         if self.tili_sum("") <= 40:
             self.saodangjs(0)
             return -1
-        temp1 = self.saodangcsqr(data)
+        temp1 = self.saodangcsqr(data,"")
         if temp1 == 1:
             self.saodangks()
             time.sleep(0.5)
@@ -215,14 +251,14 @@ class Pcr:
         if self.tili_sum("") <= 40:
             self.saodangjs(0)
             return -1
-        temp1 = self.saodangcsqr(data)
+        temp1 = self.saodangcsqr(data,"")
         if temp1 == 1:
             self.saodangks()
             time.sleep(0.5)
             temp1 = self.saodangtc()
 
     def wuquxiaowutilisd(self,data):  # 无取消无体力扫荡
-        temp1 = self.saodangcsqr(data)
+        temp1 = self.saodangcsqr(data,"")
         if temp1 == 1:
             self.saodangks()
             time.sleep(0.5)
@@ -264,8 +300,10 @@ class Pcr:
 
     '''==================================================================================================='''
 
-    def dxc_sum(self):  # 地下城层数查询
-        dxc_sum_temp1 = self.pcr.find_word_sum1(PcrData.worddxc, 0, "")
+    def dxc_sum(self,xc_sum):  # 地下城层数查询
+        if xc_sum == "":
+            xc_sum = 1
+        dxc_sum_temp1 = self.pcr["pcr"+str(xc_sum)].find_word_sum1(PcrData.worddxc, 0, "")
         if dxc_sum_temp1 != -1:
             print("当前层数为：" + str(dxc_sum_temp1))
             return dxc_sum_temp1
@@ -274,7 +312,7 @@ class Pcr:
             return -1
 
     def dxc_sum_csxz(self, data):  # 地下城层数选择
-        temp1 = self.dxc_sum()
+        temp1 = self.dxc_sum("")
         if temp1 != -1:
             self.pcr_find_pic(self.pcr_find_pic_config, data[temp1 - 1], "")
             return 1
@@ -329,63 +367,64 @@ class Pcr:
 
     '''------------------------------------------------------------------------------------------------------'''
 
-    def dxc(self,data,max_cengshu):  # 地下城过程
-        temp1 = self.dxc_sum()
+    def dxc(self, data, max_cengshu):  # 地下城过程
+        temp1 = self.dxc_sum("")
         if temp1 != -1:
             if self.dxc_sum_csxz(data) == 1:
                 if self.dxc_tzks() == 1:
                     if temp1 == 1:
-                        self.dxc_huanduiwu(1,PcrData.dxcwddwzh)
+                        self.dxc_huanduiwu(1, PcrData.dxcwddwzh)
                     elif temp1 == max_cengshu:
-                        self.dxc_huanduiwu(2,PcrData.dxcwddwzh)
-                    self.zhandougc(PcrData.dxcxyb2,PcrData.dxcggsb)
+                        self.dxc_huanduiwu(2, PcrData.dxcwddwzh)
+                    self.zhandougc(PcrData.dxcxyb2, PcrData.dxcggsb)
                     self.dxc_zdjs()
                     return temp1
 
-    def richangdxc(self,data,max_cengshu,dadaocengshu):  # 日常地下城操作
+    def richangdxc(self, data, max_cengshu, dadaocengshu):  # 日常地下城操作
         for x in range(50):
-            if self.dxc(data,max_cengshu) > dadaocengshu:
+            if self.dxc(data, max_cengshu) > dadaocengshu:
                 return 1
 
     '''==================================================================================================='''
 
     def guanqia_sum(self):  # 查询主线章节数
-        return self.pcr_find_word_sum1(PcrData.gklist,0)
+        return self.pcr_find_word_sum1(PcrData.gklist, 0,"")
 
     '''------------------------------------------------------------------------------------------------------'''
-    def zhangjie_xuanze(self,data):  # 选择主线章节
+
+    def zhangjie_xuanze(self, data):  # 选择主线章节
         temp1 = self.guanqia_sum()
         if temp1 == -1:
             return -1
-        print("当前关卡为："+str(temp1))
-        print("选择关卡为："+str(data))
+        print("当前关卡为：" + str(temp1))
+        print("选择关卡为：" + str(data))
         if data < temp1:
             temp2 = temp1 - data
             for x in range(temp2):
-                self.pcr_dianji(PcrData.gk_zuo,1.5,2,"")
+                self.pcr_dianji(PcrData.gk_zuo, 1.5, 2, "")
         else:
             temp2 = data - temp1
             for x in range(temp2):
-                self.pcr_dianji(PcrData.gk_you,1.5,2,"")
+                self.pcr_dianji(PcrData.gk_you, 1.5, 2, "")
 
-    def guanqia_nandu(self,data):  # 主线难度选择
+    def guanqia_nandu(self, data):  # 主线难度选择
         if data == 1:
             temp1 = self.pcr_find_word_click1(PcrData.gk_normal, PcrData.gk_normal_dj, "")
             print("选择简单模式")
         if data == 2:
-            temp1 = self.pcr_find_word_click1(PcrData.gk_hard,PcrData.gk_hard_dj,"")
+            temp1 = self.pcr_find_word_click1(PcrData.gk_hard, PcrData.gk_hard_dj, "")
             print("选择困难模式")
 
-    def guanqia_xuanze(self,nandu_data,zhangjie,guanka):  # 关卡选择
+    def guanqia_xuanze(self, nandu_data, zhangjie, guanka):  # 关卡选择
         if nandu_data == 1:
             return 0
         elif nandu_data == 2:
-            self.pcr_dianji(PcrData.hguanka[int(zhangjie)-1][int(guanka)-1],3,4,"")
+            self.pcr_dianji(PcrData.hguanka[int(zhangjie) - 1][int(guanka) - 1], 3, 4, "")
 
     '''------------------------------------------------------------------------------------------------------'''
 
-    def zhuxian(self,data:str):  # 主线章节关卡选择
-        if self.pcr_find_word(PcrData.zhuxian,"") == 1:
+    def zhuxian(self, data: str):  # 主线章节关卡选择
+        if self.pcr_find_word(PcrData.zhuxian, "") == 1:
             temp1 = data.split("-")
             temp2 = int(temp1[0])
             temp3 = int(temp1[1])
@@ -394,6 +433,19 @@ class Pcr:
             time.sleep(3)
             self.zhangjie_xuanze(temp3)
             time.sleep(1)
-            self.guanqia_xuanze(temp2,temp3,temp4)
+            self.guanqia_xuanze(temp2, temp3, temp4)
+
+    '''==================================================================================================='''
+
+    def jiemianxz1(self, data):  # 界面选择1
+        time.sleep(2)
+        if data[1] == 1:
+            return self.pcr_find_pic(self.pcr_find_pic_config, data[0], "")
+        elif data[1] == 2:
+            return self.pcr_find_word(data[0], "")
+        elif data[1] == 3:
+            self.pcr_dianji(data, 2, 5, "")
+        elif data == 4:
+            return self.pcr_find_pic_click(self.pcr_find_pic_config, data[0], data[2], "")
 
     '''==================================================================================================='''
