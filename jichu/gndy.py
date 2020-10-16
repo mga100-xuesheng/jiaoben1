@@ -278,8 +278,18 @@ class GongNengdy:
     '''==================================================================================================='''
     def duoxc(self,data:list):
         temp1 = locals()
+        temp2 = []
         for x in range(len(data)):
+            temp1["duoxc"+str(x)] = MyThread(data[x][0],(data[x][1]))
 
+        for x in range(len(data)):
+            temp1["duoxc" + str(x)].start()
 
+        for x in range(len(data)):
+            temp1["duoxc" + str(x)].join()
 
+        for x in range(len(data)):
+            temp2.append(temp1["duoxc" + str(x)].get_result())
+
+        return temp2
 
