@@ -3,8 +3,8 @@ from jichu.jichu import MyThread
 
 
 class GongNengdy:
-    def __init__(self, xm_data, pic_comfig, xc_sum_data):
-        self.pic_config = pic_comfig
+    def __init__(self, xm_data, pic_config, xc_sum_data):
+        self.pic_config = pic_config
         self.sum_names = locals()
         self.xm_data = xm_data
         if xc_sum_data < 5:
@@ -13,7 +13,7 @@ class GongNengdy:
             self.xc_sum_data = xc_sum_data
         self.dqzk = -1
         for x in range(xc_sum_data):
-            self.sum_names[self.xm_data + str(x)] = FindCol(pic_comfig)
+            self.sum_names[self.xm_data + str(x)] = FindCol(pic_config)
 
     def ldbangding(self, data):  # 雷电模拟器多线程绑定
         for x in range(self.xc_sum_data):
@@ -70,18 +70,21 @@ class GongNengdy:
 
     def zikubd(self,data):  # 字库绑定
         for x in range(self.xc_sum_data):
-            self.sum_names[self.xm_data + str(x)].SetDict(x,data[x])
+            for y in range(len(data)):
+                self.sum_names[self.xm_data + str(x)].lw.SetDict(y,data[y])
 
     def dqziku(self,data):  # 当前字库选择
         if self.dqzk != data:
             for x in range(self.xc_sum_data):
-                self.sum_names[self.xm_data + str(x)].UseDict(data)
+                self.sum_names[self.xm_data + str(x)].lw.UseDict(data)
             self.dqzk = data
             return 2
         else:
             return 1
 
     def find_word(self,data,xc_sum):  # 找字
+        if xc_sum == "":
+            xc_sum = 1
         self.sum_names[self.xm_data + str(xc_sum)].find_data_shezhi(data)
         return self.sum_names[self.xm_data + str(xc_sum)].find_word()
 
@@ -102,12 +105,16 @@ class GongNengdy:
             return 1
 
     def find_word_ex(self,data,xc_sum):  # 找字扩展
+        if xc_sum == "":
+            xc_sum = 1
         self.sum_names[self.xm_data + str(xc_sum)].find_data_shezhi(data)
         return self.sum_names[self.xm_data + str(xc_sum)].find_word_ex()
 
     def find_word_ex1(self,data,xc_sum):  # 找字扩展1
+        if xc_sum == "":
+            xc_sum = 1
         self.sum_names[self.xm_data + str(xc_sum)].find_data_shezhi(data)
-        return self.sum_names[self.xm_data + str(xc_sum)].find_word_ex()
+        return self.sum_names[self.xm_data + str(xc_sum)].find_word_ex1()
 
     def find_word_ex1_shujucl2(self,data,xc_sum):  # 找字扩展1:数据处理2
         self.sum_names[self.xm_data + str(xc_sum)].find_data_shezhi(data)
@@ -277,7 +284,9 @@ class GongNengdy:
             return -1
     '''==================================================================================================='''
     '''==================================================================================================='''
-    def duoxianc(self,data):
+    def duoxianc(self,data:list):
+        if len(data) > self.xc_sum_data:
+            return [-1]
         temp1 = locals()
         temp2 = []
         for x in range(len(data)):
@@ -289,27 +298,3 @@ class GongNengdy:
         for x in range(len(data)):
             temp2.append(temp1["duoxc"+str(x)].get_result())
         return temp2
-
-    def duoxc_2(self,fun1,data1,fun2,data2):
-        temp1 = MyThread(fun1,data1)
-        temp2 = MyThread(fun2,data2)
-        temp1.start()
-        temp2.start()
-        temp1.join()
-        temp2.join()
-        temp3 = [temp1.get_result(),temp2.get_result()]
-        return temp3
-
-    def duoxc_3(self,fun1,data1,fun2,data2,fun3,data3):
-        temp1 = MyThread(fun1,data1)
-        temp2 = MyThread(fun2,data2)
-        temp3 = MyThread(fun3, data3)
-        temp1.start()
-        temp2.start()
-        temp3.start()
-        temp1.join()
-        temp2.join()
-        temp3.join()
-        temp4 = [temp1.get_result(),temp2.get_result(),temp3.get_result()]
-        return temp4
-
