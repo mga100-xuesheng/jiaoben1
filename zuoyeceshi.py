@@ -1,79 +1,77 @@
-import string
-
-plaintext_ = string.ascii_lowercase  # string.ascii_letters
-ciphertext_ = string.ascii_uppercase
 
 
-# 加密算法
 
-def encryption(K1, K2, plaintext):
-    cipherarr = [0 for i in range(len(plaintext))]
-    plaintext_list = list(plaintext)
+def enCode():
+    keyMatrix = [[0, 0], [0, 0]]
 
-    j = 0
-    for plaintext_item in plaintext_list:
-        for i in range(len(plaintext_)):
-            if plaintext_item == plaintext_[i]:
-                ciphertext = (int(K1) * i + int(K2)) % 26
-                cipherarr[j] = ciphertext_[ciphertext]
-                print(ciphertext, " ", cipherarr[j])
-                j = j + 1
-    cipher = ''.join(cipherarr)
-    return cipher
-
-
-while True:
-    print('========加密部分========')
-    K1 = input('请输入K1：')
-    K2 = input('请输入K2：')
-    plaintext = input('请输入消息：')
-    print('对应密文是:')
-    cipher = encryption(K1, K2, plaintext)
-    # if plaintext == 'exit':
-    #     break
-    print('密文是:', cipher)
-    break
+    keyMatrix[0][0] = int(input('Enter a key: '))
+    keyMatrix[0][1] = int(input('Enter a key: '))
+    keyMatrix[1][0] = int(input('Enter a key: '))
+    keyMatrix[1][1] = int(input('Enter a key: '))
+    msg = input('Enter plaintext:')
+    if len(msg) % 2 != 0:
+        print('error')
+        return
+    index = 0
+    ma1 = [0, 0]
+    res = ''
+    while index < len(msg):
+        m1 = ord(msg[index]) - 97
+        m2 = ord(msg[index + 1]) - 97
+        index += 2
+        ma1[0] = (m1 * keyMatrix[0][0] + m2 * keyMatrix[1][0]) % 26
+        ma1[1] = (m1 * keyMatrix[0][1] + m2 * keyMatrix[1][1]) % 26
+        res+=chr(ma1[0]+97)
+        res+=chr(ma1[1] + 97)
+    print('Ciphertext: '+res)
 
 
-# 解密算法
+def getkey(k):
+    j=00
+    i=00
+    while (i%26)!=1:
+        i=int(k)*j
+        j+=1
+    k=j-1
+    return k
 
-def decryption(K3, K4, ciphertext):
-    plaintext_arr = [0 for i in range(len(ciphertext))]
-    cipherlist = list(ciphertext)
+def deCode():
 
-    j = 0
-    for cipheritem in cipherlist:
-        for i in range(len(ciphertext_)):
-            if cipheritem == ciphertext_[i]:
-                plaintext = (key1(K3) * (i - int(K4))) % 26
-                plaintext_arr[j] = plaintext_[plaintext]
-                print(plaintext, " ", plaintext_arr[j])
-                j = j + 1
-    plain = ''.join(plaintext_arr)
+    keyMatrix = [[0, 0], [0, 0]]
 
-    return plain
+    keyMatrix[1][1] = int(input('Enter a key: '))
+    keyMatrix[0][1] = -int(input('Enter a key: '))
+    keyMatrix[1][0] = -int(input('Enter a key: '))
+    keyMatrix[0][0] = int(input('Enter a key: '))
+    md = getkey(keyMatrix[0][0]*keyMatrix[1][1]-keyMatrix[0][1]*keyMatrix[1][0])
+    keyMatrix[0][0] = md*keyMatrix[0][0]%26
+    keyMatrix[0][1] = md * keyMatrix[0][1] % 26
+    keyMatrix[1][0] = md * keyMatrix[1][0] % 26
+    keyMatrix[1][1] = md * keyMatrix[1][1] % 26
+
+    msg = input('Enter ciphertext:')
+    if len(msg) % 2 != 0:
+        print('error')
+        return
+    index = 0
+    ma1 = [0, 0]
+    res = ''
+    while index < len(msg):
+        m1 = ord(msg[index]) - 97
+        m2 = ord(msg[index + 1]) - 97
+        index += 2
+        ma1[0] = (m1 * keyMatrix[0][0] + m2 * keyMatrix[1][0]) % 26
+        ma1[1] = (m1 * keyMatrix[0][1] + m2 * keyMatrix[1][1]) % 26
+        res += chr(ma1[0] + 97)
+        res += chr(ma1[1] + 97)
+    print('Plaintext: ' + res)
 
 
-# 乘法可逆
+print('HillPassWrod\n')
 
-def key1(K3):
-    j = 00
-    i = 00
-    while (i % 26) != 1:
-        i = int(K3) * j
-        j += 1
-    K3 = j - 1
-    return K3
+mode = input('select: e or d  : ')
 
-
-while True:
-    print('\n=========解密部分========')
-    K3 = input('请输入K3：')
-    K4 = input('请输入K4：')
-    ciphertext = input('请输入密文：')
-    print('对应明文是:')
-    plain = decryption(K3, K4, ciphertext)
-    # if ciphertext == 'EXIT':
-    #     break
-    print('明文输出为：', plain)
-    break
+if mode =='e':
+    enCode()
+elif mode=='d':
+    deCode()

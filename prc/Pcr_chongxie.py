@@ -141,6 +141,14 @@ class PcR:
             return 1
         return 0
 
+    def saodangks(self):  # 扫荡开始
+        self.pcr_dianji(PcrData.sdqr, 1.7, 3, "")
+        temp1 = self.pcr_find_pic_click(self.pic_config, PcrData.sdjqr, PcrData.sdjqrqr, "")
+        if temp1 == 1:
+            return 1
+        else:
+            return 0
+
     def saodangtc(self):  # 扫荡弹窗确认
         temp1 = [[self.pcr_find_pic, (tuple(self.pic_config), tuple(PcrData.sdtg), 1)],
                  [self.pcr_find_pic, (tuple(self.pic_config), tuple(PcrData.sdok), 2)],
@@ -187,3 +195,89 @@ class PcR:
             return 0
 
     '''--------------------------------------------------------------------------------------------------------------'''
+
+    def putongsd(self, data, xc_sum):  # 普通扫荡
+        temp1 = self.saodang_sum_qr(data, xc_sum)
+        if temp1 == 1:
+            temp2 = self.saodangks()
+            if temp2 != 1:
+                return -2
+            else:
+                temp3 = self.saodangtc()
+                return temp3
+
+    def xiandingsd(self, xc_sum):  # 限定次数扫荡
+        temp1 = self.xiandingsdcs()
+        if temp1 != 0:
+            return self.putongsd(temp1, xc_sum)
+
+    def xiandingsd1(self, data, xc_sum):  # 限定次数扫荡
+        temp1 = self.xiandingsdcs()
+        if temp1 == 0 and data == 1:
+            sdcs = self.saodangcz()
+            if sdcs == 0:
+                return 2
+            else:
+                self.putongsd(sdcs, xc_sum)
+                return 2
+        elif temp1 == 0 and data == 0:
+            return 1
+        elif temp1 != 0 and data == 1:
+            self.putongsd(temp1, xc_sum)
+            temp1 = self.saodangcz()
+            if temp1 != 0:
+                self.putongsd(temp1, xc_sum)
+                return 2
+            else:
+                return 2
+        elif temp1 != 0 and data == 0:
+            self.putongsd(temp1, xc_sum)
+            return 1
+
+    '''--------------------------------------------------------------------------------------------------------------'''
+
+    def tlptsd(self, data, xc_sum):  # 体力检测和点击取消--普通扫荡
+        if self.tili_sum() < 40:
+            return -1
+        self.putongsd(data, xc_sum)
+        self.saodangjs(0)
+
+    def tlptsd1(self, data, xc_sum):  # 体力检测和无点击取消--普通扫荡
+        if self.tili_sum() < 40:
+            return -1
+        self.putongsd(data, xc_sum)
+
+    def tlxiandingsd(self, data, xc_sum):  # 体力检测和点击取消——限定次数扫荡
+        if self.tili_sum() < 40:
+            return -1
+        self.xiandingsd1(data, xc_sum)
+        self.saodangjs(0)
+
+    def tlxiandingsd1(self, data, xc_sum):  # 体力检测和无点击取消——限定次数扫荡
+        if self.tili_sum() < 40:
+            return -1
+        self.xiandingsd1(data, xc_sum)
+
+    '''--------------------------------------------------------------------------------------------------------------'''
+
+    def tansuosd(self, xc_sum):  # 探索扫荡
+        self.saodangjs(self.xiandingsd(xc_sum))
+
+    def zhuxiansd(self, data, xc_sum):  # 主线扫荡
+        self.tlptsd(data, xc_sum)
+
+    def kunnansd(self,data,xc_sum):  # 困难扫荡
+        self.tlxiandingsd(data,xc_sum)
+
+    '''=============================================================================================================='''
+    '''战斗过程'''
+    def bianduixz(self, data,xc_sum):  # 编队选择
+        self.pcr_find_pic(self.pic_config,PcrData.biandui[data-1],xc_sum)
+
+    def duiwuxz(self,data,xc_sum):  # 队伍选择
+        if data < 4:
+            self.pcr_find_pic(self.pic_config, PcrData.duiwu[data - 1], xc_sum)
+
+    '''=============================================================================================================='''
+    '''日志记录'''
+    

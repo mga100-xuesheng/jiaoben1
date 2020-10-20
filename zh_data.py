@@ -279,4 +279,17 @@ class PcrData:
     pic_sum8 = []
     pic_sum9 = []
     pic_sum0 = []
-    pic_sum = [pic_sum1,pic_sum2,pic_sum3,pic_sum4,pic_sum5,pic_sum6,pic_sum7,pic_sum8,pic_sum9,pic_sum0]
+    pic_sum = [pic_sum1, pic_sum2, pic_sum3, pic_sum4, pic_sum5, pic_sum6, pic_sum7, pic_sum8, pic_sum9, pic_sum0]
+    '''=============================================================================================================='''
+    '''战斗过程数据'''
+    biandui1 = []
+    biandui2 = []
+    biandui3 = []
+    biandui4 = []
+    biandui5 = []
+    biandui = [biandui1, biandui2, biandui3, biandui4, biandui5]
+    '''--------------------------------------------------------------------------------------------------------------'''
+    duiwu1 = []
+    duiwu2 = []
+    duiwu3 = []
+    duiwu = [duiwu1,duiwu2,duiwu3]
