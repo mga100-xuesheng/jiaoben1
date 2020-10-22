@@ -1,5 +1,6 @@
 from jichu.gnzh import FindCol
 from jichu.jichu import MyThread
+from jichu.jichu import RiZhi1
 
 
 class GongNengdy:
@@ -298,3 +299,26 @@ class GongNengdy:
         for x in range(len(data)):
             temp2.append(temp1["duoxc"+str(x)].get_result())
         return temp2
+
+    '''==================================================================================================='''
+
+    def rizhi_duquxieru(self,path:str,name:str,keyword:str,data:str):
+        temp1 = RiZhi1(path)
+        temp2 = temp1.utf_8_duqu(name)
+        print(temp2)
+        temp4 = []
+        temp5 = 0
+        for x in temp2:
+            if x.find(keyword) != -1:
+                temp3 = x[:x.find('：') + 1] + data
+                temp5 = 1
+            else:
+                temp3 = x
+            if temp5 == 1:
+                temp4.append(temp3)
+                temp5 = 0
+            else:
+                if x.find("-") == -1:
+                    temp4.append(x)
+        print(temp4)
+        temp1.utf_8_xieru(name, temp4)
