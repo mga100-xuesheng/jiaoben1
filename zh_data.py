@@ -293,3 +293,7 @@ class PcrData:
     duiwu2 = []
     duiwu3 = []
     duiwu = [duiwu1,duiwu2,duiwu3]
+    '''================================================================================'''
+    rizhi_path = ''
+    rizhi_name = ''
+    rizhi_keyword = ["","","",""]

@@ -1,6 +1,7 @@
 from jichu.gnzh import FindCol
 from jichu.jichu import MyThread
 from jichu.jichu import RiZhi1
+from datetime import datetime
 
 
 class GongNengdy:
@@ -31,50 +32,50 @@ class GongNengdy:
     def shujucl2(self, data, xc_sum):  # 数据处理2 格式为：[第一个数据,第二个数据]
         return self.sum_names[self.xm_data + str(xc_sum)].shujuchuli12(data)
 
-    def dianji(self,data,min_time,max_time,xc_sum):  # 鼠标点击
+    def dianji(self, data, min_time, max_time, xc_sum):  # 鼠标点击
         if xc_sum == "":
             xc_sum = 1
-        self.sum_names[self.xm_data + str(xc_sum)].random_time(min_time,max_time)
+        self.sum_names[self.xm_data + str(xc_sum)].random_time(min_time, max_time)
         return self.sum_names[self.xm_data + str(xc_sum)].click(data)
 
     '''==================================================================================================='''
 
-    def find_pic(self,config,data,xc_sum):  # 找图
+    def find_pic(self, config, data, xc_sum):  # 找图
         if xc_sum == "":
             xc_sum = 1
-        self.sum_names[self.xm_data + str(xc_sum)].find_pic_data_shezhi(config,data)
+        self.sum_names[self.xm_data + str(xc_sum)].find_pic_data_shezhi(config, data)
         return self.sum_names[self.xm_data + str(xc_sum)].find_pic()
 
-    def find_pic_ex(self,config,data,xc_sum):  # 找图扩展
+    def find_pic_ex(self, config, data, xc_sum):  # 找图扩展
         if xc_sum == "":
             xc_sum = 1
-        self.sum_names[self.xm_data + str(xc_sum)].find_pic_data_shezhi(config,data)
+        self.sum_names[self.xm_data + str(xc_sum)].find_pic_data_shezhi(config, data)
         return self.sum_names[self.xm_data + str(xc_sum)].find_pic_ex()
 
-    def find_pic_click(self,config,data,click,xc_sum):  # 找图成功点击
-        temp1 = self.find_pic(config,data,xc_sum)
+    def find_pic_click(self, config, data, click, xc_sum):  # 找图成功点击
+        temp1 = self.find_pic(config, data, xc_sum)
         if temp1 == 1:
-            self.dianji(click,1,2,xc_sum)
+            self.dianji(click, 1, 2, xc_sum)
             return 1
         else:
             return 0
 
-    def find_pic_click1(self,config,data,click,xc_sum):  # 找图失败点击
-        temp1 = self.find_pic(config,data,xc_sum)
+    def find_pic_click1(self, config, data, click, xc_sum):  # 找图失败点击
+        temp1 = self.find_pic(config, data, xc_sum)
         if temp1 == 1:
             return 0
         else:
-            self.dianji(click,1,2,xc_sum)
+            self.dianji(click, 1, 2, xc_sum)
             return 1
 
     '''==================================================================================================='''
 
-    def zikubd(self,data):  # 字库绑定
+    def zikubd(self, data):  # 字库绑定
         for x in range(self.xc_sum_data):
             for y in range(len(data)):
-                self.sum_names[self.xm_data + str(x)].lw.SetDict(y,data[y])
+                self.sum_names[self.xm_data + str(x)].lw.SetDict(y, data[y])
 
-    def dqziku(self,data):  # 当前字库选择
+    def dqziku(self, data):  # 当前字库选择
         if self.dqzk != data:
             for x in range(self.xc_sum_data):
                 self.sum_names[self.xm_data + str(x)].lw.UseDict(data)
@@ -83,49 +84,51 @@ class GongNengdy:
         else:
             return 1
 
-    def find_word(self,data,xc_sum):  # 找字
+    def find_word(self, data, xc_sum):  # 找字
         if xc_sum == "":
             xc_sum = 1
         self.sum_names[self.xm_data + str(xc_sum)].find_data_shezhi(data)
         return self.sum_names[self.xm_data + str(xc_sum)].find_word()
 
-    def find_word_click(self,data,click,xc_sum):  # 找字成功点击
-        temp1 = self.find_word(data,xc_sum)
+    def find_word_click(self, data, click, xc_sum):  # 找字成功点击
+        temp1 = self.find_word(data, xc_sum)
         if temp1 == 1:
             self.dianji(click, 1, 2, xc_sum)
             return 1
         else:
             return 0
 
-    def find_word_click1(self,data,click,xc_sum):  # 找字失败点击
-        temp1 = self.find_word(data,xc_sum)
+    def find_word_click1(self, data, click, xc_sum):  # 找字失败点击
+        temp1 = self.find_word(data, xc_sum)
         if temp1 == 1:
             return 0
         else:
             self.dianji(click, 1, 2, xc_sum)
             return 1
 
-    def find_word_ex(self,data,xc_sum):  # 找字扩展
+    def find_word_ex(self, data, xc_sum):  # 找字扩展
         if xc_sum == "":
             xc_sum = 1
         self.sum_names[self.xm_data + str(xc_sum)].find_data_shezhi(data)
         return self.sum_names[self.xm_data + str(xc_sum)].find_word_ex()
 
-    def find_word_ex1(self,data,xc_sum):  # 找字扩展1
+    def find_word_ex1(self, data, xc_sum):  # 找字扩展1
         if xc_sum == "":
             xc_sum = 1
         self.sum_names[self.xm_data + str(xc_sum)].find_data_shezhi(data)
         return self.sum_names[self.xm_data + str(xc_sum)].find_word_ex1()
 
-    def find_word_ex1_shujucl2(self,data,xc_sum):  # 找字扩展1:数据处理2
+    def find_word_ex1_shujucl2(self, data, xc_sum):  # 找字扩展1:数据处理2
         self.sum_names[self.xm_data + str(xc_sum)].find_data_shezhi(data)
-        temp1 = self.find_word_ex1(data,xc_sum)
+        temp1 = self.find_word_ex1(data, xc_sum)
         if temp1[0] == 1:
             temp2 = self.sum_names[self.xm_data + str(xc_sum)].shujuchuli2(temp1[1])
             return temp2
         else:
             return [0]
+
     '''---------------------------------------------------------------------------------------------------'''
+
     def find_word_sum(self, data, find_sum, dizhi, sim: int, xc_sum):  # 文字数字查找
         temp1 = []
         for x in range(len(data)):
@@ -283,26 +286,29 @@ class GongNengdy:
             return int(temp4)
         else:
             return -1
+
     '''==================================================================================================='''
     '''==================================================================================================='''
-    def duoxianc(self,data:list):
+
+    def duoxianc(self, data: list):
         if len(data) > self.xc_sum_data:
             return [-1]
         temp1 = locals()
         temp2 = []
         for x in range(len(data)):
-            temp1["duoxc"+str(x)] = MyThread(data[x][0],data[x][1])
+            temp1["duoxc" + str(x)] = MyThread(data[x][0], data[x][1])
         for x in range(len(data)):
-            temp1["duoxc"+str(x)].start()
+            temp1["duoxc" + str(x)].start()
         for x in range(len(data)):
-            temp1["duoxc"+str(x)].join()
+            temp1["duoxc" + str(x)].join()
         for x in range(len(data)):
-            temp2.append(temp1["duoxc"+str(x)].get_result())
+            temp2.append(temp1["duoxc" + str(x)].get_result())
         return temp2
 
     '''==================================================================================================='''
 
-    def rizhi_duquxieru(self,path:str,name:str,keyword:str,data:str):
+    @staticmethod
+    def rizhi_xieru(path: str, name: str, keyword: str, data: str, xieru_time: str):
         temp1 = RiZhi1(path)
         temp2 = temp1.utf_8_duqu(name)
         print(temp2)
@@ -321,4 +327,30 @@ class GongNengdy:
                 if x.find("-") == -1:
                     temp4.append(x)
         print(temp4)
-        temp1.utf_8_xieru(name, temp4)
+        temp1.utf_8_xieru(name, temp4, xieru_time)
+
+    @staticmethod
+    def rizhi_duqu(path: str, name: str, keyword: str):
+        temp1 = RiZhi1(path)
+        temp2 = temp1.utf_8_duqu(name)
+        for x in temp2:
+            if x.find(keyword) != -1:
+                return x[x.find('：') + 1:]
+
+    @staticmethod
+    def time_db(data1, data2):
+        d1 = datetime.strptime(data1, '%Y-%m-%d-%H')
+        d2 = datetime.strptime(data2, '%Y-%m-%d-%H')
+        d3 = str(d2 - d1)
+        if d3.find(',') != -1:
+            d4 = d3.split(',')
+            d4[0] = d4[0][:d4[0].find('d')]
+            d4[0] = d4[0][:d4[0].find(' ')]
+            d7 = int(d4[0]) * 24
+            d4[1] = d4[1][1:]
+            d5 = d4[1].split(':')
+            d6 = int(d5[0]) + int(d7)
+        else:
+            d5 = d3.split(':')
+            d6 = d5[0]
+        return int(d6)
