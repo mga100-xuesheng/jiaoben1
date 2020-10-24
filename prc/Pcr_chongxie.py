@@ -273,6 +273,9 @@ class PcR:
     '''=============================================================================================================='''
     '''战斗过程'''
 
+    def wodeduiwudk(self):  # 我的队伍打开
+        self.pcr_find_pic(self.pic_config,PcrData.dxcwddw,1)
+
     def bianduixz(self, data, xc_sum):  # 编队选择
         self.pcr_find_pic(self.pic_config, PcrData.biandui[data - 1], xc_sum)
 
@@ -280,12 +283,79 @@ class PcR:
         if data < 4:
             self.pcr_find_pic(self.pic_config, PcrData.duiwu[data - 1], xc_sum)
 
+    '''--------------------------------------------------------------------------------------------------------------'''
+    '''地下城功能'''
+
+    def dxc_sum(self):  # 查找地下城层数
+        temp1 = self.pcr.find_word_sumzh1(PcrData.worddxc, 0)
+        if temp1 != -1:
+            print("当前层数为：" + str(temp1))
+            return temp1
+        else:
+            print("没有找到层数")
+            return -1
+
+    def dxc_sum_xz(self, data):  # 地下城层数选择
+        temp1 = self.dxc_sum()
+        if temp1 != -1:
+            self.pcr_find_pic(self.pic_config, data[temp1 - 1], 1)
+            return 1
+        else:
+            print("箱子没有找到")
+            return -1
+
+    def dxc_zhandouks(self):  # 地下城战斗开始
+        return self.pcr_find_pic(self.pic_config, PcrData.dxczdks, 1)
+
+    def dxc_zhandougc(self):  # 地下城战斗过程
+        for x in range(60):
+            print("地下城战斗开始-------------------")
+            temp1 = [[self.pcr_find_pic, (tuple(self.pic_config), tuple(PcrData.dxcxyb2), 1)],
+                     [self.pcr_find_pic, (tuple(self.pic_config), tuple(PcrData.dxcggsb), 2)]]
+            temp2 = self.pcr.duoxianc(temp1)
+            if temp2[0] == 1:
+                print("查找下一步：成功")
+                return 1
+            elif temp2[1] == 1:
+                print("查找返回地下城：成功")
+                return 0
+            else:
+                print("查找失败")
+                return -1
+        return -2
+
+    def dxc_zhandoujs(self,data):  # 战斗结束
+        if data == 1:
+            sleep(5)
+            return self.pcr_find_pic(self.pic_config,PcrData.dxcok,1)
+
+    def dxc_duiwu1(self):  # 地下城队伍选择1
+        self.wodeduiwudk()
+        sleep(4)
+        self.duiwuxz(1, 1)
+
+    def richangdxc(self,data):   # 日常地下城过程
+        temp1 = self.dxc_sum()
+        if temp1 != -1:
+            if self.dxc_sum_xz(temp1) == 1:
+                if self.dxc_zhandouks() == 1:
+                    if temp1 == 1:
+                        self.dxc_duiwu1()
+                    self.dxc_zhandouks()
+                    sleep(1)
+                    temp2 = self.dxc_zhandougc()
+                    self.dxc_zhandoujs(temp2)
+
+
+
+
+
     '''=============================================================================================================='''
     '''日志记录'''
 
     @staticmethod
     def pcr_rizhixieru(key_word, data):  # 日志写入
-        GongNengdy.rizhi_xieru(PcrData.rizhi_path, PcrData.rizhi_name, key_word, data,"05")
+        GongNengdy.rizhi_xieru(PcrData.rizhi_path, PcrData.rizhi_name, key_word, data, "05")
 
     @staticmethod
     def pcr_rizhiduqu(key_word):  # 日志读取
@@ -294,30 +364,38 @@ class PcR:
     def pcr_rizhi_update(self):  # 日志刷新
         temp1 = datetime.now().strftime('%Y-%m-%d-%H')
         temp2 = self.pcr_rizhiduqu('-')
-        if GongNengdy.time_db(temp2,temp1) > 24:
+        if GongNengdy.time_db(temp2, temp1) > 24:
             for x in PcrData.rizhi_keyword:
-                self.pcr_rizhixieru(x,"未做")
+                self.pcr_rizhixieru(x, "未做")
+
+    @staticmethod
+    def rizhi_db(data):  # 日志对比确认
+        if data == "已做":
+            return 0
+        elif data == '未做':
+            return 1
+        return -1
 
     def rw_tili(self):  # 任务体力领取确认
-       return self.pcr_rizhiduqu('任务领取')
+        return self.rizhi_db(self.pcr_rizhiduqu('任务领取'))
 
     def rw_xieru(self):  # 任务体力领取确认写入
-        self.pcr_rizhixieru('任务领取','已做')
+        self.pcr_rizhixieru('任务领取', '已做')
 
     def jy_tili(self):  # 家园体力领取确认
-        return self.pcr_rizhiduqu('家园领取')
+        return self.rizhi_db(self.pcr_rizhiduqu('家园领取'))
 
     def jy_xieru(self):  # 家园体力领取写入
         self.pcr_rizhixieru('家园领取', '已做')
 
-    def tansuo_qr(self): # 探索关卡执行确认
-        return self.pcr_rizhiduqu('探索')
+    def tansuo_qr(self):  # 探索关卡执行确认
+        return self.rizhi_db(self.pcr_rizhiduqu('探索'))
 
     def tansuo_xieru(self):  # 探索关卡执行确认写入
         self.pcr_rizhixieru('探索', '已做')
 
     def dxc_db(self):  # 地下城关卡执行确认
-        return self.pcr_rizhiduqu('地下城')
+        return self.rizhi_db(self.pcr_rizhiduqu('地下城'))
 
     def dxc_xieru(self):  # 地下城关卡执行确认写入
         self.pcr_rizhixieru('地下城', '已做')

@@ -48,6 +48,7 @@ def Decrypt(ciphertext, key):
             plaintext += ch
     return plaintext
 
+
 print("Vigenere密码加解密\n")
 # 加密
 print("请输入密钥:")
