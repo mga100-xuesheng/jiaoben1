@@ -334,8 +334,15 @@ class PcR:
         sleep(4)
         self.duiwuxz(1, 1)
 
-    def richangdxc(self,data):   # 日常地下城过程
+    def dxc_duiwu2(self):  # 地下城队伍选择2
+        self.wodeduiwudk()
+        sleep(4)
+        self.duiwuxz(2, 1)
+
+    def richangdxc(self, data, dadao_ceng_sum):  # 地下城执行过程
         temp1 = self.dxc_sum()
+        if temp1 > dadao_ceng_sum:
+            return 2
         if temp1 != -1:
             if self.dxc_sum_xz(temp1) == 1:
                 if self.dxc_zhandouks() == 1:
@@ -345,6 +352,8 @@ class PcR:
                     sleep(1)
                     temp2 = self.dxc_zhandougc()
                     self.dxc_zhandoujs(temp2)
+                    return 1
+        return 0
 
 
 
@@ -401,3 +410,11 @@ class PcR:
         self.pcr_rizhixieru('地下城', '已做')
 
     '''=============================================================================================================='''
+
+    @staticmethod
+    def jiemianxz(self):
+        return 0
+
+class PcrRichang:
+    def __init__(self):
+        pcr_richang = PcR("国服pcr","",["C:\\Users\\29412\\Desktop\\prc\\",".bmp","252525"])

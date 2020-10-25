@@ -104,7 +104,9 @@ bbb = "2020-10-21-23"
 #     aaa = datetime.now().strftime('%Y-%m-%d')+'-5'
 #     print(GongNengdy.time_db(aaa,d1))
 
-print(GongNengdy.rizhi_duqu('C:\\Users\\29412\\Desktop\\ceshiwenjian\\','rizhi.txt','-'))
+# print(GongNengdy.rizhi_duqu('C:\\Users\\29412\\Desktop\\ceshiwenjian\\','rizhi.txt','-'))
 
-
-
+a = ["a","b","c","d","e"]
+b = 3
+c = 4
+print(a[b-1:c])
