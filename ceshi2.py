@@ -4,9 +4,11 @@ class RapName:
         self.data = data  # 怎么去到次对象的数据
         self.guanxi_list = []  # 次对象能去的对象
         self.guanxi_list_data = {}  # 次对象能去的对象的数据
+        self.guanxi_list_obj = []
 
     def add(self, guanxi, data):
         self.guanxi_list.append(guanxi.name)
+        self.guanxi_list_obj.append(guanxi)
         if isinstance(data, int) is True:
             if data == 0:
                 self.guanxi_list_data[guanxi.name] = guanxi.data
@@ -23,22 +25,44 @@ class RapList:
     def __init__(self):
         self.raplist_data = {}
         self.raplist_name = {}
+        self.raplist_keyword = {}
 
     def add_list(self, data):
         self.raplist_name[data.name] = data.guanxi_list
         self.raplist_data[data.name] = data
 
-    def xunzhaogx(self,data,name):
-        for obj in data.guanxi_list:
+    @staticmethod
+    def xunzhaogx(data,name):
+        for obj in data:
             if obj == name:
                 return True
         return False
 
-    def xunzhaogx1(self,data,name,yizhao_list=None):
-        if yizhao_list == None:
+    def xunzhaogx1(self,xz_data,zhao_data,yizhao_list=None):
+        if yizhao_list is None:
             yizhao_list = []
-        yizhao_list.append(data.name)
-
+        #
+        all_list = yizhao_list[:]
+        all_list.append(xz_data.name)
+        res = []
+        #
+        if xz_data.name == zhao_data.name:
+            goWay = [xz_data]
+            return goWay
+        #
+        for zhao_temp1 in xz_data.guanxi_list_obj:
+            if self.xunzhaogx(all_list,zhao_temp1.name):
+                continue
+            zhao_temp2 = self.xunzhaogx1(zhao_temp1,zhao_data,all_list)
+            #
+            if 0 < len(zhao_temp2) < len(res) or len(res) == 0:
+                res = zhao_temp2
+        #
+        if len(res) > 0:
+            res.insert(0,xz_data)
+        return res
+    def fanhuilujin(self,nowdata:str,godata:str):
+        return self.xunzhaogx1(self.raplist_data[nowdata],self.raplist_data[godata])
 
 
 ceshi1 = RapName("ceshi1", [["1"]])
@@ -68,19 +92,18 @@ temp1.add_list(ceshi3)
 temp1.add_list(ceshi4)
 temp1.add_list(ceshi5)
 
-print(temp1.raplist_name)
 
-# def chazhaoguanxi(data,name):
-#     for obj in data.guanxi_list:
-#         if obj == name:
-#             return True
-#     return False
-#
-#
-# def guanxicz(data, name, yizhao_data=None):
-#     if yizhao_data is None:
-#         yizhao_data = []
-#     yizhao_data.append(data.name)
-#     if chazhaoguanxi(data,name) == False:
-#
+temp2 = temp1.xunzhaogx1(ceshi5,ceshi2)
+
+for x in range(len(temp2)):
+    print(temp2[x].name)
+    print(temp2[x].data)
+    print("")
+temp3 = temp1.fanhuilujin("ceshi5","ceshi2")
+for x in temp3:
+    print(x.name)
+    print(x.data)
+    print("")
+
+
 
