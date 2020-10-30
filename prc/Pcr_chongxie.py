@@ -274,7 +274,7 @@ class PcR:
     '''战斗过程'''
 
     def wodeduiwudk(self):  # 我的队伍打开
-        self.pcr_find_pic(self.pic_config,PcrData.dxcwddw,1)
+        self.pcr_find_pic(self.pic_config, PcrData.dxcwddw, 1)
 
     def bianduixz(self, data, xc_sum):  # 编队选择
         self.pcr_find_pic(self.pic_config, PcrData.biandui[data - 1], xc_sum)
@@ -324,10 +324,10 @@ class PcR:
                 return -1
         return -2
 
-    def dxc_zhandoujs(self,data):  # 战斗结束
+    def dxc_zhandoujs(self, data):  # 战斗结束
         if data == 1:
             sleep(5)
-            return self.pcr_find_pic(self.pic_config,PcrData.dxcok,1)
+            return self.pcr_find_pic(self.pic_config, PcrData.dxcok, 1)
 
     def dxc_duiwu1(self):  # 地下城队伍选择1
         self.wodeduiwudk()
@@ -354,10 +354,6 @@ class PcR:
                     self.dxc_zhandoujs(temp2)
                     return 1
         return 0
-
-
-
-
 
     '''=============================================================================================================='''
     '''日志记录'''
@@ -415,6 +411,7 @@ class PcR:
     def jiemianxz(self):
         return 0
 
+
 class PcrRichang:
     def __init__(self):
-        pcr_richang = PcR("国服pcr","",["C:\\Users\\29412\\Desktop\\prc\\",".bmp","252525"])
+        pcr_richang = PcR("国服pcr", "", ["C:\\Users\\29412\\Desktop\\prc\\", ".bmp", "252525"])

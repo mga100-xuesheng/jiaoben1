@@ -1,3 +1,7 @@
+import jichu.jichu as jichu
+from jichu.jichu import *
+
+
 # def di_gui(n):
 #     print(n, "<===1====>")
 #     if n > 0:
@@ -19,14 +23,14 @@
 # temp1 = []
 # ceshi(1,temp1)
 # print(temp1)
-
-aa = {}
-aa["ceshi1"] = "ceshi11"
-aa["ceshi2"] = "ceshi12"
-aa["ceshi3"] = "ceshi13"
-aa["ceshi4"] = "ceshi14"
-aa["ceshi5"] = "ceshi15"
-aa["ceshi6"] = "ceshi16"
-aa["ceshi7"] = "ceshi17"
-for x in aa.keys():
-    print(str(x)+":"+" "+aa[x])
+#
+# aa = {}
+# aa["ceshi1"] = "ceshi11"
+# aa["ceshi2"] = "ceshi12"
+# aa["ceshi3"] = "ceshi13"
+# aa["ceshi4"] = "ceshi14"
+# aa["ceshi5"] = "ceshi15"
+# aa["ceshi6"] = "ceshi16"
+# aa["ceshi7"] = "ceshi17"
+# for x in aa.keys():
+#     print(str(x)+":"+" "+aa[x])

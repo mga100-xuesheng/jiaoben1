@@ -1,9 +1,6 @@
-from jichu.gnzh import FindCol
-from jichu.jichu import MyThread
-from jichu.jichu import RiZhi1
+from jichu.gnzh import *
+from jichu.jichu import *
 from datetime import datetime
-from jichu.jichu import InterFace
-from jichu.jichu import Map
 
 
 class GongNengdy:
@@ -375,17 +372,17 @@ class GongNengdy:
 
     '''---------------------------------------------------------------------------------------------------'''
 
-    def list_InterFace_add(self,name_data:list):  # 界面对象定义_列表方式定义
+    def list_InterFace_add(self, name_data: list):  # 界面对象定义_列表方式定义
         for x in name_data:
             self.InterFace(x[0], x[1])
 
-    def list_InterFace_list_add(self,name:str,name_guanxi:list):  # 此界面可去界面对象定义_列表方式定义
+    def list_InterFace_list_add(self, name: str, name_guanxi: list):  # 此界面可去界面对象定义_列表方式定义
         for x in name_guanxi:
-            self.InterFace_list_add(name,x[0],x[1])
+            self.InterFace_list_add(name, x[0], x[1])
 
     def map_obj_list_add(self):  # 地图结点添加
         for x in self.jiemian_dic.keys():
             self.map_obj_add(str(x))
 
-    def map_go_map_path(self,nowmap,gomap):  # 返回此界面去另外界面的最短路径
-        return self.map_list.present_go_target(nowmap,gomap)
+    def map_go_map_path(self, nowmap, gomap):  # 返回此界面去另外界面的最短路径
+        return self.map_list.present_go_target(nowmap, gomap)
