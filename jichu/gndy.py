@@ -2,6 +2,8 @@ from jichu.gnzh import FindCol
 from jichu.jichu import MyThread
 from jichu.jichu import RiZhi1
 from datetime import datetime
+from jichu.jichu import InterFace
+from jichu.jichu import Map
 
 
 class GongNengdy:
@@ -16,6 +18,8 @@ class GongNengdy:
         self.dqzk = -1
         for x in range(xc_sum_data):
             self.sum_names[self.xm_data + str(x)] = FindCol(pic_config)
+        self.jiemian_dic = {}
+        self.map_list = Map()
 
     def ldbangding(self, data):  # 雷电模拟器多线程绑定
         for x in range(self.xc_sum_data):
@@ -159,7 +163,7 @@ class GongNengdy:
         else:
             return temp1
 
-    def find_word_sumzh(self, data: list, dizhi: list, sim: list, fangxian: int):
+    def find_word_sumzh(self, data: list, dizhi: list, sim: list, fangxian: int): # 文字数字整合查找
         temp1 = []
         temp4 = ""
         zifu1 = MyThread(self.find_word_sum, (tuple(data[0]), 1, tuple(dizhi), sim[0], 1))
@@ -223,7 +227,7 @@ class GongNengdy:
         else:
             return -1
 
-    def find_word_sumzh1(self, data: list, fangxian: int):
+    def find_word_sumzh1(self, data: list, fangxian: int): # 文字数字整合查找1
         temp1 = []
         temp4 = ""
         zifu1 = MyThread(self.find_word_sum1, (data[0], 1, 1))
@@ -290,7 +294,7 @@ class GongNengdy:
     '''==================================================================================================='''
     '''==================================================================================================='''
 
-    def duoxianc(self, data: list):
+    def duoxianc(self, data: list):  # 多线程定义
         if len(data) > self.xc_sum_data:
             return [-1]
         temp1 = locals()
@@ -308,7 +312,7 @@ class GongNengdy:
     '''==================================================================================================='''
 
     @staticmethod
-    def rizhi_xieru(path: str, name: str, keyword: str, data: str, xieru_time: str):
+    def rizhi_xieru(path: str, name: str, keyword: str, data: str, xieru_time: str):  # 日志写入
         temp1 = RiZhi1(path)
         temp2 = temp1.utf_8_duqu(name)
         print(temp2)
@@ -330,7 +334,7 @@ class GongNengdy:
         temp1.utf_8_xieru(name, temp4, xieru_time)
 
     @staticmethod
-    def rizhi_duqu(path: str, name: str, keyword: str):
+    def rizhi_duqu(path: str, name: str, keyword: str):  # 日志读取
         temp1 = RiZhi1(path)
         temp2 = temp1.utf_8_duqu(name)
         for x in temp2:
@@ -338,7 +342,7 @@ class GongNengdy:
                 return x[x.find('：') + 1:]
 
     @staticmethod
-    def time_db(data1, data2):
+    def time_db(data1, data2):  # 时间对比
         d1 = datetime.strptime(data1, '%Y-%m-%d-%H')
         d2 = datetime.strptime(data2, '%Y-%m-%d-%H')
         d3 = str(d2 - d1)
@@ -354,3 +358,34 @@ class GongNengdy:
             d5 = d3.split(':')
             d6 = d5[0]
         return int(d6)
+
+    '''==================================================================================================='''
+
+    def InterFace(self, name: str, data: list):  # 界面对象定义
+        self.jiemian_dic[name] = InterFace(name, data)
+
+    def InterFace_list_add(self, name: str, guanxi, data):  # 此界面可去界面对象定义
+        self.jiemian_dic[name].add(guanxi, data)
+
+    def map_obj_add(self, name: str):  # 生成地图
+        self.map_list.add_list(self.jiemian_dic[name])
+
+    def map_path(self,nowdata,godata):  # 当前界面去其他界面路径查询
+        return self.map_list.get_go_map_path(nowdata,godata)
+
+    '''---------------------------------------------------------------------------------------------------'''
+
+    def list_InterFace_add(self,name_data:list):  # 界面对象定义_列表方式定义
+        for x in name_data:
+            self.InterFace(x[0], x[1])
+
+    def list_InterFace_list_add(self,name:str,name_guanxi:list):  # 此界面可去界面对象定义_列表方式定义
+        for x in name_guanxi:
+            self.InterFace_list_add(name,x[0],x[1])
+
+    def map_obj_list_add(self):  # 地图结点添加
+        for x in self.jiemian_dic.keys():
+            self.map_obj_add(str(x))
+
+    def map_go_map_path(self,nowmap,gomap):  # 返回此界面去另外界面的最短路径
+        return self.map_list.present_go_target(nowmap,gomap)
