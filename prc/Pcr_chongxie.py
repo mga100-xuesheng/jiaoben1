@@ -8,6 +8,7 @@ class PcR:
     def __init__(self, xm_data, pic_config, xc_sum_data):
         self.pcr = GongNengdy(xm_data, pic_config, xc_sum_data)
         self.pic_config = pic_config
+        self.pcr_jm_obj()
 
     def ldbangding(self, data):  # 雷电绑定
         self.pcr.ldbangding(data)
@@ -420,24 +421,27 @@ class PcR:
                 PcrData.jm_maoxian,
                 PcrData.jm_zhuxian,
                 PcrData.jm_tansuo,
+                PcrData.jm_tansuo_jingyan,
+                PcrData.jm_tansuo_mana,
                 PcrData.jm_dixiacheng,
                 #  家园
                 PcrData.jm_jiayuan
         ]
         self.pcr.list_InterFace_add(data)
+        self.pcr.list_InterFace_list_add2()
+        self.pcr.map_obj_list_add()
 
-    def ceshi(self):
-        self.pcr_jm_obj()
-        # print(self.pcr.jiemian_dic)
+    def pcr_jm_path(self,nowdata:str,godata:str):
+        temp1 = self.pcr.map_go_map_path(nowdata,godata)
+        temp1 = temp1[1:]
+        return temp1
 
 
-temp1  = PcR("",["","",""],20)
-temp1.ceshi()
-# print(temp1.pcr.jiemian_dic['主页'].guanxi_list)
-temp1.pcr.list_InterFace_list_add2()
-temp1.pcr.map_obj_list_add()
-for x in temp1.pcr.map_go_map_path("主页","家园"):
+temp11 = PcR("",["","",""],20)
+temp2 = temp11.pcr_jm_path('地下城','任务')
+for x in temp2:
     print(x.name)
+    print(x.data)
     print(x.guanxi_list)
     print("")
 
