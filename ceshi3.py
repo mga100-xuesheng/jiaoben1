@@ -1,5 +1,5 @@
-import jichu.jichu as jichu
-from jichu.jichu import *
+import jichu.jichugn as jichu
+from jichu.jichugn import *
 
 
 # def di_gui(n):

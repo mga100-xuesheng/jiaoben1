@@ -1,4 +1,4 @@
-from jichu.jichu import RiZhi1
+from jichu.jichugn import RiZhi1
 from jichu.gndy import GongNengdy
 from datetime import datetime
 # a = "测试测试测试：成功"

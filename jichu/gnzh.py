@@ -1,4 +1,4 @@
-from jichu.jichu import JiChu
+from jichu.jichugn import JiChu
 import time
 import random
 

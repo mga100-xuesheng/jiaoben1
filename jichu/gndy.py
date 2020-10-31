@@ -1,5 +1,5 @@
 from jichu.gnzh import *
-from jichu.jichu import *
+from jichu.jichugn import *
 from datetime import datetime
 
 
@@ -160,7 +160,7 @@ class GongNengdy:
         else:
             return temp1
 
-    def find_word_sumzh(self, data: list, dizhi: list, sim: list, fangxian: int): # 文字数字整合查找
+    def find_word_sumzh(self, data: list, dizhi: list, sim: list, fangxian: int):  # 文字数字整合查找
         temp1 = []
         temp4 = ""
         zifu1 = MyThread(self.find_word_sum, (tuple(data[0]), 1, tuple(dizhi), sim[0], 1))
@@ -224,7 +224,7 @@ class GongNengdy:
         else:
             return -1
 
-    def find_word_sumzh1(self, data: list, fangxian: int): # 文字数字整合查找1
+    def find_word_sumzh1(self, data: list, fangxian: int):  # 文字数字整合查找1
         temp1 = []
         temp4 = ""
         zifu1 = MyThread(self.find_word_sum1, (data[0], 1, 1))
@@ -367,8 +367,8 @@ class GongNengdy:
     def map_obj_add(self, name: str):  # 生成地图
         self.map_list.add_list(self.jiemian_dic[name])
 
-    def map_path(self,nowdata,godata):  # 当前界面去其他界面路径查询
-        return self.map_list.get_go_map_path(nowdata,godata)
+    def map_path(self, nowdata, godata):  # 当前界面去其他界面路径查询
+        return self.map_list.get_go_map_path(nowdata, godata)
 
     '''---------------------------------------------------------------------------------------------------'''
 
