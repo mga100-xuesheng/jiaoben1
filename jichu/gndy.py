@@ -358,11 +358,15 @@ class GongNengdy:
 
     '''==================================================================================================='''
 
-    def InterFace(self, name: str, data: list):  # 界面对象定义
-        self.jiemian_dic[name] = InterFace(name, data)
+    def InterFace(self, name: str, data: list, guanxi:list):  # 界面对象定义
+        self.jiemian_dic[name] = InterFace(name, data, guanxi)
 
     def InterFace_list_add(self, name: str, guanxi, data):  # 此界面可去界面对象定义
         self.jiemian_dic[name].add(guanxi, data)
+
+    def list_InterFace_list_add(self,name):
+        for x in self.jiemian_dic[name].guanxi_list:
+            self.InterFace_list_add(name,self.jiemian_dic[x],0)
 
     def map_obj_add(self, name: str):  # 生成地图
         self.map_list.add_list(self.jiemian_dic[name])
@@ -374,11 +378,16 @@ class GongNengdy:
 
     def list_InterFace_add(self, name_data: list):  # 界面对象定义_列表方式定义
         for x in name_data:
-            self.InterFace(x[0], x[1])
+            self.InterFace(x[0], x[1], x[2])
 
-    def list_InterFace_list_add(self, name: str, name_guanxi: list):  # 此界面可去界面对象定义_列表方式定义
+    def list_InterFace_list_add1(self, name: str, name_guanxi: list):  # 此界面可去界面对象定义_列表方式定义
         for x in name_guanxi:
-            self.InterFace_list_add(name, x[0], x[1])
+            self.InterFace_list_add(name, self.jiemian_dic[x[0]], x[1])
+
+    def list_InterFace_list_add2(self):
+        for x in self.jiemian_dic.keys():
+            self.list_InterFace_list_add(x)
+
 
     def map_obj_list_add(self):  # 地图结点添加
         for x in self.jiemian_dic.keys():

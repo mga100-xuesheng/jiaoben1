@@ -411,7 +411,33 @@ class PcR:
     def jiemianxz(self):
         return 0
 
+    def pcr_jm_obj(self):
+        data = [
+                # 主页
+                PcrData.jm_zhuye,
+                PcrData.jm_renwu,
+                # 冒险
+                PcrData.jm_maoxian,
+                PcrData.jm_zhuxian,
+                PcrData.jm_tansuo,
+                PcrData.jm_dixiacheng,
+                #  家园
+                PcrData.jm_jiayuan
+        ]
+        self.pcr.list_InterFace_add(data)
 
-class PcrRichang:
-    def __init__(self):
-        pcr_richang = PcR("国服pcr", "", ["C:\\Users\\29412\\Desktop\\prc\\", ".bmp", "252525"])
+    def ceshi(self):
+        self.pcr_jm_obj()
+        # print(self.pcr.jiemian_dic)
+
+
+temp1  = PcR("",["","",""],20)
+temp1.ceshi()
+# print(temp1.pcr.jiemian_dic['主页'].guanxi_list)
+temp1.pcr.list_InterFace_list_add2()
+temp1.pcr.map_obj_list_add()
+for x in temp1.pcr.map_go_map_path("主页","家园"):
+    print(x.name)
+    print(x.guanxi_list)
+    print("")
+

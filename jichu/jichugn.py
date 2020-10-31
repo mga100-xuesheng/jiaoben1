@@ -361,24 +361,30 @@ class RiZhi1:
 
 
 class InterFace:
-    def __init__(self, name: str, data: list):
+    def __init__(self, name: str, data: list, guanxi:list):
         self.name = name  # 此对象名
         self.data = data  # 怎么去到次对象的数据
-        self.guanxi_list = []  # 此对象能去的对象名字
+        self.guanxi_list = []
+        for x in guanxi:
+            if x != self.name:
+                self.guanxi_list.append(x)
+        self.guanxi_list1 = guanxi  # 此对象能去的对象名字
+        self.guanxi_list2 = []
         self.guanxi_list_data = {}  # 此对象能去的对象的数据
         self.guanxi_list_obj = []  # 此对象能去的对象
 
     def add(self, guanxi, data):
-        self.guanxi_list.append(guanxi.name)
-        self.guanxi_list_obj.append(guanxi)
-        if isinstance(data, int) is True:
-            if data == 0:
-                self.guanxi_list_data[guanxi.name] = guanxi.data
-            else:
-                self.guanxi_list_data[guanxi.name] = guanxi.data[data - 1]
-        if isinstance(data, str) is True:
-            temp1 = data.split("q")
-            self.guanxi_list_data[guanxi.name] = data[int(temp1[0]) - 1:int(temp1[1])]
+        if guanxi.name != self.name:
+            self.guanxi_list2.append(guanxi.name)
+            self.guanxi_list_obj.append(guanxi)
+            if isinstance(data, int) is True:
+                if data == 0:
+                    self.guanxi_list_data[guanxi.name] = guanxi.data
+                else:
+                    self.guanxi_list_data[guanxi.name] = guanxi.data[data - 1]
+            if isinstance(data, str) is True:
+                temp1 = data.split("q")
+                self.guanxi_list_data[guanxi.name] = data[int(temp1[0]) - 1:int(temp1[1])]
 
 
 class Map:
