@@ -20,5 +20,7 @@ class PcrCeshi:
     dizhi = "C:\\Users\\29412\\Desktop\\prc\\ziku1.txt"
     pcr.zikusz([dizhi])
     pcr.dqziku(0)
-    pcr.zhuxiangkxz("2-2-1")
+    # pcr.zhuxiangkxz("2-2-1")
+    # print(pcr.jmqr_dqjm())
+    pcr.jiemianxz("主线冒险")
     pcr.ldjiebang()

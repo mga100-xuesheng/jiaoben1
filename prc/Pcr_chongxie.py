@@ -408,9 +408,28 @@ class PcR:
 
     '''=============================================================================================================='''
 
-    @staticmethod
-    def jiemianxz(self):
-        return 0
+    def jiemianxz(self, godata):
+        temp1 = self.jmqr_jmtiaozhuan_path(godata)
+        for x in temp1:
+            print(x.name)
+        if isinstance(temp1, int) is True:
+            print('查找页面失败')
+            return False
+        for obj in temp1:
+            for obj1 in obj.data:
+                print(obj1)
+                if obj1[0] == 1:
+                    sleep(2)
+                    self.pcr_find_pic(self.pic_config, obj1[1], 1)
+                    break
+                if obj1[0] == 2:
+                    sleep(2)
+                    self.pcr_find_word(obj1[1], 1)
+                    break
+                if obj1[0] == 3:
+                    sleep(2)
+                    self.pcr_find_pic_click(self.pic_config, obj1[1], obj1[2], 1)
+                    break
 
     def pcr_jm_obj(self):
         data = [
@@ -419,11 +438,12 @@ class PcR:
                 PcrData.jm_renwu,
                 # 冒险
                 PcrData.jm_maoxian,
-                PcrData.jm_zhuxian,
+
                 PcrData.jm_tansuo,
                 PcrData.jm_tansuo_jingyan,
                 PcrData.jm_tansuo_mana,
                 PcrData.jm_dixiacheng,
+                PcrData.jm_zhuxian,
                 #  家园
                 PcrData.jm_jiayuan
         ]
@@ -436,12 +456,30 @@ class PcR:
         temp1 = temp1[1:]
         return temp1
 
+    def jmqr_dqjm(self):
+        for obj in PcrData.xunlu_jmqr:
+            temp1 = self.pcr_find_word(obj[1], 1)
+            if temp1 == 1:
+                print("当前界面："+obj[0])
+                return obj[0]
+        return -1
 
-temp11 = PcR("",["","",""],20)
-temp2 = temp11.pcr_jm_path('地下城','任务')
-for x in temp2:
-    print(x.name)
-    print(x.data)
-    print(x.guanxi_list)
-    print("")
+    def jmqr_jmtiaozhuan_path(self,data:str):
+        temp1 = self.jmqr_dqjm()
+        if temp1 != -1:
+            temp2 = self.pcr_jm_path(temp1,data)
+            print(temp2)
+            return temp2
+        else:
+            return -1
 
+# temp11 = PcR("",["","",""],20)
+# temp2 = temp11.pcr_jm_path('探索','主线冒险')
+# # var = temp11.pcr.jiemian_dic['主线冒险']
+# # print(var.data)
+# for x in temp2:
+#     print(x.name)
+#     print(x.data)
+#     print(x.guanxi_list)
+#     print("")
+#
