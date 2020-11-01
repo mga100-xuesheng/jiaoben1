@@ -22,5 +22,5 @@ class PcrCeshi:
     pcr.dqziku(0)
     # pcr.zhuxiangkxz("2-2-1")
     # print(pcr.jmqr_dqjm())
-    pcr.jiemianxz("主线冒险")
+    pcr.jiemianxz("任务")
     pcr.ldjiebang()
