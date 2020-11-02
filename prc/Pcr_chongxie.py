@@ -67,7 +67,7 @@ class PcR:
 
     def tili_sum(self):  # 体力数查询
         self.jiemiandqgc()
-        return self.pcr.find_word_sumzh1(PcrData.sd_sum, 0)
+        return self.pcr.find_word_sumzh1(PcrData.tili, 0)
 
     def pcr_find_word_sum1(self, data, fangxiang):  # pcr文字找数
         self.jiemiandqgc()
@@ -464,11 +464,12 @@ class PcR:
                 return obj[0]
         return -1
 
-    def jmqr_jmtiaozhuan_path(self,data:str):
+    def jmqr_jmtiaozhuan_path(self, data: str):
         temp1 = self.jmqr_dqjm()
         if temp1 != -1:
-            temp2 = self.pcr_jm_path(temp1,data)
+            temp2 = self.pcr_jm_path(temp1, data)
             return temp2
         else:
             return -1
 
+    '''=============================================================================================================='''

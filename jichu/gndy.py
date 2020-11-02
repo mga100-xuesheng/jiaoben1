@@ -1,6 +1,7 @@
 from jichu.gnzh import *
 from jichu.jichugn import *
 from datetime import datetime
+from time import sleep
 
 
 class GongNengdy:
@@ -294,14 +295,17 @@ class GongNengdy:
     def duoxianc(self, data: list):  # 多线程定义
         if len(data) > self.xc_sum_data:
             return [-1]
-        temp1 = locals()
+        temp1 = {}
         temp2 = []
         for x in range(len(data)):
             temp1["duoxc" + str(x)] = MyThread(data[x][0], data[x][1])
+            sleep(0.1)
         for x in range(len(data)):
             temp1["duoxc" + str(x)].start()
+            sleep(0.1)
         for x in range(len(data)):
             temp1["duoxc" + str(x)].join()
+            sleep(0.1)
         for x in range(len(data)):
             temp2.append(temp1["duoxc" + str(x)].get_result())
         return temp2
