@@ -279,6 +279,7 @@ class MyThread(threading.Thread):
 
     def run(self):
         self.__flag.wait()
+        # print(self.args)
         self.result = self.func(*self.args)
 
     def get_result(self):

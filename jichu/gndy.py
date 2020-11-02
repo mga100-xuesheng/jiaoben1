@@ -5,69 +5,113 @@ from time import sleep
 
 
 class GongNengdy:
+    xc_sum_data1 = 0
+    lock = threading.Lock()
+
     def __init__(self, xm_data, pic_config, xc_sum_data):
         self.pic_config = pic_config
-        self.sum_names = locals()
+        self.sum_names = {}
         self.xm_data = xm_data
         if xc_sum_data < 5:
             self.xc_sum_data = 5
+            GongNengdy.xc_sum_data1 = 5
         elif xc_sum_data > 5 or xc_sum_data == 5:
             self.xc_sum_data = xc_sum_data
+            GongNengdy.xc_sum_data1 = xc_sum_data
         self.dqzk = -1
+        self.sum_names_list = []
+        self.sum_names_key = []
         for x in range(xc_sum_data):
             self.sum_names[self.xm_data + str(x)] = FindCol(pic_config)
+            self.sum_names_list.append(self.xm_data + str(x))
+            self.sum_names_key.append(1)
         self.jiemian_dic = {}
         self.map_list = Map()
+        self.lock = threading.Lock()
+
+    def obj_fenpei(self, panduan=None):
+        self.lock.acquire()
+        if panduan is None:
+            panduan = 1
+        for x in range(len(self.sum_names_key)):
+            if self.sum_names_key[x] == 1:
+                self.sum_names_key[x] = 0
+                self.lock.release()
+                return self.sum_names_list[x]
+        sleep(6)
+        if panduan > 10:
+            self.lock.release()
+            return False
+        self.obj_fenpei(panduan + 1)
+
+    def obj_shouhui(self, name):
+        self.lock.acquire()
+        for x in range(len(self.sum_names_list)):
+            if self.sum_names_list[x] == name:
+                self.sum_names_key[x] = 1
+                self.lock.release()
+                return 1
+            if x == len(self.sum_names_list) - 1:
+                self.lock.release()
+                return -1
+        self.lock.release()
 
     def ldbangding(self, data):  # 雷电模拟器多线程绑定
-        for x in range(self.xc_sum_data):
-            self.sum_names[self.xm_data + str(x)].leidianbang(data, self.xm_data)
+        for x in self.sum_names.keys():
+            self.sum_names[x].leidianbang(data, self.xm_data)
 
     def ldjiebang(self):  # 雷电模拟器解绑
         self.sum_names[self.xm_data + str(1)].jiebang()
 
-    def shujucl1(self, data, xc_sum):  # 数据处理1  格式为：[[第一个数据],[第二个数据]]
-        if xc_sum == "":
-            xc_sum = 1
-        return self.sum_names[self.xm_data + str(xc_sum)].shujuchuli11(data)
+    def shujucl1(self, data):  # 数据处理1  格式为：[[第一个数据],[第二个数据]]
+        xc_sum_temp = self.obj_fenpei()
+        temp1 = self.sum_names[xc_sum_temp].shujuchuli1(data)
+        self.obj_shouhui(xc_sum_temp)
+        return temp1
 
-    def shujucl2(self, data, xc_sum):  # 数据处理2 格式为：[第一个数据,第二个数据]
-        return self.sum_names[self.xm_data + str(xc_sum)].shujuchuli12(data)
+    def shujucl2(self, data):  # 数据处理2 格式为：[第一个数据,第二个数据]
+        xc_sum_temp = self.obj_fenpei()
+        temp1 = self.sum_names[xc_sum_temp].shujuchuli2(data)
+        self.obj_shouhui(xc_sum_temp)
+        return temp1
 
-    def dianji(self, data, min_time, max_time, xc_sum):  # 鼠标点击
-        if xc_sum == "":
-            xc_sum = 1
-        self.sum_names[self.xm_data + str(xc_sum)].random_time(min_time, max_time)
-        return self.sum_names[self.xm_data + str(xc_sum)].click(data)
+    def dianji(self, data, min_time, max_time):  # 鼠标点击
+        xc_sum_temp = self.obj_fenpei()
+        self.sum_names[xc_sum_temp].random_time(min_time, max_time)
+        temp1 = self.sum_names[xc_sum_temp].click(data)
+        self.obj_shouhui(xc_sum_temp)
+        return temp1
 
     '''==================================================================================================='''
 
-    def find_pic(self, config, data, xc_sum):  # 找图
-        if xc_sum == "":
-            xc_sum = 1
-        self.sum_names[self.xm_data + str(xc_sum)].find_pic_data_shezhi(config, data)
-        return self.sum_names[self.xm_data + str(xc_sum)].find_pic()
+    def find_pic(self, config, data):  # 找图
+        xc_sum_temp = self.obj_fenpei()
+        self.sum_names[xc_sum_temp].find_pic_data_shezhi(config, data)
+        temp1 = self.sum_names[xc_sum_temp].find_pic()
+        self.obj_shouhui(xc_sum_temp)
+        return temp1
 
-    def find_pic_ex(self, config, data, xc_sum):  # 找图扩展
-        if xc_sum == "":
-            xc_sum = 1
-        self.sum_names[self.xm_data + str(xc_sum)].find_pic_data_shezhi(config, data)
-        return self.sum_names[self.xm_data + str(xc_sum)].find_pic_ex()
+    def find_pic_ex(self, config, data):  # 找图扩展
+        xc_sum_temp = self.obj_fenpei()
+        self.sum_names[xc_sum_temp].find_pic_data_shezhi(config, data)
+        temp1 = self.sum_names[xc_sum_temp].find_pic_ex()
+        self.obj_shouhui(xc_sum_temp)
+        return temp1
 
-    def find_pic_click(self, config, data, click, xc_sum):  # 找图成功点击
-        temp1 = self.find_pic(config, data, xc_sum)
+    def find_pic_click(self, config, data, click):  # 找图成功点击
+        temp1 = self.find_pic(config, data)
         if temp1 == 1:
-            self.dianji(click, 1, 2, xc_sum)
+            self.dianji(click, 1, 2)
             return 1
         else:
             return 0
 
-    def find_pic_click1(self, config, data, click, xc_sum):  # 找图失败点击
-        temp1 = self.find_pic(config, data, xc_sum)
+    def find_pic_click1(self, config, data, click):  # 找图失败点击
+        temp1 = self.find_pic(config, data)
         if temp1 == 1:
             return 0
         else:
-            self.dianji(click, 1, 2, xc_sum)
+            self.dianji(click, 1, 2)
             return 1
 
     '''==================================================================================================='''
@@ -86,57 +130,61 @@ class GongNengdy:
         else:
             return 1
 
-    def find_word(self, data, xc_sum):  # 找字
-        if xc_sum == "":
-            xc_sum = 1
-        self.sum_names[self.xm_data + str(xc_sum)].find_data_shezhi(data)
-        return self.sum_names[self.xm_data + str(xc_sum)].find_word()
+    def find_word(self, data: list):  # 找字
+        xc_sum_temp = self.obj_fenpei()
+        self.sum_names[xc_sum_temp].find_data_shezhi(data)
+        temp1 = self.sum_names[xc_sum_temp].find_word()
+        self.obj_shouhui(xc_sum_temp)
+        return temp1
 
-    def find_word_click(self, data, click, xc_sum):  # 找字成功点击
-        temp1 = self.find_word(data, xc_sum)
+    def find_word_click(self, data, click):  # 找字成功点击
+        temp1 = self.find_word(data)
         if temp1 == 1:
-            self.dianji(click, 1, 2, xc_sum)
+            self.dianji(click, 1, 2)
             return 1
         else:
             return 0
 
-    def find_word_click1(self, data, click, xc_sum):  # 找字失败点击
-        temp1 = self.find_word(data, xc_sum)
+    def find_word_click1(self, data, click):  # 找字失败点击
+        temp1 = self.find_word(data)
         if temp1 == 1:
             return 0
         else:
-            self.dianji(click, 1, 2, xc_sum)
+            self.dianji(click, 1, 2)
             return 1
 
-    def find_word_ex(self, data, xc_sum):  # 找字扩展
-        if xc_sum == "":
-            xc_sum = 1
-        self.sum_names[self.xm_data + str(xc_sum)].find_data_shezhi(data)
-        return self.sum_names[self.xm_data + str(xc_sum)].find_word_ex()
+    def find_word_ex(self, data):  # 找字扩展
+        xc_sum_temp = self.obj_fenpei()
+        self.sum_names[xc_sum_temp].find_data_shezhi(data)
+        temp1 = self.sum_names[xc_sum_temp].find_word_ex()
+        self.obj_shouhui(xc_sum_temp)
+        return temp1
 
-    def find_word_ex1(self, data, xc_sum):  # 找字扩展1
-        if xc_sum == "":
-            xc_sum = 1
-        self.sum_names[self.xm_data + str(xc_sum)].find_data_shezhi(data)
-        return self.sum_names[self.xm_data + str(xc_sum)].find_word_ex1()
+    def find_word_ex1(self, data):  # 找字扩展1
+        xc_sum_temp = self.obj_fenpei()
+        self.sum_names[xc_sum_temp].find_data_shezhi(data)
+        temp1 = self.sum_names[xc_sum_temp].find_word_ex1()
+        self.obj_shouhui(xc_sum_temp)
+        return temp1
 
-    def find_word_ex1_shujucl2(self, data, xc_sum):  # 找字扩展1:数据处理2
-        self.sum_names[self.xm_data + str(xc_sum)].find_data_shezhi(data)
-        temp1 = self.find_word_ex1(data, xc_sum)
+    def find_word_ex1_shujucl2(self, data):  # 找字扩展1:数据处理2
+        temp1 = self.find_word_ex1(data)
         if temp1[0] == 1:
-            temp2 = self.sum_names[self.xm_data + str(xc_sum)].shujuchuli2(temp1[1])
+            xc_sum_temp = self.obj_fenpei()
+            temp2 = self.sum_names[xc_sum_temp].shujuchuli2(temp1[1])
+            self.obj_shouhui(xc_sum_temp)
             return temp2
         else:
             return [0]
 
     '''---------------------------------------------------------------------------------------------------'''
 
-    def find_word_sum(self, data, find_sum, dizhi, sim: int, xc_sum):  # 文字数字查找
+    def find_word_sum(self, data, find_sum, dizhi, sim: int):  # 文字数字查找
         temp1 = []
         for x in range(len(data)):
             data[x][0] = dizhi
             data[x][3] = sim
-            temp2 = self.find_word_ex1_shujucl2(data[x], xc_sum)
+            temp2 = self.find_word_ex1_shujucl2(data[x])
             if temp2[0] == 1:
                 for x in range(len(temp2[1])):
                     temp2[1][x] = temp2[1][x].split(",")
@@ -147,10 +195,10 @@ class GongNengdy:
         else:
             return temp1
 
-    def find_word_sum1(self, data, find_sum, xc_sum):  # 文字数字查找1
+    def find_word_sum1(self, data, find_sum):  # 文字数字查找1
         temp1 = []
         for x in range(len(data)):
-            temp2 = self.find_word_ex1_shujucl2(data[x], xc_sum)
+            temp2 = self.find_word_ex1_shujucl2(data[x])
             if temp2[0] == 1:
                 for x in range(len(temp2[1])):
                     temp2[1][x] = temp2[1][x].split(",")
@@ -164,11 +212,11 @@ class GongNengdy:
     def find_word_sumzh(self, data: list, dizhi: list, sim: list, fangxian: int):  # 文字数字整合查找
         temp1 = []
         temp4 = ""
-        zifu1 = MyThread(self.find_word_sum, (tuple(data[0]), 1, tuple(dizhi), sim[0], 1))
-        zifu2 = MyThread(self.find_word_sum, (data[1], 2, dizhi, sim[1], 2))
-        zifu3 = MyThread(self.find_word_sum, (data[2], 3, dizhi, sim[2], 3))
-        zifu4 = MyThread(self.find_word_sum, (data[3], 4, dizhi, sim[3], 4))
-        zifu5 = MyThread(self.find_word_sum, (data[4], 5, dizhi, sim[4], 5))
+        zifu1 = MyThread(self.find_word_sum, (tuple(data[0]), 1, tuple(dizhi), sim[0]))
+        zifu2 = MyThread(self.find_word_sum, (data[1], 2, dizhi, sim[1]))
+        zifu3 = MyThread(self.find_word_sum, (data[2], 3, dizhi, sim[2]))
+        zifu4 = MyThread(self.find_word_sum, (data[3], 4, dizhi, sim[3]))
+        zifu5 = MyThread(self.find_word_sum, (data[4], 5, dizhi, sim[4]))
         zifu1.start()
         zifu2.start()
         zifu3.start()
@@ -184,11 +232,11 @@ class GongNengdy:
             if temp2[x][0][0] != -1:
                 for y in range(len(temp2[x])):
                     temp1.append(temp2[x][y])
-        zifu1 = MyThread(self.find_word_sum, (data[5], 6, dizhi, sim[5], 1))
-        zifu2 = MyThread(self.find_word_sum, (data[6], 7, dizhi, sim[6], 2))
-        zifu3 = MyThread(self.find_word_sum, (data[7], 8, dizhi, sim[7], 3))
-        zifu4 = MyThread(self.find_word_sum, (data[8], 9, dizhi, sim[8], 4))
-        zifu5 = MyThread(self.find_word_sum, (data[9], 0, dizhi, sim[9], 5))
+        zifu1 = MyThread(self.find_word_sum, (data[5], 6, dizhi, sim[5]))
+        zifu2 = MyThread(self.find_word_sum, (data[6], 7, dizhi, sim[6]))
+        zifu3 = MyThread(self.find_word_sum, (data[7], 8, dizhi, sim[7]))
+        zifu4 = MyThread(self.find_word_sum, (data[8], 9, dizhi, sim[8]))
+        zifu5 = MyThread(self.find_word_sum, (data[9], 0, dizhi, sim[9]))
         zifu1.start()
         zifu2.start()
         zifu3.start()
@@ -228,11 +276,11 @@ class GongNengdy:
     def find_word_sumzh1(self, data: list, fangxian: int):  # 文字数字整合查找1
         temp1 = []
         temp4 = ""
-        zifu1 = MyThread(self.find_word_sum1, (data[0], 1, 1))
-        zifu2 = MyThread(self.find_word_sum1, (data[1], 2, 2))
-        zifu3 = MyThread(self.find_word_sum1, (data[2], 3, 3))
-        zifu4 = MyThread(self.find_word_sum1, (data[3], 4, 4))
-        zifu5 = MyThread(self.find_word_sum1, (data[4], 5, 5))
+        zifu1 = MyThread(self.find_word_sum1, (data[0], 1))
+        zifu2 = MyThread(self.find_word_sum1, (data[1], 2))
+        zifu3 = MyThread(self.find_word_sum1, (data[2], 3))
+        zifu4 = MyThread(self.find_word_sum1, (data[3], 4))
+        zifu5 = MyThread(self.find_word_sum1, (data[4], 5))
         zifu1.start()
         zifu2.start()
         zifu3.start()
@@ -248,11 +296,11 @@ class GongNengdy:
             if temp2[x][0][0] != -1:
                 for y in range(len(temp2[x])):
                     temp1.append(temp2[x][y])
-        zifu1 = MyThread(self.find_word_sum1, (data[5], 6, 1))
-        zifu2 = MyThread(self.find_word_sum1, (data[6], 7, 2))
-        zifu3 = MyThread(self.find_word_sum1, (data[7], 8, 3))
-        zifu4 = MyThread(self.find_word_sum1, (data[8], 9, 4))
-        zifu5 = MyThread(self.find_word_sum1, (data[9], 0, 5))
+        zifu1 = MyThread(self.find_word_sum1, (data[5], 6))
+        zifu2 = MyThread(self.find_word_sum1, (data[6], 7))
+        zifu3 = MyThread(self.find_word_sum1, (data[7], 8))
+        zifu4 = MyThread(self.find_word_sum1, (data[8], 9))
+        zifu5 = MyThread(self.find_word_sum1, (data[9], 0))
         zifu1.start()
         zifu2.start()
         zifu3.start()
@@ -292,22 +340,12 @@ class GongNengdy:
     '''==================================================================================================='''
     '''==================================================================================================='''
 
-    def duoxianc(self, data: list):  # 多线程定义
-        if len(data) > self.xc_sum_data:
-            return [-1]
-        temp1 = {}
-        temp2 = []
-        for x in range(len(data)):
-            temp1["duoxc" + str(x)] = MyThread(data[x][0], data[x][1])
-            sleep(0.1)
-        for x in range(len(data)):
-            temp1["duoxc" + str(x)].start()
-            sleep(0.1)
-        for x in range(len(data)):
-            temp1["duoxc" + str(x)].join()
-            sleep(0.1)
-        for x in range(len(data)):
-            temp2.append(temp1["duoxc" + str(x)].get_result())
+    @staticmethod
+    def duoxianc(data: list):  # 多线程定义
+        if GongNengdy.xc_sum_data1 < len(data):
+            return -1
+        temp1 = DuoXianc()
+        temp2 = temp1.duoxianc(data)
         return temp2
 
     '''==================================================================================================='''
@@ -362,15 +400,15 @@ class GongNengdy:
 
     '''==================================================================================================='''
 
-    def InterFace(self, name: str, data: list, guanxi:list):  # 界面对象定义
+    def InterFace(self, name: str, data: list, guanxi: list):  # 界面对象定义
         self.jiemian_dic[name] = InterFace(name, data, guanxi)
 
     def InterFace_list_add(self, name: str, guanxi, data):  # 此界面可去界面对象定义
         self.jiemian_dic[name].add(guanxi, data)
 
-    def list_InterFace_list_add(self,name):
+    def list_InterFace_list_add(self, name):
         for x in self.jiemian_dic[name].guanxi_list:
-            self.InterFace_list_add(name,self.jiemian_dic[x],0)
+            self.InterFace_list_add(name, self.jiemian_dic[x], 0)
 
     def map_obj_add(self, name: str):  # 生成地图
         self.map_list.add_list(self.jiemian_dic[name])
@@ -392,10 +430,27 @@ class GongNengdy:
         for x in self.jiemian_dic.keys():
             self.list_InterFace_list_add(x)
 
-
     def map_obj_list_add(self):  # 地图结点添加
         for x in self.jiemian_dic.keys():
             self.map_obj_add(str(x))
 
     def map_go_map_path(self, nowmap, gomap):  # 返回此界面去另外界面的最短路径
         return self.map_list.present_go_target(nowmap, gomap)
+
+
+class DuoXianc:
+    def __init__(self):
+        self.duoxianc1 = {}
+        self.duoxianc2 = []
+        self.duoxianc3 = []
+
+    def duoxianc(self, data: list):
+        for x in range(len(data)):
+            self.duoxianc1["duoxc" + str(x)] = MyThread(data[x][0], args=data[x][1])
+        for x in self.duoxianc1.keys():
+            self.duoxianc1[x].start()
+        for x in self.duoxianc1.keys():
+            self.duoxianc1[x].join()
+        for x in self.duoxianc1.keys():
+            self.duoxianc3.append(self.duoxianc1[x].get_result())
+        return self.duoxianc3
