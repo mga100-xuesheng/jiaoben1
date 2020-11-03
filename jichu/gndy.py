@@ -29,27 +29,24 @@ class GongNengdy:
         self.map_list = Map()
         self.lock = threading.Lock()
 
-    def obj_fenpei(self, panduan=None):
+    def obj_fenpei(self):  # 执行对象分配
         self.lock.acquire()
-        if panduan is None:
-            panduan = 1
-        for x in range(len(self.sum_names_key)):
-            if self.sum_names_key[x] == 1:
-                self.sum_names_key[x] = 0
-                self.lock.release()
-                return self.sum_names_list[x]
-        sleep(6)
-        if panduan > 10:
-            self.lock.release()
-            return False
-        self.obj_fenpei(panduan + 1)
+        while True:
+            for x in range(len(self.sum_names_key)):
+                if self.sum_names_key[x] == 1:
+                    self.sum_names_key[x] = 0
+                    self.lock.release()
+                    # print('使用'+self.sum_names_list[x])
+                    return self.sum_names_list[x]
+            sleep(2)
 
-    def obj_shouhui(self, name):
+    def obj_shouhui(self, name):  # 执行对象收回
         self.lock.acquire()
         for x in range(len(self.sum_names_list)):
             if self.sum_names_list[x] == name:
                 self.sum_names_key[x] = 1
                 self.lock.release()
+                # print('回收'+self.sum_names_list[x])
                 return 1
             if x == len(self.sum_names_list) - 1:
                 self.lock.release()
