@@ -5,6 +5,7 @@ import time
 import threading
 import math
 import datetime
+import pythoncom
 
 
 class JiChu:
@@ -15,6 +16,7 @@ class JiChu:
         self.hwnd = 0
         self.xc_sum = 1
         self.dqzifu_sum = -1
+        pythoncom.CoInitialize()
         self.lw = client.CreateObject('lw.lwsoft3')
         "--------------------------------------------"
         self.find_word_data_coord = []

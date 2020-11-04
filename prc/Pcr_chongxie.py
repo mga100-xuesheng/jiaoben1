@@ -5,8 +5,8 @@ from datetime import datetime
 
 
 class PcR:
-    def __init__(self, xm_data, pic_config, xc_sum_data):
-        self.pcr = GongNengdy(xm_data, pic_config, xc_sum_data)
+    def __init__(self, xm_data, pic_config, chuangkou_name, ziku_path: list):
+        self.pcr = GongNengdy(xm_data, pic_config, chuangkou_name, ziku_path)
         self.pic_config = pic_config
         self.pcr_jm_obj()
 
@@ -71,7 +71,9 @@ class PcR:
 
     def tili_sum(self):  # 体力数查询
         self.jiemiandqgc()
-        return self.pcr.find_word_sumzh1(PcrData.tili, 0)
+        temp1 = self.pcr.find_word_sumzh1(PcrData.tili, 0)
+        print('体力为：' + str(temp1))
+        return temp1
 
     def pcr_find_word_sum1(self, data, fangxiang):  # pcr文字找数
         self.jiemiandqgc()
