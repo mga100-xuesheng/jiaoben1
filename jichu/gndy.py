@@ -38,7 +38,7 @@ class GongNengdy:
         self.sum_names_key.append(1)
         GongNengdy.xc_sum_data1 = GongNengdy.xc_sum_data1 + 1
 
-    def obj_key_chaxun(self, data, name=None):
+    def obj_key_chaxun(self, data, name=None):  # 执行对象查询
         self.lock.acquire()
         sleep(0.5)
         while True:
