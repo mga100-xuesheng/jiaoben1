@@ -293,11 +293,11 @@ class PcrData:
     duiwu1 = []
     duiwu2 = []
     duiwu3 = []
-    duiwu = [duiwu1,duiwu2,duiwu3]
+    duiwu = [duiwu1, duiwu2, duiwu3]
     '''================================================================================'''
-    rizhi_path = ''
-    rizhi_name = ''
-    rizhi_keyword = ["","","",""]
+    rizhi_path = 'C:\\Users\\29412\\Desktop\\prc\\'
+    rizhi_name = 'rizhi2.txt'
+    rizhi_keyword = ["家园领取体力", "任务领取体力", "探索", "地下城"]
 
     '''=============================================================================================================='''
     '''界面数据'''

@@ -354,6 +354,7 @@ class RiZhi1:
     def utf_8_xieru(self, xieru_time: str, name, data):
         temp1 = []
         temp1.append(datetime.datetime.now().strftime('%Y-%m-%d') + '-' + xieru_time + "\n")
+        print(data)
         for x in range(len(data)):
             data[x] = str(data[x]) + "\n"
         temp1 = temp1 + data

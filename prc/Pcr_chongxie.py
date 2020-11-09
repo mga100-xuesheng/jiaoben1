@@ -223,7 +223,7 @@ class PcR:
         temp1 = self.xiandingsdcs()
         if temp1 == 0 and data == 1:
             sdcs = self.saodangcz()
-            if sdcs == 0:
+            if sdcs == 0 and self.tili_sum() < 40:
                 return 2
             else:
                 self.putongsd(sdcs)
@@ -233,7 +233,7 @@ class PcR:
         elif temp1 != 0 and data == 1:
             self.putongsd(temp1)
             temp1 = self.saodangcz()
-            if temp1 != 0:
+            if temp1 != 0 and self.tili_sum() > 40:
                 self.putongsd(temp1)
                 return 2
             else:

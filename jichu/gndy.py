@@ -400,7 +400,7 @@ class GongNengdy:
     def rizhi_xieru(path: str, name: str, keyword: str, data: str, xieru_time: str):  # 日志写入
         temp1 = RiZhi1(path)
         temp2 = temp1.utf_8_duqu(name)
-        print(temp2)
+        # print(temp2)
         temp4 = []
         temp5 = 0
         for x in temp2:
@@ -415,8 +415,8 @@ class GongNengdy:
             else:
                 if x.find("-") == -1:
                     temp4.append(x)
-        print(temp4)
-        temp1.utf_8_xieru(name, temp4, xieru_time)
+        # print(temp4)
+        temp1.utf_8_xieru(xieru_time, name, temp4)
 
     @staticmethod
     def rizhi_duqu(path: str, name: str, keyword: str):  # 日志读取
