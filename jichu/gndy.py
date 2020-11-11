@@ -376,20 +376,6 @@ class GongNengdy:
     '''==================================================================================================='''
 
     def duoxianc(self, data: list):  # 多线程定义
-        # temp3 = 0
-        # self.lock.acquire()
-        # for x in self.sum_names_key:
-        #     if x == 1:
-        #         temp3 = temp3 + 1
-        # print('多线程：'+ str(temp3))
-        # print(self.sum_names_key)
-        # print("")
-        # if temp3 < len(data):
-        #     for x in range(len(data) - temp3):
-        #         self.obj_add()
-        # elif temp3 == 0:
-        #     self.obj_add()
-        # self.lock.release()
         temp1 = DuoXianc()
         temp2 = temp1.duoxianc(data)
         return temp2
@@ -400,7 +386,6 @@ class GongNengdy:
     def rizhi_xieru(path: str, name: str, keyword: str, data: str, xieru_time: str):  # 日志写入
         temp1 = RiZhi1(path)
         temp2 = temp1.utf_8_duqu(name)
-        # print(temp2)
         temp4 = []
         temp5 = 0
         for x in temp2:
@@ -415,7 +400,6 @@ class GongNengdy:
             else:
                 if x.find("-") == -1:
                     temp4.append(x)
-        # print(temp4)
         temp1.utf_8_xieru(xieru_time, name, temp4)
 
     @staticmethod

@@ -436,6 +436,10 @@ class PcR:
                     temp2 = self.pcr_find_pic_click(self.pic_config, obj1[1], obj1[2])
                     if temp2 == 1:
                         break
+                if obj1[0] == 4:
+                    sleep(2)
+                    self.pcr_dianji(obj1[1], obj1[2], obj1[3])
+                    break
 
     def pcr_jm_obj(self):
         data = [
