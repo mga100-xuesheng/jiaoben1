@@ -8,7 +8,6 @@ from prc.Pcr_chongxie import PcR
 class PcrCeshi:
     pcr = PcR("pcr", ["C:\\Users\\29412\\Desktop\\prc\\", ".bmp", "252525"], "公主连结国服",
               ["C:\\Users\\29412\\Desktop\\prc\\ziku1.txt"])
-    pcr.pcr_rizhi_update()
 
     def juesesuipian(self, data1, data2):
         self.pcr.zhuxiangkxz(data1)
@@ -42,7 +41,7 @@ class PcrCeshi:
             suipian = hutao
             shuffle(suipian)
         else:
-            suipian = jiansheng + bingjiao
+            suipian = jiansheng + hutao + kan + chongdianbao
             shuffle(suipian)
         print(suipian)
         self.richangjuesesd(suipian)
@@ -103,7 +102,10 @@ class PcrCeshi:
 
 
 temp1 = PcrCeshi()
-# print(temp1.pcr.pcr_rizhiduqu('探索'))
-# temp1.tansuo()
+temp1.pcr.pcr_rizhi_update()
+temp1.gonghuizhijiatili()
+temp1.renwu()
 temp1.suipiansd()
+temp1.tansuo()
+# temp1.pcr.tili_sum()
 temp1.pcr.ldjiebang()

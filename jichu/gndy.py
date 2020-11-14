@@ -39,10 +39,9 @@ class GongNengdy:
         GongNengdy.xc_sum_data1 = GongNengdy.xc_sum_data1 + 1
 
     def obj_key_chaxun(self, data, name=None):  # 执行对象查询
-        self.lock.acquire()
-        sleep(0.5)
         while True:
-            for z in range(2):
+            for z in range(20):
+                self.lock.acquire()
                 if data == 1:
                     for x in range(len(self.sum_names_key)):
                         if self.sum_names_key[x] == 1:
@@ -58,8 +57,11 @@ class GongNengdy:
                             # print('回收线程:'+str(self.sum_names_list[x]))
                             self.lock.release()
                             return True
-                sleep(2)
+                self.lock.release()
+                sleep(0.1)
+            self.lock.acquire()
             self.obj_add()
+            self.lock.release()
 
     def obj_fenpei(self):  # 执行对象分配
         return self.obj_key_chaxun(1)

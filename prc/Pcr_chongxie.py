@@ -1,4 +1,4 @@
-from jichu.gndy import GongNengdy
+from jichu.gndy import GongNengdy, threading
 from zh_data import PcrData
 from time import sleep
 from datetime import datetime
@@ -9,6 +9,8 @@ class PcR:
         self.pcr = GongNengdy(xm_data, pic_config, chuangkou_name, ziku_path)
         self.pic_config = pic_config
         self.pcr_jm_obj()
+        self.jiemiandq_zt = 0
+        self.lock = threading.Lock()
 
     def ldbangding(self, data):  # 雷电绑定
         self.pcr.ldbangding(data)
@@ -24,15 +26,40 @@ class PcR:
 
     '''--------------------------------------------------------------------------------------------------------------'''
 
+    def jiemiandqgc_zt(self, data):
+        self.lock.acquire()
+        if data == 1:
+            self.jiemiandq_zt = 1
+        elif data == 0:
+            self.jiemiandq_zt = 0
+        self.lock.release()
+
+    def jiemiandqgc_ztcx(self):
+        self.lock.acquire()
+        if self.jiemiandq_zt == 1:
+            self.lock.release()
+            return 1
+        else:
+            self.lock.release()
+            return 0
+
     def jiemiandqgc(self):  # Pcr界面转页读取过程
-        for x in range(1000):
-            temp1 = [[self.pcr.find_word, (PcrData.dqgc1,)],
-                     [self.pcr.find_word, (PcrData.dqgc2,)]]
-            temp2 = self.pcr.duoxianc(temp1)
-            # print(temp2)
-            if temp2[0] == 0 and temp2[1] == 0:
-                return 1
-            sleep(2)
+        if self.jiemiandqgc_ztcx() == 0:
+            self.jiemiandqgc_zt(1)
+            for x in range(1000):
+                temp1 = [[self.pcr.find_word, (PcrData.dqgc1,)],
+                         [self.pcr.find_word, (PcrData.dqgc2,)]]
+                temp2 = self.pcr.duoxianc(temp1)
+                if temp2[0] == 0 and temp2[1] == 0:
+                    self.jiemiandqgc_zt(0)
+                    return 1
+                sleep(2)
+        else:
+            while True:
+                if self.jiemiandqgc_ztcx() == 1:
+                    sleep(0.5)
+                else:
+                    return 1
 
     '''--------------------------------------------------------------------------------------------------------------'''
 
@@ -365,9 +392,14 @@ class PcR:
     '''=============================================================================================================='''
     '''日志记录'''
 
-    @staticmethod
-    def pcr_rizhixieru(key_word, data):  # 日志写入
-        GongNengdy.rizhi_xieru(PcrData.rizhi_path, PcrData.rizhi_name, key_word, data, "05")
+    def pcr_rizhixieru(self, key_word, data):  # 日志写入
+        temp1 = datetime.now().strftime('%Y-%m-%d-%H')
+        temp2 = self.pcr_rizhiduqu('-')
+        if GongNengdy.time_db(temp2, temp1) > 24:
+            xieru_time = datetime.now().strftime('%Y-%m-%d') + '-' + '05'
+        else:
+            xieru_time = temp2
+        GongNengdy.rizhi_xieru(PcrData.rizhi_path, PcrData.rizhi_name, key_word, data, xieru_time)
 
     @staticmethod
     def pcr_rizhiduqu(key_word):  # 日志读取
@@ -376,6 +408,7 @@ class PcR:
     def pcr_rizhi_update(self):  # 日志刷新
         temp1 = datetime.now().strftime('%Y-%m-%d-%H')
         temp2 = self.pcr_rizhiduqu('-')
+        print(GongNengdy.time_db(temp2, temp1))
         if GongNengdy.time_db(temp2, temp1) > 24:
             for x in PcrData.rizhi_keyword:
                 self.pcr_rizhixieru(x, "未做")
@@ -443,26 +476,26 @@ class PcR:
 
     def pcr_jm_obj(self):
         data = [
-                # 主页
-                PcrData.jm_zhuye,
-                PcrData.jm_renwu,
-                # 冒险
-                PcrData.jm_maoxian,
+            # 主页
+            PcrData.jm_zhuye,
+            PcrData.jm_renwu,
+            # 冒险
+            PcrData.jm_maoxian,
 
-                PcrData.jm_tansuo,
-                PcrData.jm_tansuo_jingyan,
-                PcrData.jm_tansuo_mana,
-                PcrData.jm_dixiacheng,
-                PcrData.jm_zhuxian,
-                #  家园
-                PcrData.jm_jiayuan
+            PcrData.jm_tansuo,
+            PcrData.jm_tansuo_jingyan,
+            PcrData.jm_tansuo_mana,
+            PcrData.jm_dixiacheng,
+            PcrData.jm_zhuxian,
+            #  家园
+            PcrData.jm_jiayuan
         ]
         self.pcr.list_InterFace_add(data)
         self.pcr.list_InterFace_list_add2()
         self.pcr.map_obj_list_add()
 
-    def pcr_jm_path(self,nowdata:str,godata:str):
-        temp1 = self.pcr.map_go_map_path(nowdata,godata)
+    def pcr_jm_path(self, nowdata: str, godata: str):
+        temp1 = self.pcr.map_go_map_path(nowdata, godata)
         temp1 = temp1[1:]
         return temp1
 
@@ -470,7 +503,7 @@ class PcR:
         for obj in PcrData.xunlu_jmqr:
             temp1 = self.pcr_find_word(obj[1])
             if temp1 == 1:
-                print("当前界面："+obj[0])
+                print("当前界面：" + obj[0])
                 return obj[0]
         return -1
 
