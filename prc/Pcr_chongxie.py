@@ -98,6 +98,7 @@ class PcR:
 
     def tili_sum(self):  # 体力数查询
         self.jiemiandqgc()
+        sleep(0.5)
         temp1 = self.pcr.find_word_sumzh1(PcrData.tili, 0)
         print('体力为：' + str(temp1))
         return temp1
@@ -408,7 +409,6 @@ class PcR:
     def pcr_rizhi_update(self):  # 日志刷新
         temp1 = datetime.now().strftime('%Y-%m-%d-%H')
         temp2 = self.pcr_rizhiduqu('-')
-        print(GongNengdy.time_db(temp2, temp1))
         if GongNengdy.time_db(temp2, temp1) > 24:
             for x in PcrData.rizhi_keyword:
                 self.pcr_rizhixieru(x, "未做")
@@ -473,6 +473,7 @@ class PcR:
                     sleep(2)
                     self.pcr_dianji(obj1[1], obj1[2], obj1[3])
                     break
+        print("页面切换结束")
 
     def pcr_jm_obj(self):
         data = [

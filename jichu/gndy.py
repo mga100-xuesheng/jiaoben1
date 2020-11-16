@@ -281,16 +281,16 @@ class GongNengdy:
             for x in range(len(temp1)):
                 for y in range(len(temp1) - x - 1):
                     if int(temp1[y][0]) > int(temp1[y + 1][0]):
-                        temp3 = temp1[y]
+                        temp3 = temp1[y + 1]
                         temp1[y + 1] = temp1[y]
-                        temp1[y + 1] = temp3
+                        temp1[y] = temp3
         else:
             for x in range(len(temp1)):
                 for y in range(len(temp1) - x - 1):
                     if int(temp1[y][1]) > int(temp1[y + 1][1]):
-                        temp3 = temp1[y]
+                        temp3 = temp1[y + 1]
                         temp1[y + 1] = temp1[y]
-                        temp1[y + 1] = temp3
+                        temp1[y] = temp3
         for x in range(len(temp1)):
             temp4 = temp4 + str(temp1[x][2])
         if temp4 != "":
@@ -301,49 +301,22 @@ class GongNengdy:
     def find_word_sumzh1(self, data: list, fangxian: int):  # 文字数字整合查找1
         temp1 = []
         temp4 = ""
+        # dxc_temp1 = [[self.find_word_sum1, (data[0], 1)],
+        #              [self.find_word_sum1, (data[1], 2)],
+        #              [self.find_word_sum1, (data[2], 3)],
+        #              [self.find_word_sum1, (data[3], 4)],
+        #              [self.find_word_sum1, (data[4], 5)]]
+        # temp2 = self.duoxianc(dxc_temp1)
+        # for x in range(len(temp2)):
+        #     if temp2[x][0][0] != -1:
+        #         for y in range(len(temp2[x])):
+        #             temp1.append(temp2[x][y])
         dxc_temp1 = [[self.find_word_sum1, (data[0], 1)],
                      [self.find_word_sum1, (data[1], 2)],
                      [self.find_word_sum1, (data[2], 3)],
                      [self.find_word_sum1, (data[3], 4)],
-                     [self.find_word_sum1, (data[4], 5)]]
-        temp2 = self.duoxianc(dxc_temp1)
-        # zifu1 = MyThread(self.find_word_sum1, (data[0], 1))
-        # zifu2 = MyThread(self.find_word_sum1, (data[1], 2))
-        # zifu3 = MyThread(self.find_word_sum1, (data[2], 3))
-        # zifu4 = MyThread(self.find_word_sum1, (data[3], 4))
-        # zifu5 = MyThread(self.find_word_sum1, (data[4], 5))
-        # zifu1.start()
-        # zifu2.start()
-        # zifu3.start()
-        # zifu4.start()
-        # zifu5.start()
-        # zifu1.join()
-        # zifu2.join()
-        # zifu3.join()
-        # zifu4.join()
-        # zifu5.join()
-        # temp2 = [zifu1.get_result(), zifu2.get_result(), zifu3.get_result(), zifu4.get_result(), zifu5.get_result()]
-        for x in range(len(temp2)):
-            if temp2[x][0][0] != -1:
-                for y in range(len(temp2[x])):
-                    temp1.append(temp2[x][y])
-        #         zifu1 = MyThread(self.find_word_sum1, (data[5], 6))
-        #         # zifu2 = MyThread(self.find_word_sum1, (data[6], 7))
-        #         # zifu3 = MyThread(self.find_word_sum1, (data[7], 8))
-        #         # zifu4 = MyThread(self.find_word_sum1, (data[8], 9))
-        #         # zifu5 = MyThread(self.find_word_sum1, (data[9], 0))
-        #         # zifu1.start()
-        #         # zifu2.start()
-        #         # zifu3.start()
-        #         # zifu4.start()
-        #         # zifu5.start()
-        #         # zifu1.join()
-        #         # zifu2.join()
-        #         # zifu3.join()
-        #         # zifu4.join()
-        #         # zifu5.join()
-        #   temp2 = [zifu1.get_result(), zifu2.get_result(), zifu3.get_result(), zifu4.get_result(), zifu5.get_result()]
-        dxc_temp1 = [[self.find_word_sum1, (data[5], 6)],
+                     [self.find_word_sum1, (data[4], 5)],
+                     [self.find_word_sum1, (data[5], 6)],
                      [self.find_word_sum1, (data[6], 7)],
                      [self.find_word_sum1, (data[7], 8)],
                      [self.find_word_sum1, (data[8], 9)],
@@ -357,16 +330,16 @@ class GongNengdy:
             for x in range(len(temp1)):
                 for y in range(len(temp1) - x - 1):
                     if int(temp1[y][0]) > int(temp1[y + 1][0]):
-                        temp3 = temp1[y]
+                        temp3 = temp1[y + 1]
                         temp1[y + 1] = temp1[y]
-                        temp1[y + 1] = temp3
+                        temp1[y] = temp3
         else:
             for x in range(len(temp1)):
                 for y in range(len(temp1) - x - 1):
                     if int(temp1[y][1]) > int(temp1[y + 1][1]):
-                        temp3 = temp1[y]
+                        temp3 = temp1[y + 1]
                         temp1[y + 1] = temp1[y]
-                        temp1[y + 1] = temp3
+                        temp1[y] = temp3
         for x in range(len(temp1)):
             temp4 = temp4 + str(temp1[x][2])
         if temp4 != "":
