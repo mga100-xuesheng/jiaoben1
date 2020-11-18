@@ -332,12 +332,15 @@ class PcR:
 
     def dxc_sum_xz(self, data):  # 地下城层数选择
         temp1 = self.dxc_sum()
-        if temp1 != -1:
+        if int(temp1) != -1:
             self.pcr_find_pic(self.pic_config, data[temp1 - 1])
             return 1
         else:
             print("箱子没有找到")
             return -1
+
+    def dxc_tiaozhanks(self):  # 地下城挑战开始
+        return self.pcr_find_pic(self.pic_config, PcrData.dxctz)
 
     def dxc_zhandouks(self):  # 地下城战斗开始
         return self.pcr_find_pic(self.pic_config, PcrData.dxczdks)
@@ -356,7 +359,6 @@ class PcR:
                 return 0
             else:
                 print("查找失败")
-                return -1
         return -2
 
     def dxc_zhandoujs(self, data):  # 战斗结束
@@ -379,16 +381,31 @@ class PcR:
         if temp1 > dadao_ceng_sum:
             return 2
         if temp1 != -1:
-            if self.dxc_sum_xz(temp1) == 1:
-                if self.dxc_zhandouks() == 1:
+            if self.dxc_sum_xz(data) == 1:
+                if self.dxc_tiaozhanks() == 1:
                     if temp1 == 1:
                         self.dxc_duiwu1()
                     self.dxc_zhandouks()
                     sleep(1)
                     temp2 = self.dxc_zhandougc()
-                    self.dxc_zhandoujs(temp2)
+                    temp3 = self.dxc_zhandoujs(temp2)
+                    if temp3 == 1 and temp1 == len(data):
+                        return 2
                     return 1
         return 0
+
+    def dxc_tuichu(self):
+        sleep(3)
+        self.pcr_dianji(PcrData.dxccetui1, 3, 5)
+        sleep(0.5)
+        self.pcr_dianji(PcrData.dxccetui2, 3, 5)
+
+    def richangdxc_pdjs(self, data, dadao_ceng_sum):
+        while True:
+            temp1 = self.richangdxc(data, dadao_ceng_sum)
+            if temp1 == 2:
+                self.dxc_tuichu()
+                return 1
 
     '''=============================================================================================================='''
     '''日志记录'''

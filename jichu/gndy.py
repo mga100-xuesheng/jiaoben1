@@ -301,16 +301,6 @@ class GongNengdy:
     def find_word_sumzh1(self, data: list, fangxian: int):  # 文字数字整合查找1
         temp1 = []
         temp4 = ""
-        # dxc_temp1 = [[self.find_word_sum1, (data[0], 1)],
-        #              [self.find_word_sum1, (data[1], 2)],
-        #              [self.find_word_sum1, (data[2], 3)],
-        #              [self.find_word_sum1, (data[3], 4)],
-        #              [self.find_word_sum1, (data[4], 5)]]
-        # temp2 = self.duoxianc(dxc_temp1)
-        # for x in range(len(temp2)):
-        #     if temp2[x][0][0] != -1:
-        #         for y in range(len(temp2[x])):
-        #             temp1.append(temp2[x][y])
         dxc_temp1 = [[self.find_word_sum1, (data[0], 1)],
                      [self.find_word_sum1, (data[1], 2)],
                      [self.find_word_sum1, (data[2], 3)],

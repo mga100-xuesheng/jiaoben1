@@ -100,6 +100,12 @@ class PcrCeshi:
                 self.renwucz()
                 self.pcr.rw_xieru()
 
+    '''==================================================================================================='''
+
+    def richangdxc(self):  # 暂时不能用
+        self.pcr.jiemianxz("地下城")
+        self.pcr.richangdxc_pdjs(PcrData.gtdxc, 4)
+
 
 temp1 = PcrCeshi()
 temp1.pcr.pcr_rizhi_update()
@@ -107,5 +113,6 @@ temp1.gonghuizhijiatili()
 temp1.renwu()
 temp1.suipiansd()
 temp1.tansuo()
+# temp1.richangdxc
 # temp1.pcr.tili_sum()
 temp1.pcr.ldjiebang()

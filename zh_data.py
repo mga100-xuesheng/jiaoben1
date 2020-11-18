@@ -10,8 +10,8 @@ class PcrData:
     worddxc8 = [[265, 545, 301, 608], "dxc8", '424552-252525|7B828C-252525', 0.9, 0, 0.1]
     worddxc9 = [[265, 545, 301, 608], "dxc9", '424552-252525|7B828C-252525', 0.9, 0, 0.1]
     worddxc0 = [[265, 545, 301, 608], "dxc0", '424552-252525|7B828C-252525', 0.9, 0, 0.1]
-    worddxc = [worddxc1, worddxc2, worddxc3, worddxc4, worddxc5, worddxc6, worddxc7,
-               worddxc8, worddxc9, worddxc0]
+    worddxc = [[worddxc1], [worddxc2], [worddxc3], [worddxc4], [worddxc5], [worddxc6], [worddxc7],
+               [worddxc8], [worddxc9], [worddxc0]]
     # 断崖地下城宝箱数据
     dydxc1 = [[666, 303, 1041, 544], ["ptbx", 2], [0.9, 1, 20, 20], [10, 3]]
     dydxc2 = [[371, 277, 489, 377], ["ptbx", 2], [0.9, 1, "20q30", "20q30"], [10, 3]]
@@ -290,8 +290,8 @@ class PcrData:
     biandui5 = []
     biandui = [biandui1, biandui2, biandui3, biandui4, biandui5]
     '''--------------------------------------------------------------------------------------------------------------'''
-    duiwu1 = []
-    duiwu2 = []
+    duiwu1 = [[978, 205, 1128, 256], ["hcwddw", 1], [0.8, 1, 30, "10q20"], [20, 3]]
+    duiwu2 = [[983, 364, 1124, 416], ["hcwddw", 1], [0.8, 1, 30, "10q20"], [20, 3]]
     duiwu3 = []
     duiwu = [duiwu1, duiwu2, duiwu3]
     '''================================================================================'''
