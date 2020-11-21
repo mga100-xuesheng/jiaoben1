@@ -1,7 +1,7 @@
 from jichu.gndy import GongNengdy, threading
 from zh_data import PcrData
 from time import sleep
-from datetime import datetime
+from datetime import *
 
 
 class PcR:
@@ -382,9 +382,12 @@ class PcR:
             return 2
         if temp1 != -1:
             if self.dxc_sum_xz(data) == 1:
+                sleep(0.5)
                 if self.dxc_tiaozhanks() == 1:
+                    sleep(0.5)
                     if temp1 == 1:
                         self.dxc_duiwu1()
+                    sleep(0.5)
                     self.dxc_zhandouks()
                     sleep(1)
                     temp2 = self.dxc_zhandougc()
@@ -413,8 +416,9 @@ class PcR:
     def pcr_rizhixieru(self, key_word, data):  # 日志写入
         temp1 = datetime.now().strftime('%Y-%m-%d-%H')
         temp2 = self.pcr_rizhiduqu('-')
-        if GongNengdy.time_db(temp2, temp1) > 24:
-            xieru_time = datetime.now().strftime('%Y-%m-%d') + '-' + '05'
+        if GongNengdy.time_db(temp2, temp1) > 0:
+            temp2 = datetime.strptime(temp2, '%Y-%m-%d-%H')
+            xieru_time = (temp2 + timedelta(days=1)).strftime("%Y-%m-%d-%H")
         else:
             xieru_time = temp2
         GongNengdy.rizhi_xieru(PcrData.rizhi_path, PcrData.rizhi_name, key_word, data, xieru_time)
@@ -426,7 +430,7 @@ class PcR:
     def pcr_rizhi_update(self):  # 日志刷新
         temp1 = datetime.now().strftime('%Y-%m-%d-%H')
         temp2 = self.pcr_rizhiduqu('-')
-        if GongNengdy.time_db(temp2, temp1) > 24:
+        if GongNengdy.time_db(temp2, temp1) > 0:
             for x in PcrData.rizhi_keyword:
                 self.pcr_rizhixieru(x, "未做")
 
@@ -505,6 +509,7 @@ class PcR:
             PcrData.jm_tansuo_mana,
             PcrData.jm_dixiacheng,
             PcrData.jm_zhuxian,
+            PcrData.jm_gutadxc,
             #  家园
             PcrData.jm_jiayuan
         ]

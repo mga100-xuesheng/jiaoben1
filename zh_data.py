@@ -320,7 +320,7 @@ class PcrData:
                   jm_dilan + ['地下城', '探索','主线冒险']]
     #
     jm_dixiacheng = ['地下城',
-                     [[3, [[1127, 212, 1209, 251], ['dxc', 1], [0.9, 0, 0, 0], [10, 2], [1113, 131, 1222, 229]]]],
+                     [[3, [[1127, 212, 1209, 251], ['dxc', 1], [0.9, 0, 0, 0], [10, 2]], [1113, 131, 1222, 229]]],
                      jm_dilan + ['冒险']]
     #
     jm_tansuo = ['探索', [[3, [[946, 215, 1012, 252], ['tansuo', 1], [0.9, 0, 0, 0], [10, 2]], [934, 126, 1034, 216]],
@@ -338,6 +338,8 @@ class PcrData:
     #
     jm_jiayuan = ['家园', [[1, [[754, 677, 899, 717], ['gonghuizhijia', 1], [0.9, 1, 0, 0], [10, 2]]]],
                   ['主页', '冒险', '家园']]
+    #
+    jm_gutadxc = ["孤塔地下城", [], jm_dilan]
     '''--------------------------------------------------------------------------------------------------------------'''
     jmqr_maoxian = ['冒险', [[54, 4, 162, 68], '冒险', '633C10-252525', 0.9, 0, 3]]
     #
@@ -357,9 +359,10 @@ class PcrData:
     #
     jmqr_dixiacheng = ["地下城", [[71, 6, 185, 83], "地下城", "633C10-252525", 0.95, 0, 3]]
     #
+    jmqr_gutadxc = ["孤塔地下城", [[71, 6, 185, 83], "gtdxc1", "#324", 0.9, 0, 3]]
     #
     xunlu_jmqr = [jmqr_wodezhuye, jmqr_renwu,
-                  jmqr_maoxian, jmqr_zhuxianguanka, jmqr_tansuo, jmqr_managuanka, jmqr_jingyan,jmqr_dixiacheng,
-                  jmqr_gonghuizhijia]
+                  jmqr_maoxian, jmqr_zhuxianguanka, jmqr_tansuo, jmqr_managuanka, jmqr_jingyan, jmqr_dixiacheng,
+                  jmqr_gonghuizhijia, jmqr_gutadxc]
 
     '''--------------------------------------------------------------------------------------------------------------'''

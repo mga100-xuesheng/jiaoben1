@@ -102,17 +102,34 @@ class PcrCeshi:
 
     '''==================================================================================================='''
 
+    def dxc_jmjc(self, data):
+        dxc_temp1 = [[self.pcr.pcr_find_word, PcrData.jmqr_dixiacheng[1]],
+                     [self.pcr.pcr_find_word, PcrData.jmqr_gutadxc[1]]]
+        dxc_temp2 = self.pcr.pcr.duoxianc(dxc_temp1)
+        if dxc_temp2[0] == 1:
+            if self.pcr.pcr_find_pic(self.pcr.pic_config, PcrData.dxcjc) == 1:
+                if data == '孤塔':
+                    self.pcr.pcr_find_pic_click(self.pcr.pic_config, PcrData.gtdxcjm, PcrData.gtdxcjmxz)
+                self.pcr.pcr_dianji(PcrData.dxcqyxz, 3, 6)
+                return 1
+            return 0
+        else:
+            return 1
+
     def richangdxc(self):  # 暂时不能用
-        self.pcr.jiemianxz("地下城")
-        self.pcr.richangdxc_pdjs(PcrData.gtdxc, 4)
+        if self.pcr.dxc_db() == 1:
+            self.pcr.jiemianxz("地下城")
+            if self.dxc_jmjc("孤塔") == 1:
+                self.pcr.richangdxc_pdjs(PcrData.gtdxc, 4)
+                self.pcr.dxc_xieru()
 
 
 temp1 = PcrCeshi()
 temp1.pcr.pcr_rizhi_update()
-temp1.gonghuizhijiatili()
-temp1.renwu()
-temp1.suipiansd()
-temp1.tansuo()
-# temp1.richangdxc
+# temp1.gonghuizhijiatili()
+# temp1.renwu()
+# temp1.suipiansd()
+# temp1.tansuo()
+temp1.richangdxc()
 # temp1.pcr.tili_sum()
 temp1.pcr.ldjiebang()
