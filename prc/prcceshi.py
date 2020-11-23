@@ -81,7 +81,7 @@ class PcrCeshi:
     def gonghuizhijiatili(self):
         if self.pcr.jy_tili() == 1:
             now_time = datetime.now().strftime('%H')
-            if now_time < "18" or now_time > "04":
+            if "18" < now_time < "06":
                 self.ghzjcz()
                 self.pcr.jy_xieru()
 
@@ -103,8 +103,8 @@ class PcrCeshi:
     '''==================================================================================================='''
 
     def dxc_jmjc(self, data):
-        dxc_temp1 = [[self.pcr.pcr_find_word, PcrData.jmqr_dixiacheng[1]],
-                     [self.pcr.pcr_find_word, PcrData.jmqr_gutadxc[1]]]
+        dxc_temp1 = [[self.pcr.pcr_find_word, (PcrData.jmqr_dixiacheng[1],)],
+                     [self.pcr.pcr_find_word, (PcrData.jmqr_gutadxc[1],)]]
         dxc_temp2 = self.pcr.pcr.duoxianc(dxc_temp1)
         if dxc_temp2[0] == 1:
             if self.pcr.pcr_find_pic(self.pcr.pic_config, PcrData.dxcjc) == 1:
@@ -119,6 +119,7 @@ class PcrCeshi:
     def richangdxc(self):  # 暂时不能用
         if self.pcr.dxc_db() == 1:
             self.pcr.jiemianxz("地下城")
+            sleep(2)
             if self.dxc_jmjc("孤塔") == 1:
                 self.pcr.richangdxc_pdjs(PcrData.gtdxc, 4)
                 self.pcr.dxc_xieru()
@@ -126,10 +127,9 @@ class PcrCeshi:
 
 temp1 = PcrCeshi()
 temp1.pcr.pcr_rizhi_update()
-# temp1.gonghuizhijiatili()
-# temp1.renwu()
-# temp1.suipiansd()
-# temp1.tansuo()
+temp1.gonghuizhijiatili()
+temp1.renwu()
+temp1.suipiansd()
+temp1.tansuo()
 temp1.richangdxc()
-# temp1.pcr.tili_sum()
 temp1.pcr.ldjiebang()
