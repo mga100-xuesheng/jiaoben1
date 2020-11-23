@@ -41,7 +41,7 @@ class PcrCeshi:
             suipian = hutao
             shuffle(suipian)
         else:
-            suipian = jiansheng + hutao + kan + chongdianbao
+            suipian = jiansheng + kan
             shuffle(suipian)
         print(suipian)
         self.richangjuesesd(suipian)
@@ -81,7 +81,7 @@ class PcrCeshi:
     def gonghuizhijiatili(self):
         if self.pcr.jy_tili() == 1:
             now_time = datetime.now().strftime('%H')
-            if "18" < now_time < "06":
+            if "18" < now_time or now_time < "06":
                 self.ghzjcz()
                 self.pcr.jy_xieru()
 
