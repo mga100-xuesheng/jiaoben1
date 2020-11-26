@@ -81,7 +81,7 @@ class PcrCeshi:
     def gonghuizhijiatili(self):
         if self.pcr.jy_tili() == 1:
             now_time = datetime.now().strftime('%H')
-            if "18" < now_time or now_time < "06":
+            if now_time > "18" or now_time == "18" or now_time < "06":
                 self.ghzjcz()
                 self.pcr.jy_xieru()
 

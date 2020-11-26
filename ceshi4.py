@@ -4,10 +4,13 @@ from time import *
 
 class MyThread(threading.Thread):
 
-    def __init__(self, name):
-        super().__init__(name)
+    def ceshi(self, data):
+        print(data)
+
+    def __init__(self, name1):
+        super().__init__()
         self.result = None
-        self.name = name
+        self.name1 = name1
         self.func: object
         self.args = ()
         self.keyword = {}
@@ -19,7 +22,15 @@ class MyThread(threading.Thread):
         self.run_whether_state = False  # 线程是否就绪（默认非就绪）
         self.stop = False  # 是否停止线程（默认不停止）
         self.result_state = False
-        self.run()
+        self.subscribe = False
+
+    def on_theard_subscribe(self):
+        self.subscribe = True
+
+    def on_join(self):
+        while True:
+            if self.result_state is True:
+                break
 
     def mytask(self, func, args, keyword=None):
         self.func = func
@@ -33,41 +44,36 @@ class MyThread(threading.Thread):
     def off_state(self):
         self.state = False
 
-    def Thread_run_state(self):
-        return self.run_state
-
-    def Thread_name(self):
-        return self.name
-
     def Thread_stop(self):
         self.stop = True
+        self.result_state_wait.set()
         self.event.set()
 
     def run(self):
         self.run_whether_state = True
         while True:
+            if self.stop is True:
+                break
             self.event.wait()
-            if self.stop:
+            if self.state is False:
+                self.event.clear()
+            if self.stop is True:
                 break
             self.run_state = True
+            self.result_state_wait.clear()
             if self.keyword is None:
-                self.result_state_wait.clear()
                 self.result_state = False
                 temp1 = self.func(*self.args)
                 self.result_state = True
-                self.result_state_wait.wait()
-                sleep(0.2)
                 self.result = temp1
             else:
-                self.result_state_wait.clear()
                 self.result_state = False
                 temp1 = self.func(*self.args, **self.keyword)
                 self.result_state = True
-                self.result_state_wait.wait()
                 sleep(0.2)
                 self.result = temp1
+            self.result_state_wait.wait()
             if self.state is False:
-                self.event.clear()
                 self.run_state = False
         self.run_whether_state = False
 
@@ -75,6 +81,7 @@ class MyThread(threading.Thread):
         try:
             self.result_state = None
             self.result_state_wait.set()
+            self.subscribe = False
             return self.result
         except Exception:
             return None
@@ -97,14 +104,69 @@ class ListThread:
             str(self.thread_name) + str(thread_name_num))
         self.thread_now_num = self.thread_now_num + 1
 
-    def find_thread(self, find_num):
-        self.lock.acquire()
+    def Theard_start_testing(self):
+        for x in range(self.thread_now_num):
+            if not self.thread_list_obj[str(self.thread_name) + str(x + 1)].run_whether_state:
+                self.thread_list_obj[str(self.thread_name) + str(x + 1)].start()
+
+    def findtheard(self):
+        for x in range(self.thread_now_num):
+            if not self.thread_list_obj[str(self.thread_name) + str(x + 1)].subscribe:
+                self.thread_list_obj[str(self.thread_name) + str(x + 1)].on_theard_subscribe()
+                return str(self.thread_name) + str(x + 1)
+
+    # def task_allocation(self,data):
+
+    def task_run(self, theard_run_data, run_data):
+        self.Theard_start_testing()
+        temp1 = []
+        for x in range(len(run_data)):
+            self.thread_list_obj[theard_run_data[x]].mytask(run_data[x][0], args=run_data[x][1])
         while True:
-            for x in range(self.thread_now_num):
-                if not self.thread_list_obj[str(self.thread_name) + str(x)].run_state():
-                    self.lock.release()
-                    return str(self.thread_name) + str(x)
+            for x in range(len(theard_run_data)):
+                if self.thread_list_obj[theard_run_data[x]].result_state:
+                    temp1.append(self.thread_list_obj[theard_run_data[x]].get_result())
+                if len(temp1) == len(theard_run_data):
+                    break
 
     def stop(self):
         for x in range(self.thread_num):
             self.thread_list_obj[str(self.thread_name) + str(x + 1)].Thread_stop()
+
+
+temp11 = MyThread('1')
+temp12 = MyThread('2')
+
+
+def aaa(data):
+    for x in range(10):
+        print('aaa')
+        print(x + 1)
+        sleep(1)
+    return 666
+
+
+def bbb():
+    for x in range(20):
+        print("bbb")
+        print(x + 1)
+        sleep(1)
+    return 777
+
+
+temp11.start()
+temp12.start()
+temp11.mytask(aaa, args=(1,))
+temp12.mytask(bbb, args=())
+# temp1.on_state()
+temp11.on_join()
+temp12.on_join()
+print(temp11.get_result())
+print(temp12.get_result())
+temp11.mytask(bbb, args=())
+temp12.mytask(aaa, args=(1,))
+temp11.on_join()
+print(temp11.get_result())
+print(temp12.get_result())
+temp11.Thread_stop()
+temp12.Thread_stop()
