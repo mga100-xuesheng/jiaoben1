@@ -25,6 +25,7 @@ class GongNengdy:
         self.map_list = Map()
         self.lock = threading.Lock()
         self.obj_add()
+        self.theard_run = ListThread(True, 20, str(xm_data), thread_num=11)  # 线程池设置
 
     def obj_add(self):  # 生成执行对象
         self.obj_list_sum = self.obj_list_sum + 1
@@ -344,6 +345,19 @@ class GongNengdy:
         temp1 = DuoXianc()
         temp2 = temp1.duoxianc(data)
         return temp2
+
+    def duoxiancEx(self, data: list):  # 线程池使用
+        return self.theard_run.task_run(data)
+
+    def duoxiancEx_getresult(self, name):  # 线程池获取返回值
+        return self.theard_run.theard_name_get_result(name)
+
+    def duoxiancEx_name_join(self, name):  # 线程池执行等待
+        self.theard_run.theard_name_join(name)
+
+    def duoxiancEx_run_getresult(self, data: list):  # 线程池执行并且获取返回值
+        temp = self.duoxiancEx(data)
+        return self.duoxiancEx_getresult(temp)
 
     '''==================================================================================================='''
 
