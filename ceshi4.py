@@ -4,9 +4,6 @@ from time import *
 
 class MyThread(threading.Thread):
 
-    def ceshi(self, data):
-        print(data)
-
     def __init__(self, name1):
         super().__init__()
         self.result = None
@@ -52,8 +49,6 @@ class MyThread(threading.Thread):
     def run(self):
         self.run_whether_state = True
         while True:
-            if self.stop is True:
-                break
             self.event.wait()
             if self.state is False:
                 self.event.clear()
@@ -61,17 +56,13 @@ class MyThread(threading.Thread):
                 break
             self.run_state = True
             self.result_state_wait.clear()
+            self.result_state = False
             if self.keyword is None:
-                self.result_state = False
                 temp1 = self.func(*self.args)
-                self.result_state = True
-                self.result = temp1
             else:
-                self.result_state = False
                 temp1 = self.func(*self.args, **self.keyword)
-                self.result_state = True
-                sleep(0.2)
-                self.result = temp1
+            self.result_state = True
+            self.result = temp1
             self.result_state_wait.wait()
             if self.state is False:
                 self.run_state = False
@@ -96,38 +87,86 @@ class ListThread:
         self.thread_name = thread_name
         self.thread_list_obj = {}
         self.lock = threading.Lock()
-        for x in range(self.thread_num):
-            self.listthread_add(x + 1)
+        self.batch_listthread_add(thread_num)
 
-    def listthread_add(self, thread_name_num):
-        self.thread_list_obj[str(self.thread_name) + str(thread_name_num)] = MyThread(
-            str(self.thread_name) + str(thread_name_num))
-        self.thread_now_num = self.thread_now_num + 1
+    def batch_listthread_add(self, num):
+        for x in range(num):
+            self.thread_now_num = self.thread_now_num + 1
+            self.thread_list_obj[str(self.thread_name) + str(self.thread_now_num)] = MyThread(
+                str(self.thread_name) + str(self.thread_now_num))
+            self.thread_list_obj[str(self.thread_name) + str(self.thread_now_num)].start()
 
     def Theard_start_testing(self):
         for x in range(self.thread_now_num):
             if not self.thread_list_obj[str(self.thread_name) + str(x + 1)].run_whether_state:
                 self.thread_list_obj[str(self.thread_name) + str(x + 1)].start()
 
+    @staticmethod
+    def task_state_set(data):
+        temp = []
+        for x in range(len(data)):
+            temp.append([data[x], 0])
+        return temp
+
+    @staticmethod
+    def task_tate_detection(data):
+        for x in range(len(data)):
+            if data[x][1] == 0:
+                data[x][1] = 1
+                return data[x]
+        return False
+
     def findtheard(self):
+        self.lock.acquire()
         for x in range(self.thread_now_num):
             if not self.thread_list_obj[str(self.thread_name) + str(x + 1)].subscribe:
                 self.thread_list_obj[str(self.thread_name) + str(x + 1)].on_theard_subscribe()
+                self.lock.release()
                 return str(self.thread_name) + str(x + 1)
+        self.lock.release()
+        return False
+
+    def findtheard_state(self):
+        temp = 0
+        for x in range(self.thread_now_num):
+            if not self.thread_list_obj[str(self.thread_name) + str(x + 1)].subscribe:
+                temp = temp + 1
+        return temp
+
+    def many_task(self, data):
+        self.Theard_start_testing()
+        temp1 = self.task_state_set(data)
+        temp2 = []
+        while True:
+            temp3 = []
+            while True:
+                temp4 = self.findtheard()
+                if temp4 is not False:
+                    temp5 = self.task_tate_detection(temp1)
+                    temp3.append(temp4)
+                    if len(temp5[0]) == 2:
+                        self.thread_list_obj[temp4].mytask(temp5[0][0], temp5[0][1])
+                    else:
+                        self.thread_list_obj[temp4].mytask(temp5[0][0], temp5[0][1], temp5[0][2])
+                else:
+                    break
+            for x in range(len(temp3)):
+                temp6 = self.theard_name_get_result(temp3[x])
+                temp2.append(temp6)
+                if len(temp2) == len(temp1):
+                    return temp2
+
+    def theard_name_join(self, name):
+        self.thread_list_obj[name].on_join()
+
+    def theard_name_get_result(self, name):
+        self.theard_name_join(name)
+        return self.thread_list_obj[name].get_result()
 
     # def task_allocation(self,data):
 
     def task_run(self, theard_run_data, run_data):
         self.Theard_start_testing()
-        temp1 = []
-        for x in range(len(run_data)):
-            self.thread_list_obj[theard_run_data[x]].mytask(run_data[x][0], args=run_data[x][1])
-        while True:
-            for x in range(len(theard_run_data)):
-                if self.thread_list_obj[theard_run_data[x]].result_state:
-                    temp1.append(self.thread_list_obj[theard_run_data[x]].get_result())
-                if len(temp1) == len(theard_run_data):
-                    break
 
     def stop(self):
         for x in range(self.thread_num):
