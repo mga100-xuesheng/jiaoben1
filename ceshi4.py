@@ -2,7 +2,7 @@ import threading
 from time import *
 
 
-class MyThread(threading.Thread):
+class MyThreadEx(threading.Thread):
 
     def __init__(self, name1):
         super().__init__()
@@ -18,8 +18,8 @@ class MyThread(threading.Thread):
         self.run_state = False  # 线程任务是否在运行（默认没有运行）
         self.run_whether_state = False  # 线程是否就绪（默认非就绪）
         self.stop = False  # 是否停止线程（默认不停止）
-        self.result_state = False
-        self.subscribe = False
+        self.result_state = False  # 线程是否发送返回值
+        self.subscribe = False  # 线程是否无任务
 
     def on_theard_subscribe(self):
         self.subscribe = True
@@ -92,7 +92,7 @@ class ListThread:
     def batch_listthread_add(self, num):
         for x in range(num):
             self.thread_now_num = self.thread_now_num + 1
-            self.thread_list_obj[str(self.thread_name) + str(self.thread_now_num)] = MyThread(
+            self.thread_list_obj[str(self.thread_name) + str(self.thread_now_num)] = MyThreadEx(
                 str(self.thread_name) + str(self.thread_now_num))
             self.thread_list_obj[str(self.thread_name) + str(self.thread_now_num)].start()
 
@@ -123,6 +123,8 @@ class ListThread:
                 self.thread_list_obj[str(self.thread_name) + str(x + 1)].on_theard_subscribe()
                 self.lock.release()
                 return str(self.thread_name) + str(x + 1)
+        if self.limit_state == True and self.thread_now_num < self.thread_num + self.limit_num_add:
+            self.batch_listthread_add(1)
         self.lock.release()
         return False
 
@@ -134,7 +136,6 @@ class ListThread:
         return temp
 
     def many_task(self, data):
-        self.Theard_start_testing()
         temp1 = self.task_state_set(data)
         temp2 = []
         while True:
@@ -143,6 +144,8 @@ class ListThread:
                 temp4 = self.findtheard()
                 if temp4 is not False:
                     temp5 = self.task_tate_detection(temp1)
+                    if temp5 is False:
+                        break
                     temp3.append(temp4)
                     if len(temp5[0]) == 2:
                         self.thread_list_obj[temp4].mytask(temp5[0][0], temp5[0][1])
@@ -156,6 +159,16 @@ class ListThread:
                 if len(temp2) == len(temp1):
                     return temp2
 
+    def sing_task(self, data):
+        while True:
+            temp1 = self.findtheard()
+            if temp1 is not False:
+                if len(data[0]) == 2:
+                    self.thread_list_obj[temp1].mytask(data[0][0], data[0][1])
+                else:
+                    self.thread_list_obj[temp1].mytask(data[0][0], data[0][1], data[0][2])
+            return self.theard_name_get_result(temp1)
+
     def theard_name_join(self, name):
         self.thread_list_obj[name].on_join()
 
@@ -163,21 +176,23 @@ class ListThread:
         self.theard_name_join(name)
         return self.thread_list_obj[name].get_result()
 
-    # def task_allocation(self,data):
-
-    def task_run(self, theard_run_data, run_data):
-        self.Theard_start_testing()
+    def task_run(self, data):
+        temp1 = self.findtheard()
+        if len(data) == 1:
+            self.thread_list_obj[temp1].mytask(self.sing_task, (data,))
+        else:
+            self.thread_list_obj[temp1].mytask(self.many_task, (data,))
+        return temp1
 
     def stop(self):
-        for x in range(self.thread_num):
+        for x in range(self.thread_now_num):
             self.thread_list_obj[str(self.thread_name) + str(x + 1)].Thread_stop()
 
 
-temp11 = MyThread('1')
-temp12 = MyThread('2')
+temp11 = ListThread(True, 10, 'ceshi')
 
 
-def aaa(data):
+def aaa():
     for x in range(10):
         print('aaa')
         print(x + 1)
@@ -193,19 +208,25 @@ def bbb():
     return 777
 
 
-temp11.start()
-temp12.start()
-temp11.mytask(aaa, args=(1,))
-temp12.mytask(bbb, args=())
-# temp1.on_state()
-temp11.on_join()
-temp12.on_join()
-print(temp11.get_result())
-print(temp12.get_result())
-temp11.mytask(bbb, args=())
-temp12.mytask(aaa, args=(1,))
-temp11.on_join()
-print(temp11.get_result())
-print(temp12.get_result())
-temp11.Thread_stop()
-temp12.Thread_stop()
+def ccc(data):
+    for x in range(10):
+        print('ccc:' + str(x))
+    return data
+
+
+def ddd():
+    for x in range(10):
+        print('ddd:' + str(x))
+
+
+# temp12 = [[aaa, ()], [bbb, ()], [ddd, ()]]
+# temp13 = temp11.task_run(temp12)
+# temp14 = [[aaa, ()], [ccc, ('ceshiyixia',)], [ddd, ()]]
+# temp15 = temp11.task_run(temp14)
+# print(temp11.theard_name_get_result(temp15))
+# print(temp11.theard_name_get_result(temp13))
+temp12 = [[aaa, ()]]
+temp13 = temp11.task_run(temp12)
+print(temp11.theard_name_get_result(temp13))
+print(temp11.thread_now_num)
+temp11.stop()
