@@ -75,6 +75,7 @@ class GongNengdy:
             self.sum_names[x].leidianbang(data, self.xm_data)
 
     def ldjiebang(self):  # 雷电模拟器解绑
+        self.theard_stop()
         self.sum_names[self.xm_data + str(1)].jiebang()
 
     def shujucl1(self, data):  # 数据处理1  格式为：[[第一个数据],[第二个数据]]
@@ -232,42 +233,10 @@ class GongNengdy:
                      [self.find_word_sum, (data[3], 4, dizhi, sim[3])],
                      [self.find_word_sum, (data[4], 5, dizhi, sim[4])]]
         temp2 = self.duoxianc(dxc_temp1)
-        # zifu1 = MyThread(self.find_word_sum, (tuple(data[0]), 1, tuple(dizhi), sim[0]))
-        # zifu2 = MyThread(self.find_word_sum, (data[1], 2, dizhi, sim[1]))
-        # zifu3 = MyThread(self.find_word_sum, (data[2], 3, dizhi, sim[2]))
-        # zifu4 = MyThread(self.find_word_sum, (data[3], 4, dizhi, sim[3]))
-        # zifu5 = MyThread(self.find_word_sum, (data[4], 5, dizhi, sim[4]))
-        # zifu1.start()
-        # zifu2.start()
-        # zifu3.start()
-        # zifu4.start()
-        # zifu5.start()
-        # zifu1.join()
-        # zifu2.join()
-        # zifu3.join()
-        # zifu4.join()
-        # zifu5.join()
-        # temp2 = [zifu1.get_result(), zifu2.get_result(), zifu3.get_result(), zifu4.get_result(), zifu5.get_result()]
         for x in range(len(temp2)):
             if temp2[x][0][0] != -1:
                 for y in range(len(temp2[x])):
                     temp1.append(temp2[x][y])
-        # zifu1 = MyThread(self.find_word_sum, (data[5], 6, dizhi, sim[5]))
-        # zifu2 = MyThread(self.find_word_sum, (data[6], 7, dizhi, sim[6]))
-        # zifu3 = MyThread(self.find_word_sum, (data[7], 8, dizhi, sim[7]))
-        # zifu4 = MyThread(self.find_word_sum, (data[8], 9, dizhi, sim[8]))
-        # zifu5 = MyThread(self.find_word_sum, (data[9], 0, dizhi, sim[9]))
-        # zifu1.start()
-        # zifu2.start()
-        # zifu3.start()
-        # zifu4.start()
-        # zifu5.start()
-        # zifu1.join()
-        # zifu2.join()
-        # zifu3.join()
-        # zifu4.join()
-        # zifu5.join()
-        # temp2 = [zifu1.get_result(), zifu2.get_result(), zifu3.get_result(), zifu4.get_result(), zifu5.get_result()]
         dxc_temp1 = [[self.find_word_sum, (data[5], 6, dizhi, sim[5])],
                      [self.find_word_sum, (data[6], 7, dizhi, sim[6])],
                      [self.find_word_sum, (data[7], 8, dizhi, sim[7])],
@@ -312,7 +281,8 @@ class GongNengdy:
                      [self.find_word_sum1, (data[7], 8)],
                      [self.find_word_sum1, (data[8], 9)],
                      [self.find_word_sum1, (data[9], 0)]]
-        temp2 = self.duoxianc(dxc_temp1)
+        # temp2 = self.duoxianc(dxc_temp1)
+        temp2 = self.duoxiancEx_run_getresult(dxc_temp1)
         for x in range(len(temp2)):
             if temp2[x][0][0] != -1:
                 for y in range(len(temp2[x])):
@@ -358,6 +328,9 @@ class GongNengdy:
     def duoxiancEx_run_getresult(self, data: list):  # 线程池执行并且获取返回值
         temp = self.duoxiancEx(data)
         return self.duoxiancEx_getresult(temp)
+
+    def theard_stop(self):  # 停止线程池
+        self.theard_run.stop()
 
     '''==================================================================================================='''
 

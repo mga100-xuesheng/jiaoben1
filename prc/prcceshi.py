@@ -89,7 +89,7 @@ class PcrCeshi:
 
     def renwucz(self):
         self.pcr.jiemianxz("任务")
-        sleep(1.5)
+        sleep(5)
         self.pcr.pcr_dianji(PcrData.renwushouqu, 2, 3)
         self.pcr.pcr_find_pic(self.pcr.pic_config, PcrData.renwugb)
 
