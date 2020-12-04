@@ -48,14 +48,14 @@ class GongNengdy:
                         if self.sum_names_key[x] == 1:
                             self.sum_names_key[x] = 0
                             temp1 = self.sum_names_list[x]
-                            # print('使用线程：'+str(temp1))
+                            # print('使用对象：'+str(temp1))
                             self.lock.release()
                             return temp1
                 elif data == 2:
                     for x in range(len(self.sum_names_list)):
                         if self.sum_names_list[x] == name:
                             self.sum_names_key[x] = 1
-                            # print('回收线程:'+str(self.sum_names_list[x]))
+                            # print('回收对象:'+str(self.sum_names_list[x]))
                             self.lock.release()
                             return True
                 self.lock.release()
