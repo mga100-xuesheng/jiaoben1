@@ -297,7 +297,11 @@ class PcR:
     '''--------------------------------------------------------------------------------------------------------------'''
 
     def tansuosd(self):  # 探索扫荡
-        self.saodangjs(self.xiandingsd())
+        temp1 = self.xiandingsd()
+        if temp1 == -2:
+            self.saodangjs(0)
+        else:
+            self.saodangjs(temp1)
 
     def zhuxiansd(self, data):  # 主线扫荡
         self.tlptsd(data)
