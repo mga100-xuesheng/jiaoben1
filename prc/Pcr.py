@@ -33,8 +33,8 @@ class Pcr:
 
     def pcrjiemianduqugn(self, data1, data2):  # Pcr界面转页读取过程功能
         for x in range(1000):
-            temp1 = MyThread(self.pcr["pcr1"].find_word, (tuple(data1), 1))
-            temp2 = MyThread(self.pcr["pcr2"].find_word, (tuple(data2), 2))
+            temp1 = MyThread(self.pcr["pcr1"].le_findword, (tuple(data1), 1))
+            temp2 = MyThread(self.pcr["pcr2"].le_findword, (tuple(data2), 2))
             temp1.start()
             temp2.start()
             temp1.join()
@@ -68,19 +68,19 @@ class Pcr:
         if xc_sum == "":
             xc_sum = 1
         self.pcrjmdq()
-        return self.pcr["pcr"+str(xc_sum)].find_word(data, xc_sum)
+        return self.pcr["pcr" + str(xc_sum)].le_findword(data, xc_sum)
 
     def pcr_find_word_click(self, data, click, xc_sum):  # Pcr找字成功点击
         if xc_sum == "":
             xc_sum = 1
         self.pcrjmdq()
-        return self.pcr["pcr"+str(xc_sum)].find_word_click(data, click, xc_sum)
+        return self.pcr["pcr" + str(xc_sum)].lw_findword_click(data, click, xc_sum)
 
     def pcr_find_word_click1(self, data, click, xc_sum):  # Pcr找字失败点击
         if xc_sum == "":
             xc_sum = 1
         self.pcrjmdq()
-        return self.pcr["pcr"+str(xc_sum)].find_word_click1(data, click, xc_sum)
+        return self.pcr["pcr" + str(xc_sum)].lw_findword_click1(data, click, xc_sum)
 
     def pcr_dianji(self, data, min_time, max_time, xc_sum):  # Pcr点击
         if xc_sum == "":
