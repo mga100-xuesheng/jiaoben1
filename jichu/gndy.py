@@ -148,7 +148,7 @@ class GongNengdy:
     def find_word(self, data: list):  # 找字
         xc_sum_temp = self.obj_fenpei()
         self.sum_names[xc_sum_temp].find_data_shezhi(data)
-        temp1 = self.sum_names[xc_sum_temp].le_findword()
+        temp1 = self.sum_names[xc_sum_temp].find_word()
         self.obj_shouhui(xc_sum_temp)
         return temp1
 
@@ -178,7 +178,7 @@ class GongNengdy:
     def find_word_ex1(self, data):  # 找字扩展1
         xc_sum_temp = self.obj_fenpei()
         self.sum_names[xc_sum_temp].find_data_shezhi(data)
-        temp1 = self.sum_names[xc_sum_temp].lw_findwordex1()
+        temp1 = self.sum_names[xc_sum_temp].find_word_ex1()
         self.obj_shouhui(xc_sum_temp)
         return temp1
 
