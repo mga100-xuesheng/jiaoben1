@@ -1,6 +1,5 @@
 from jichu.gnzh import *
 from jichu.jichugn import *
-from datetime import datetime
 from time import sleep
 
 
@@ -30,20 +29,26 @@ class LwGnDy:
         return temp1
 
     def lw_findpicex(self, data, pic_config=None):  # 找图扩展
+        if pic_config is None:
+            pic_config = self.pic_config
         self.lw.find_pic_data_shezhi(pic_config, data)
         temp1 = self.lw.find_pic_ex()
         return temp1
 
-    def find_pic_click(self, config, data, click):  # 找图成功点击
-        temp1 = self.lw_findpic(config, data)
+    def find_pic_click(self, data, click, config=None):  # 找图成功点击
+        if config is None:
+            config = self.pic_config
+        temp1 = self.lw_findpic(data, pic_config=config)
         if temp1 == 1:
             self.lw_dianji(click, 1, 2)
             return 1
         else:
             return 0
 
-    def find_pic_click1(self, config, data, click):  # 找图失败点击
-        temp1 = self.lw_findpic(config, data)
+    def find_pic_click1(self, data, click, config=None):  # 找图失败点击
+        if config is None:
+            config = self.pic_config
+        temp1 = self.lw_findpic(data, pic_config=config)
         if temp1 == 1:
             return 0
         else:
@@ -160,9 +165,10 @@ class LwGndyExObj:
             self.lw_obj[temp1].ld_lwbd(self.win_name, self.name)
 
     def obj_find(self, data: int, name=None, num=None):
+        state = 0
+        self.lock.acquire()
         while True:
             for z in range(5):
-                self.lock.acquire()
                 if data == 1:
                     for x in range(self.obj_sum):
                         if self.lw_obj[self.name + str(x + 1)].state is False:
@@ -175,6 +181,10 @@ class LwGndyExObj:
                     return 1
                 elif data == 3:
                     self.add_obj(num)
+                    if state == 1:
+                        data = 1
+                        state = 0
+                        continue
                     self.lock.release()
                     return 1
                 sleep(0.1)
@@ -185,7 +195,10 @@ class LwGndyExObj:
                         break
                 sleep(0.1)
                 if self.limit is True and self.obj_sum > self.add_sum + self.limit_num:
-                    self.obj_find(3, num=1)
+                    data = 3
+                    num = 1
+                    state = 1
+                    break
 
     def obj_dis(self):
         return self.obj_find(1)
@@ -199,3 +212,7 @@ class LwGndyExObj:
     def obj_stop(self):
         for x in range(self.obj_sum):
             self.lw_obj[self.name + str(x + 1)].ld_jiebang()
+
+    def obj_word_path(self, data: list):
+        for x in range(self.obj_sum):
+            self.lw_obj[self.name + str(x + 1)].lw_zikubd(data)
