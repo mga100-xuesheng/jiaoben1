@@ -78,7 +78,7 @@ class MyThreadEx(threading.Thread):
 
 
 class ListThread:
-    def __init__(self, limit_state: bool, limit_num_add: int, thread_name: str, thread_num=5):
+    def __init__(self, limit_state: bool, limit_num_add: int, thread_name: str, thread_num=10):
         self.limit_state = limit_state
         self.limit_num_add = limit_num_add
         self.thread_num = thread_num
