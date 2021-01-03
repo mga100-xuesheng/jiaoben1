@@ -618,6 +618,7 @@ class WorK:
         self.add_num = add_num
         self.limit_state = limit_state
         self.limit_add_sum = limit_add_sum
+        self.worker_rec(self.add_num)
 
     def worker_add(self, num: int):
         for x in range(num):
@@ -666,3 +667,22 @@ class WorK:
                     data_temp1 = 0
                     if self.worker_sum < self.add_num + self.limit_add_sum:
                         self.worer_distr(4)
+
+    def worker_find(self, num):
+        if num == 1:
+            return self.worer_distr(1)
+        else:
+            temp = []
+            for x in range(num):
+                temp.append(self.worer_distr(1))
+            return temp
+
+    def worker_complete(self, name):
+        if isinstance(name, str) is True:
+            self.worer_distr(2, name=name)
+        if isinstance(name, list) is True:
+            for x in range(len(name)):
+                self.worer_distr(2, name=name[x])
+
+    def worker_rec(self, num):
+        self.worer_distr(3, num=num)
