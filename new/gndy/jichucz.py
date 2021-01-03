@@ -4,6 +4,7 @@ import random
 import time
 import math
 import pythoncom
+import threading
 
 
 class JiChu:
@@ -263,9 +264,9 @@ class JiChu:
             return [1, temp2]
 
     '''格式为：[[第一个数据],[第二个数据]]'''
+    '------------------------------------------------------------------------------------------------------------------'
+    '找字'
 
-
-class FindWord(JiChu):
     def find_data_shezhi(self, data, find_word_data_coord=None, find_word_data_col=None, find_word_data_sim=None,
                          find_word_data_back=None, find_word_data_time=None):
         if find_word_data_coord is not None:
@@ -373,8 +374,9 @@ class FindWord(JiChu):
                     self.find_word_data_y = -1
                     return [0]
 
+    '------------------------------------------------------------------------------------------------------------------'
+    '找图'
 
-class FindPic(FindWord):
     def find_pic_data_shezhi(self, config, data):
         self.find_pic_data_path = config[0]
         self.find_pic_data_format = config[1]
@@ -492,6 +494,29 @@ class FindPic(FindWord):
         if find_pic_temp1 == 0:
             return 0
 
+    def find_pic1(self, num=1):
+        find_pic_temp1 = self.lw.findpic(self.find_pic_data_coord[0],
+                                         self.find_pic_data_coord[1],
+                                         self.find_pic_data_coord[2],
+                                         self.find_pic_data_coord[3],
+                                         self.find_pic_data_path +
+                                         self.find_pic_data_name +
+                                         str(num) +
+                                         self.find_pic_data_format,
+                                         self.find_pic_data_col_cast,
+                                         self.find_pic_data_sim, 0,
+                                         self.find_pic_data_time_out,
+                                         self.find_pic_data_click,
+                                         self.find_pic_data_x_cast,
+                                         self.find_pic_data_y_cast,
+                                         self.find_pic_data_Delay_time)
+        if find_pic_temp1 == 1:
+            self.find_pic_data_x = self.lw.x
+            self.find_pic_data_y = self.lw.y
+            return 1
+        else:
+            return 0
+
     def find_pic_ex(self):
         find_pic_ex_temp1 = 0
         find_pic_ex_temp2 = ""
@@ -513,8 +538,9 @@ class FindPic(FindWord):
                                               self.find_pic_data_Delay_time)
         return find_pic_ex_temp1
 
+    '------------------------------------------------------------------------------------------------------------------'
+    '找色'
 
-class FindCol(FindPic):
     def find_col_data_chuli(self, data, time_out):
         self.find_col_data_coord = data[0]
         self.find_col_data_find_color = data[1]
@@ -579,3 +605,64 @@ class FindCol(FindPic):
                                        self.find_col_data_dire
                                        , self.find_col_data_time_out)
         return temp1
+
+
+class WorK:
+    def __init__(self, config, xm_name, add_num, limit_state=False, limit_add_sum=0):
+        self.pic_config = config
+        self.xm_name = xm_name
+        self.stater = []
+        self.worker = {}
+        self.worker_sum = 0
+        self.lock = threading.Lock()
+        self.add_num = add_num
+        self.limit_state = limit_state
+        self.limit_add_sum = limit_add_sum
+
+    def worker_add(self, num: int):
+        for x in range(num):
+            worker_temp1 = x + 1 + self.worker_sum
+            self.worker[self.xm_name + str(worker_temp1)] = JiChu(self.pic_config)
+            self.stater.append(1)
+        self.worker_sum = self.worker_sum + num
+
+    def worer_distr(self, data: int, name=None, num=None):
+        while True:
+            self.lock.acquire()
+            if data == 1:
+                for x in range(self.worker_sum):
+                    if self.stater[x] == 1:
+                        self.stater[x] = 0
+                        self.lock.release()
+                        return self.xm_name + str(x + 1)
+            if data == 2:
+                data_temp = 0
+                for x in self.worker.keys():
+                    if x == name:
+                        self.stater[data_temp] = 1
+                        self.lock.release()
+                        return 1
+                    data_temp = data_temp + 1
+            if data == 3:
+                self.worker_add(num)
+                self.lock.release()
+                return 1
+            if data == 4:
+                self.worker_add(1)
+                for x in range(self.worker_sum):
+                    if self.stater[x] == 1:
+                        self.stater[x] = 0
+                        self.lock.release()
+                        return self.xm_name + str(x + 1)
+            self.lock.release()
+            data_temp1 = 0
+            while True:
+                for x in range(self.worker_sum):
+                    if self.stater[x] == 1:
+                        break
+                data_temp1 = data_temp1 + 1
+                time.sleep(0.1)
+                if data_temp1 > 5:
+                    data_temp1 = 0
+                    if self.worker_sum < self.add_num + self.limit_add_sum:
+                        self.worer_distr(4)
