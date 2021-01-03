@@ -129,8 +129,7 @@ class FindPic(FindWord):
             self.find_pic_data_y_cast = int(
                 random.randint(int(self.find_pic_data_y_cast_temp[0]), int(self.find_pic_data_y_cast_temp[1])))
         self.find_pic_data_time_out = data[3][0] * 1000
-        self.find_pic_data_elay_time = data[3][1]
-        self.find_pic_data_Delay_time = self.find_pic_data_Delay_time * 1000
+        self.find_pic_data_Delay_time = data[3][1] * 1000
         self.find_pic_data_x = -1
         self.find_pic_data_y = -1
 

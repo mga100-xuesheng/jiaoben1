@@ -57,9 +57,13 @@ class LwGnDy:
 
     '''==================================================================================================='''
 
-    def lw_zikubd(self, data):  # 字库绑定
-        for y in range(len(data)):
-            self.lw.lw.SetDict(y, data[y])
+    def lw_zikubd(self, data, num=0):  # 字库绑定
+        if num != 0:
+            for y in range(len(data)):
+                self.lw.lw.SetDict(y + 1 + num, data[y])
+        else:
+            for y in range(len(data)):
+                self.lw.lw.SetDict(y, data[y])
 
     def lw_dqziku(self, data):  # 当前字库选择
         if self.dqzk != data:
@@ -213,6 +217,6 @@ class LwGndyExObj:
         for x in range(self.obj_sum):
             self.lw_obj[self.name + str(x + 1)].ld_jiebang()
 
-    def obj_word_path(self, data: list):
+    def obj_word_path(self, data: list, num=0):
         for x in range(self.obj_sum):
-            self.lw_obj[self.name + str(x + 1)].lw_zikubd(data)
+            self.lw_obj[self.name + str(x + 1)].lw_zikubd(data, num=num)
