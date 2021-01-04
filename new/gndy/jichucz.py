@@ -6,6 +6,8 @@ import math
 import pythoncom
 import threading
 
+"乐玩对象池"
+
 
 class JiChu:
     def __init__(self, pic_comfig):
@@ -267,8 +269,8 @@ class JiChu:
     '------------------------------------------------------------------------------------------------------------------'
     '找字'
 
-    def find_data_shezhi(self, data, find_word_data_coord=None, find_word_data_col=None, find_word_data_sim=None,
-                         find_word_data_back=None, find_word_data_time=None):
+    def find_word_data_shezhi(self, data, find_word_data_coord=None, find_word_data_col=None, find_word_data_sim=None,
+                              find_word_data_back=None, find_word_data_time=None):
         if find_word_data_coord is not None:
             self.find_word_data_coord = find_word_data_coord
         else:
@@ -686,3 +688,280 @@ class WorK:
 
     def worker_rec(self, num):
         self.worer_distr(3, num=num)
+
+
+"======================================================================================================================"
+
+"线程池"
+
+
+class MyThreadEx(threading.Thread):
+
+    def __init__(self, name1):
+        super().__init__()
+        self.result = None
+        self.name1 = name1
+        self.func: object
+        self.args = ()
+        self.keyword = {}
+        self.event = threading.Event()
+        self.result_state_wait = threading.Event()  # 返回等待
+        self.event.clear()
+        self.state = False  # 线程是否循环执行任务（默认非循环执行任务）
+        self.run_state = False  # 线程任务是否在运行（默认没有运行）
+        self.run_whether_state = False  # 线程是否就绪（默认非就绪）
+        self.stop = False  # 是否停止线程（默认不停止）
+        self.result_state = False  # 线程是否发送返回值
+        self.subscribe = False  # 线程是否无任务
+
+    def on_theard_subscribe(self):
+        self.subscribe = True
+
+    def on_join(self):
+        while True:
+            if self.result_state is True:
+                break
+
+    def mytask(self, func, args, keyword=None):
+        self.func = func
+        self.args = args
+        self.keyword = keyword
+        self.event.set()
+
+    def on_state(self):
+        self.state = True
+
+    def off_state(self):
+        self.state = False
+
+    def Thread_stop(self):
+        self.stop = True
+        self.result_state_wait.set()
+        self.event.set()
+
+    def run(self):
+        self.run_whether_state = True
+        while True:
+            self.event.wait()
+            if self.state is False:
+                self.event.clear()
+            if self.stop is True:
+                break
+            self.run_state = True
+            self.result_state_wait.clear()
+            self.result_state = False
+            if self.keyword is None:
+                temp1 = self.func(*self.args)
+            else:
+                temp1 = self.func(*self.args, **self.keyword)
+            self.result_state = True
+            self.result = temp1
+            self.result_state_wait.wait()
+            if self.state is False:
+                self.run_state = False
+        self.run_whether_state = False
+
+    def get_result(self):
+        try:
+            self.result_state = None
+            self.result_state_wait.set()
+            self.subscribe = False
+            return self.result
+        except Exception:
+            return None
+
+
+class ListThread:
+    def __init__(self, limit_state: bool, limit_num_add: int, thread_name: str, thread_num=10):
+        self.limit_state = limit_state
+        self.limit_num_add = limit_num_add
+        self.thread_num = thread_num
+        self.thread_now_num = 0
+        self.thread_name = thread_name
+        self.thread_list_obj = {}
+        self.lock = threading.Lock()
+        self.batch_listthread_add(thread_num)
+
+    def batch_listthread_add(self, num):
+        for x in range(num):
+            self.thread_now_num = self.thread_now_num + 1
+            self.thread_list_obj[str(self.thread_name) + str(self.thread_now_num)] = MyThreadEx(
+                str(self.thread_name) + str(self.thread_now_num))
+            self.thread_list_obj[str(self.thread_name) + str(self.thread_now_num)].start()
+
+    def Theard_start_testing(self):
+        for x in range(self.thread_now_num):
+            if not self.thread_list_obj[str(self.thread_name) + str(x + 1)].run_whether_state:
+                self.thread_list_obj[str(self.thread_name) + str(x + 1)].start()
+
+    @staticmethod
+    def task_state_set(data):
+        temp = []
+        for x in range(len(data)):
+            temp.append([data[x], 0])
+        return temp
+
+    @staticmethod
+    def task_tate_detection(data):
+        for x in range(len(data)):
+            if data[x][1] == 0:
+                data[x][1] = 1
+                return data[x]
+        return False
+
+    def findtheard(self):
+        self.lock.acquire()
+        for x in range(self.thread_now_num):
+            if not self.thread_list_obj[str(self.thread_name) + str(x + 1)].subscribe:
+                self.thread_list_obj[str(self.thread_name) + str(x + 1)].on_theard_subscribe()
+                self.lock.release()
+                return str(self.thread_name) + str(x + 1)
+        if self.limit_state == True and self.thread_now_num < self.thread_num + self.limit_num_add:
+            self.batch_listthread_add(1)
+        self.lock.release()
+        return False
+
+    def findtheard_state(self):
+        temp = 0
+        for x in range(self.thread_now_num):
+            if not self.thread_list_obj[str(self.thread_name) + str(x + 1)].subscribe:
+                temp = temp + 1
+        return temp
+
+    def many_task(self, data):
+        temp1 = self.task_state_set(data)
+        temp2 = []
+        while True:
+            temp3 = []
+            while True:
+                temp4 = self.findtheard()
+                if temp4 is not False:
+                    temp5 = self.task_tate_detection(temp1)
+                    if temp5 is False:
+                        break
+                    temp3.append(temp4)
+                    if len(temp5[0]) == 2:
+                        self.thread_list_obj[temp4].mytask(temp5[0][0], temp5[0][1])
+                    else:
+                        self.thread_list_obj[temp4].mytask(temp5[0][0], temp5[0][1], temp5[0][2])
+                else:
+                    break
+            for x in range(len(temp3)):
+                temp6 = self.theard_name_get_result(temp3[x])
+                temp2.append(temp6)
+                if len(temp2) == len(temp1):
+                    return temp2
+
+    def sing_task(self, data):
+        while True:
+            temp1 = self.findtheard()
+            if temp1 is not False:
+                if len(data[0]) == 2:
+                    self.thread_list_obj[temp1].mytask(data[0][0], data[0][1])
+                else:
+                    self.thread_list_obj[temp1].mytask(data[0][0], data[0][1], data[0][2])
+            return self.theard_name_get_result(temp1)
+
+    def theard_name_join(self, name):
+        self.thread_list_obj[name].on_join()
+
+    def theard_name_get_result(self, name):
+        self.theard_name_join(name)
+        return self.thread_list_obj[name].get_result()
+
+    def task_run(self, data):
+        temp1 = self.findtheard()
+        if len(data) == 1:
+            self.thread_list_obj[temp1].mytask(self.sing_task, (data,))
+        else:
+            self.thread_list_obj[temp1].mytask(self.many_task, (data,))
+        return temp1
+
+    def stop(self):
+        for x in range(self.thread_now_num):
+            self.thread_list_obj[str(self.thread_name) + str(x + 1)].Thread_stop()
+
+
+"======================================================================================================================"
+
+"基础功能设置"
+
+
+class AssemblyLine:
+    def __init__(self, config, xm_name, add_num, limit_state=False, limit_add_sum=0):
+        self.worker = WorK(config, xm_name, add_num, limit_state=limit_state, limit_add_sum=limit_add_sum)
+        self.equip = ListThread(limit_state, limit_add_sum, xm_name, add_num)
+
+    '------------------------------------------------------------------------------------------------------------------'
+    '基础功能'
+
+    '------------------------------------------------------------------------------------------------------------------'
+    '找字基础功能设置'
+
+    def find_word(self, data, find_word_data_coord=None, find_word_data_col=None, find_word_data_sim=None,
+                  find_word_data_back=None, find_word_data_time=None):
+        temp1 = self.worker.worker_find(1)
+        self.worker.worker[temp1].find_word_data_shezhi(data, find_word_data_coord=find_word_data_coord,
+                                                        find_word_data_col=find_word_data_col,
+                                                        find_word_data_sim=find_word_data_sim,
+                                                        find_word_data_back=find_word_data_back,
+                                                        find_word_data_time=find_word_data_time)
+        temp2 = self.worker.worker[temp1].find_word()
+        self.worker.worker_complete(temp1)
+        return temp2
+
+    def find_wordex(self, data, find_word_data_coord=None, find_word_data_col=None, find_word_data_sim=None,
+                    find_word_data_back=None, find_word_data_time=None):
+        temp1 = self.worker.worker_find(1)
+        self.worker.worker[temp1].find_word_data_shezhi(data, find_word_data_coord=find_word_data_coord,
+                                                        find_word_data_col=find_word_data_col,
+                                                        find_word_data_sim=find_word_data_sim,
+                                                        find_word_data_back=find_word_data_back,
+                                                        find_word_data_time=find_word_data_time)
+        temp2 = self.worker.worker[temp1].find_wordex()
+        self.worker.worker_complete(temp1)
+        return temp2
+
+    def find_wordex1(self, data, find_word_data_coord=None, find_word_data_col=None, find_word_data_sim=None,
+                     find_word_data_back=None, find_word_data_time=None):
+        temp1 = self.worker.worker_find(1)
+        self.worker.worker[temp1].find_word_data_shezhi(data, find_word_data_coord=find_word_data_coord,
+                                                        find_word_data_col=find_word_data_col,
+                                                        find_word_data_sim=find_word_data_sim,
+                                                        find_word_data_back=find_word_data_back,
+                                                        find_word_data_time=find_word_data_time)
+        temp2 = self.worker.worker[temp1].find_wordex1()
+        self.worker.worker_complete(temp1)
+        return temp2
+
+    '------------------------------------------------------------------------------------------------------------------'
+    '找图基础功能设置'
+
+    def find_pic(self, config, data):
+        temp1 = self.worker.worker_find(1)
+        self.worker.worker[temp1].find_pic_data_shezhi(config, data)
+        temp2 = self.worker.worker[temp1].find_pic()
+        self.worker.worker_complete(temp1)
+        return temp2
+
+    def find_pic1(self, data, config=None, find_pic_data_coord=None, find_pic_data_sim=None,
+                  find_pic_data_click=None, find_pic_data_x_cast=None, find_pic_data_y_cast=None,
+                  find_pic_data_time_out=None, find_pic_data_Delay_time=None):
+        temp1 = self.worker.worker_find(1)
+        self.worker.worker[temp1].find_pic_data_shezhi1(data, config=config, find_pic_data_coord=find_pic_data_coord,
+                                                        find_pic_data_sim=find_pic_data_sim, find_pic_data_click=
+                                                        find_pic_data_click, find_pic_data_x_cast=find_pic_data_x_cast,
+                                                        find_pic_data_y_cast=find_pic_data_y_cast,
+                                                        find_pic_data_time_out
+                                                        =find_pic_data_time_out, find_pic_data_Delay_time=
+                                                        find_pic_data_Delay_time)
+        temp2 = self.worker.worker[temp1].find_pic1()
+        self.worker.worker_complete(temp1)
+        return temp2
+
+    def find_picex(self, config, data):
+        temp1 = self.worker.worker_find(1)
+        self.worker.worker[temp1].find_pic_data_shezhi(config, data)
+        temp2 = self.worker.worker[temp1].find_picex()
+        self.worker.worker_complete(temp1)
+        return temp2
