@@ -55,7 +55,7 @@ class JiChu:
         self.find_col_data_x = -1
         self.find_col_data_y = -1
 
-    def leidianbang(self, data, mingzi):  # 雷电模拟器绑定
+    def leidianbang(self, data, mingzi=""):  # 雷电模拟器绑定
         hwnd = win32gui.FindWindow("LDPlayerMainFrame", data)
         ch_hwnd = win32gui.FindWindowEx(hwnd, 0, "RenderWindow", "TheRender")
         self.hwnd = ch_hwnd
@@ -610,7 +610,7 @@ class JiChu:
 
 
 class WorK:
-    def __init__(self, config, xm_name, add_num, limit_state=False, limit_add_sum=0):
+    def __init__(self, config, xm_name, windos_name, add_num, limit_state=False, limit_add_sum=0):
         self.pic_config = config
         self.xm_name = xm_name
         self.stater = []
@@ -620,6 +620,7 @@ class WorK:
         self.add_num = add_num
         self.limit_state = limit_state
         self.limit_add_sum = limit_add_sum
+        self.windos_name = windos_name
         self.worker_rec(self.add_num)
 
     def worker_add(self, num: int):
@@ -627,6 +628,8 @@ class WorK:
             worker_temp1 = x + 1 + self.worker_sum
             self.worker[self.xm_name + str(worker_temp1)] = JiChu(self.pic_config)
             self.stater.append(1)
+            self.worker[self.xm_name + str(worker_temp1)].ldbangding(self.windos_name,
+                                                                     mingzi=self.windos_name + str(worker_temp1))
         self.worker_sum = self.worker_sum + num
 
     def worer_distr(self, data: int, name=None, num=None):
@@ -877,6 +880,14 @@ class ListThread:
             self.thread_list_obj[temp1].mytask(self.many_task, (data,))
         return temp1
 
+    def take_run1(self, data):
+        temp1 = self.findtheard()
+        if len(data) == 1:
+            self.thread_list_obj[temp1].mytask(self.sing_task, (data,))
+        else:
+            self.thread_list_obj[temp1].mytask(self.many_task, (data,))
+        return self.theard_name_get_result(temp1)
+
     def stop(self):
         for x in range(self.thread_now_num):
             self.thread_list_obj[str(self.thread_name) + str(x + 1)].Thread_stop()
@@ -888,12 +899,91 @@ class ListThread:
 
 
 class AssemblyLine:
-    def __init__(self, config, xm_name, add_num, limit_state=False, limit_add_sum=0):
-        self.worker = WorK(config, xm_name, add_num, limit_state=limit_state, limit_add_sum=limit_add_sum)
+    def __init__(self, config, xm_name, windos_name, add_num, limit_state=False, limit_add_sum=0):
+        self.worker = WorK(config, xm_name, windos_name, add_num, limit_state=limit_state, limit_add_sum=limit_add_sum)
         self.equip = ListThread(limit_state, limit_add_sum, xm_name, add_num)
 
     '------------------------------------------------------------------------------------------------------------------'
     '基础功能'
+
+    def click(self, data, min_time=0, max_time=1):
+        temp1 = self.worker.worker_find(1)
+        self.worker.worker[temp1].random_time(min_time, max_time)
+        self.worker.worker[temp1].click(data)
+        self.worker.worker_complete(temp1)
+        return 1
+
+    '------------------------------------------------------------------------------------------------------------------'
+
+    def func(self, find: str, data,
+             #  找字默认数值
+             find_word_data_coord=None,
+             find_word_data_col=None,
+             find_word_data_sim=None,
+             find_word_data_back=None,
+             find_word_data_time=None,
+             # 找图默认数值
+             find_pic_config=None,
+             find_pic_data_coord=None,
+             find_pic_data_sim=None,
+             find_pic_data_click=None,
+             find_pic_data_x_cast=None,
+             find_pic_data_y_cast=None,
+             find_pic_data_time_out=None,
+             find_pic_data_Delay_time=None,
+             #  功能数值
+             fun1=None,
+             fun2=None,
+             fun3=None,
+             ):
+        if fun1 is None:
+            fun1 = []
+        if fun2 is None:
+            fun2 = []
+        if fun3 is None:
+            fun3 = []
+        if find == '找字':
+            self.find_word(data)
+
+    def run_fun(self, data, judge):
+        if judge == '正确' or judge == 1:
+            judge_temp = 1
+        else:
+            judge_temp = 0
+        while True:
+            if len(data) == 0:
+                return 1
+            elif len(data) == 1:
+                temp1 = self.equip.take_run1(data)
+                if temp1 == judge_temp:
+                    return 1
+            else:
+                temp1 = self.equip.take_run1(data)
+                temp2 = len(temp1)
+                temp3 = 0
+                for x in range(len(temp1)):
+                    if JiChu.list_sum(temp1[x]) == 1:
+                        if temp1[x][0] == judge_temp:
+                            temp3 = temp3 + 1
+                    elif JiChu.list_sum(temp1[x]) == 0:
+                        if temp1[x][0] == judge_temp:
+                            temp3 = temp3 + 1
+                if temp2 == temp3:
+                    return 1
+
+    def run_funex(self, right_fun, fail_fun):
+        '1'
+
+    def top_fun(self, data):
+        while True:
+            if len(data) == 0:
+                break
+
+    '------------------------------------------------------------------------------------------------------------------'
+
+    def assem_add(self, num):
+        self.worker.worker_add(num)
+        self.equip.batch_listthread_add(num)
 
     '------------------------------------------------------------------------------------------------------------------'
     '找字基础功能设置'
