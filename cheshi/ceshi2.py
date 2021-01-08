@@ -1,2 +1,5 @@
-a = []
-print(len(a))
+a = [[1]]
+b = [[2]]
+c = [[1]][:]
+print(a + b)
+print(c)
