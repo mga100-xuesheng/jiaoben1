@@ -1028,11 +1028,110 @@ class AssemblyLine:
                         break
                 if judge:
                     break
-                if self.run_fun_process('bottom', fun1_right, fun1_fail) == 0:
-                    bottom[0] = False
-                else:
-                    bottom[0] = True
-                return temp2
+            if self.run_fun_process('bottom', fun1_right, fun1_fail) == 0:
+                bottom[0] = False
+            else:
+                bottom[0] = True
+            return temp2
+
+    def run_process(self, find, data, judge=False, time_out_num=4,  # 找字默认数值
+                    find_word_data_coord=None,
+                    find_word_data_col=None,
+                    find_word_data_sim=None,
+                    find_word_data_back=None,
+                    find_word_data_time=None,
+                    # 找图默认数值
+                    find_pic_config=None,
+                    find_pic_data_coord=None,
+                    find_pic_data_sim=None,
+                    find_pic_data_click=None,
+                    find_pic_data_x_cast=None,
+                    find_pic_data_y_cast=None,
+                    find_pic_data_time_out=None,
+                    find_pic_data_Delay_time=None,
+                    #  功能数值
+                    fun1_right=None,
+                    fun1_fail=None, ):
+        if fun1_right is None:
+            fun1_right = [[]]
+        if fun1_fail is None:
+            fun1_fail = [[]]
+        while True:
+            temp1 = []
+            temp2 = [[]]
+            temp1_temp1 = 0
+            temp1_temp2 = 0
+            temp1_temp3 = 0
+            temp2_temp = 0
+            if find == "找字":
+                temp1 = self.equip.task_run([[self.find_word, (data,
+                                                               find_word_data_coord,
+                                                               find_word_data_col,
+                                                               find_word_data_sim,
+                                                               find_word_data_back,
+                                                               find_word_data_time)]])
+                temp2 = [[self.find_word, (data,
+                                           find_word_data_coord,
+                                           find_word_data_col,
+                                           find_word_data_sim,
+                                           find_word_data_back,
+                                           find_word_data_time)]]
+                temp2_temp = 1
+            elif find == "找字ex":
+                temp1 = self.equip.task_run([self.find_wordex, (data,
+                                                                find_word_data_coord,
+                                                                find_word_data_col,
+                                                                find_word_data_sim,
+                                                                find_word_data_back,
+                                                                find_word_data_time)])
+                temp2 = [[self.find_wordex, (data,
+                                             find_word_data_coord,
+                                             find_word_data_col,
+                                             find_word_data_sim,
+                                             find_word_data_back,
+                                             find_word_data_time)]]
+                temp2_temp = 1
+            elif find == "找字ex1":
+                temp1 = self.equip.task_run([[self.find_wordex1, (data,
+                                                                  find_word_data_coord,
+                                                                  find_word_data_col,
+                                                                  find_word_data_sim,
+                                                                  find_word_data_back,
+                                                                  find_word_data_time)]])
+                temp2 = [[self.find_wordex1, (data,
+                                              find_word_data_coord,
+                                              find_word_data_col,
+                                              find_word_data_sim,
+                                              find_word_data_back,
+                                              find_word_data_time)]]
+                temp2_temp = 1
+            elif find == "找图":
+                temp1 = self.equip.task_run([[self.find_pic, (find_pic_config, data)]])
+            if temp2_temp == 1:
+                temp3 = self.equip.task_run([[self.run_fun_process, ('middle', fun1_right, fun1_fail + temp2)]])
+            else:
+                temp3 = self.equip.task_run([[self.run_fun_process, ('middle', fun1_right, fun1_fail)]])
+            temp1 = self.equip.theard_name_get_result(temp1)
+            temp3 = self.equip.theard_name_get_result(temp3)
+            if temp1_temp2 == 0:
+                if issubclass(temp1, list) is True:
+                    if issubclass(temp1[0], int):
+                        if temp1[0] == 1:
+                            temp1_temp1 = temp1
+                            temp1_temp2 = 1
+                elif issubclass(temp1, int) is True:
+                    if temp1 == 1:
+                        temp1_temp1 = temp1
+                        temp1_temp2 = 1
+            if temp1_temp2 == 1 and temp3 == 1:
+                return temp1_temp1
+            elif judge:
+                return temp1_temp1
+
+            if temp1_temp3 == time_out_num:
+                return None
+            else:
+                temp1_temp3 = temp1_temp3 + 1
 
     '运行过程额外操作过程设置'
 
