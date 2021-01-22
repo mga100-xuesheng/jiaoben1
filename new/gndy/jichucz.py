@@ -9,6 +9,7 @@ import threading
 "乐玩对象池"
 
 
+# noinspection DuplicatedCode
 class JiChu:
     def __init__(self, pic_comfig):
         self.pic_path = pic_comfig[0]
@@ -376,6 +377,42 @@ class JiChu:
                     self.find_word_data_y = -1
                     return [0]
 
+    def find_word_ex2(self):
+        find_word_ex_temp1 = 1
+        find_word_ex_temp2 = ""
+        ex_time_process = 0
+        find_word_ex_temp3 = []
+        while find_word_ex_temp1 == 1:
+            ex_time_start = time.time()
+            find_word_ex_temp2 = self.lw.FindStrEx(self.find_word_data_coord[0],
+                                                   self.find_word_data_coord[1],
+                                                   self.find_word_data_coord[2],
+                                                   self.find_word_data_coord[3],
+                                                   self.find_word_data_name,
+                                                   self.find_word_data_col,
+                                                   self.find_word_data_sim,
+                                                   self.find_word_data_back)
+            if len(find_word_ex_temp2) == 0:
+                ex_time_end = time.time()
+                ex_time_process = ex_time_process + ex_time_end - ex_time_start
+                if ex_time_process == self.find_word_data_time or ex_time_process > self.find_word_data_time:
+                    return [0]
+            else:
+                find_word_ex_temp3.append(1)
+                if find_word_ex_temp2.find('|') != -1:
+                    find_word_ex_temp2 = find_word_ex_temp2.split('|')
+                    break
+                else:
+                    find_word_ex_temp2 = [find_word_ex_temp2]
+                    break
+        find_word_ex_temp2_temp3 = []
+        for x in range(len(find_word_ex_temp2)):
+            find_word_ex_temp2_temp1 = find_word_ex_temp2[x].split(',')
+            find_word_ex_temp2_temp2 = str(find_word_ex_temp2_temp1[1]) + ',' + str(find_word_ex_temp2_temp1[2])
+            find_word_ex_temp2_temp3.append(find_word_ex_temp2_temp2)
+        find_word_ex_temp3.append(find_word_ex_temp2_temp3)
+        return find_word_ex_temp3
+
     '------------------------------------------------------------------------------------------------------------------'
     '找图'
 
@@ -539,6 +576,38 @@ class JiChu:
                                               self.find_pic_data_y_cast,
                                               self.find_pic_data_Delay_time)
         return [1, find_pic_ex_temp1]
+
+    def find_pic_ex1(self, num):
+        find_pic_temp1 = self.lw.FindPicEx(self.find_pic_data_coord[0],
+                                           self.find_pic_data_coord[1],
+                                           self.find_pic_data_coord[2],
+                                           self.find_pic_data_coord[3],
+                                           self.find_pic_data_path +
+                                           self.find_pic_data_name +
+                                           str(num) +
+                                           self.find_pic_data_format,
+                                           self.find_pic_data_col_cast,
+                                           self.find_pic_data_sim, 0,
+                                           self.find_pic_data_time_out,
+                                           self.find_pic_data_click,
+                                           self.find_pic_data_x_cast,
+                                           self.find_pic_data_y_cast,
+                                           self.find_pic_data_Delay_time)
+        if len(find_pic_temp1) == 0:
+            return [0]
+        else:
+            temp1 = [1]
+            temp2 = []
+            if find_pic_temp1.find('|') != -1:
+                find_pic_temp1 = find_pic_temp1.split('|')
+            else:
+                find_pic_temp1 = [find_pic_temp1]
+        for x in range(len(find_pic_temp1)):
+            temp2_temp1 = find_pic_temp1[x].split(',')
+            temp2_temp2 = str(temp2_temp1[1]) + ',' + str(temp2_temp1[2])
+            temp2.append(temp2_temp2)
+        temp1.append(temp2)
+        return temp1
 
     '------------------------------------------------------------------------------------------------------------------'
     '找色'
@@ -918,322 +987,17 @@ class AssemblyLine:
         return 1
 
     '------------------------------------------------------------------------------------------------------------------'
-    '运行集合接口'
-
-    def func(self, find: str, data, bottom: list = None, judge=False,
-             #  找字默认数值
-             find_word_data_coord=None,
-             find_word_data_col=None,
-             find_word_data_sim=None,
-             find_word_data_back=None,
-             find_word_data_time=None,
-             # 找图默认数值
-             find_pic_config=None,
-             find_pic_data_coord=None,
-             find_pic_data_sim=None,
-             find_pic_data_click=None,
-             find_pic_data_x_cast=None,
-             find_pic_data_y_cast=None,
-             find_pic_data_time_out=None,
-             find_pic_data_Delay_time=None,
-             #  功能数值
-             fun1_right=None,
-             fun1_fail=None,
-             fun2_right=None,
-             fun2_fail=None,
-             fun3_right=None,
-             fun3_fali=None
-             ):
-        if bottom is None:
-            bottom = []
-        if fun1_right is None:
-            fun1_right = []
-        if fun1_fail is None:
-            fun1_fail = []
-        if fun2_right is None:
-            fun2_right = []
-        if fun2_fail is None:
-            fun2_fail = []
-        if fun3_right is None:
-            fun3_right = []
-        if fun3_fali is None:
-            fun3_fali = []
-        if self.run_fun_process('top', fun1_right, fun1_fail) == 1:
-            temp3 = 0
-            while True:
-                temp1 = self.equip.task_run([self.run_fun_process, ('middle', fun2_right, fun2_fail)])
-                temp2 = 0
-                if find == '找字':
-                    temp2 = self.equip.task_run([[self.find_word, (data,
-                                                                   find_word_data_coord,
-                                                                   find_word_data_col,
-                                                                   find_word_data_sim,
-                                                                   find_word_data_back,
-                                                                   find_word_data_time)]])
-                    temp1_temp = [[self.find_word, (data,
-                                                    find_word_data_coord,
-                                                    find_word_data_col,
-                                                    find_word_data_sim,
-                                                    find_word_data_back,
-                                                    find_word_data_time)]]
-                    temp1 = self.equip.task_run([self.run_fun_process, ('middle', fun2_right, fun2_fail + temp1_temp)])
-                elif find == '找字ex':
-                    temp2 = self.equip.task_run([self.find_wordex, (data,
-                                                                    find_word_data_coord,
-                                                                    find_word_data_col,
-                                                                    find_word_data_sim,
-                                                                    find_word_data_back,
-                                                                    find_word_data_time)])
-                    temp1_temp = [[self.find_wordex, (data,
-                                                      find_word_data_coord,
-                                                      find_word_data_col,
-                                                      find_word_data_sim,
-                                                      find_word_data_back,
-                                                      find_word_data_time)]]
-                    temp1 = self.equip.task_run([self.run_fun_process, ('middle', fun2_right, fun2_fail + temp1_temp)])
-                elif find == '找字ex1':
-                    temp2 = self.equip.task_run([self.find_wordex1, (data,
-                                                                     find_word_data_coord,
-                                                                     find_word_data_col,
-                                                                     find_word_data_sim,
-                                                                     find_word_data_back,
-                                                                     find_word_data_time)])
-                elif find == '找图':
-                    temp2 = self.equip.task_run([self.find_pic, (find_pic_config, data)])
-                elif find == '找图1':
-                    temp2 = self.equip.task_run([self.find_pic1, (data, find_pic_config,
-                                                                  find_pic_data_coord,
-                                                                  find_pic_data_sim,
-                                                                  find_pic_data_click,
-                                                                  find_pic_data_x_cast,
-                                                                  find_pic_data_y_cast,
-                                                                  find_pic_data_time_out,
-                                                                  find_pic_data_Delay_time)])
-                elif find == '找图ex':
-                    temp2 = self.equip.task_run([self.find_picex, (find_pic_config, data)])
-                temp1 = self.equip.theard_name_get_result(temp1)
-                temp2 = self.equip.theard_name_get_result(temp2)
-                if isinstance(temp2, int) is True:
-                    if temp3 == 0:
-                        temp3 = temp2
-                if isinstance(temp2, list) is True:
-                    if isinstance(temp3, int) is True:
-                        if temp3 == 0 and temp2[0] == 1:
-                            temp3 = temp2
-                if isinstance(temp2, list) is True:
-                    if temp1 == 1 and temp2[0] == 1:
-                        break
-                else:
-                    if temp1 == 1 and temp2 == 1:
-                        break
-                if judge:
-                    break
-            if self.run_fun_process('bottom', fun1_right, fun1_fail) == 0:
-                bottom[0] = False
-            else:
-                bottom[0] = True
-            return temp2
-
-    def run_process(self, find, data, judge=False, time_out_num=4,  # 找字默认数值
-                    find_word_data_coord=None,
-                    find_word_data_col=None,
-                    find_word_data_sim=None,
-                    find_word_data_back=None,
-                    find_word_data_time=None,
-                    # 找图默认数值
-                    find_pic_config=None,
-                    find_pic_data_coord=None,
-                    find_pic_data_sim=None,
-                    find_pic_data_click=None,
-                    find_pic_data_x_cast=None,
-                    find_pic_data_y_cast=None,
-                    find_pic_data_time_out=None,
-                    find_pic_data_Delay_time=None,
-                    #  功能数值
-                    fun1_right=None,
-                    fun1_fail=None, ):
-        if fun1_right is None:
-            fun1_right = [[]]
-        if fun1_fail is None:
-            fun1_fail = [[]]
-        while True:
-            temp1 = []
-            temp2 = [[]]
-            temp1_temp1 = 0
-            temp1_temp2 = 0
-            temp1_temp3 = 0
-            temp2_temp = 0
-            if find == "找字":
-                temp1 = self.equip.task_run([[self.find_word, (data,
-                                                               find_word_data_coord,
-                                                               find_word_data_col,
-                                                               find_word_data_sim,
-                                                               find_word_data_back,
-                                                               find_word_data_time)]])
-                temp2 = [[self.find_word, (data,
-                                           find_word_data_coord,
-                                           find_word_data_col,
-                                           find_word_data_sim,
-                                           find_word_data_back,
-                                           find_word_data_time)]]
-                temp2_temp = 1
-            elif find == "找字ex":
-                temp1 = self.equip.task_run([self.find_wordex, (data,
-                                                                find_word_data_coord,
-                                                                find_word_data_col,
-                                                                find_word_data_sim,
-                                                                find_word_data_back,
-                                                                find_word_data_time)])
-                temp2 = [[self.find_wordex, (data,
-                                             find_word_data_coord,
-                                             find_word_data_col,
-                                             find_word_data_sim,
-                                             find_word_data_back,
-                                             find_word_data_time)]]
-                temp2_temp = 1
-            elif find == "找字ex1":
-                temp1 = self.equip.task_run([[self.find_wordex1, (data,
-                                                                  find_word_data_coord,
-                                                                  find_word_data_col,
-                                                                  find_word_data_sim,
-                                                                  find_word_data_back,
-                                                                  find_word_data_time)]])
-                temp2 = [[self.find_wordex1, (data,
-                                              find_word_data_coord,
-                                              find_word_data_col,
-                                              find_word_data_sim,
-                                              find_word_data_back,
-                                              find_word_data_time)]]
-                temp2_temp = 1
-            elif find == "找图":
-                temp1 = self.equip.task_run([[self.find_pic, (find_pic_config, data)]])
-            if temp2_temp == 1:
-                temp3 = self.equip.task_run([[self.run_fun_process, ('middle', fun1_right, fun1_fail + temp2)]])
-            else:
-                temp3 = self.equip.task_run([[self.run_fun_process, ('middle', fun1_right, fun1_fail)]])
-            temp1 = self.equip.theard_name_get_result(temp1)
-            temp3 = self.equip.theard_name_get_result(temp3)
-            if temp1_temp2 == 0:
-                if issubclass(temp1, list) is True:
-                    if issubclass(temp1[0], int):
-                        if temp1[0] == 1:
-                            temp1_temp1 = temp1
-                            temp1_temp2 = 1
-                elif issubclass(temp1, int) is True:
-                    if temp1 == 1:
-                        temp1_temp1 = temp1
-                        temp1_temp2 = 1
-            if temp1_temp2 == 1 and temp3 == 1:
-                return temp1_temp1
-            elif judge:
-                return temp1_temp1
-
-            if temp1_temp3 == time_out_num:
-                return None
-            else:
-                temp1_temp3 = temp1_temp3 + 1
-
-    '运行过程额外操作过程设置'
-
-    def run_fun(self, data, judge):
-        if judge == '正确' or judge == 1:
-            judge_temp = 1
-        else:
-            judge_temp = 0
-        while True:
-            if len(data) == 0:
-                return 1
-            elif len(data) == 1:
-                temp1 = self.equip.take_run1(data)
-                if temp1 == judge_temp:
-                    return 1
-            else:
-                temp1 = self.equip.take_run1(data)
-                temp2 = len(temp1)
-                temp3 = 0
-                for x in range(len(temp1)):
-                    if JiChu.list_sum(temp1[x]) == 1:
-                        if temp1[x][0] == judge_temp:
-                            temp3 = temp3 + 1
-                    elif JiChu.list_sum(temp1[x]) == 0:
-                        if temp1[x][0] == judge_temp:
-                            temp3 = temp3 + 1
-                if temp2 == temp3:
-                    return 1
-
-    '运行过程额外操作设置'
-
-    def run_funex(self, right_fun, fail_fun):
-        temp1 = [self.run_fun, (right_fun, 1)]
-        temp2 = [self.run_fun, (fail_fun, 0)]
-        temp3 = self.equip.task_run(temp1)
-        temp4 = self.equip.task_run(temp2)
-        temp3 = self.equip.theard_name_get_result(temp3)
-        temp4 = self.equip.theard_name_get_result(temp4)
-        if temp3 == 1 and temp4 == 1:
-            return 1
-        else:
-            return 0
-
-    '运行过程额外操作状态设置'
-
-    def run_fun_state_modify(self, name, value: bool = None, find=False):
-        self.lock.acquire()
-        if value is None:
-            for x in self.run_fun_state.keys():
-                if find:
-                    if x == name:
-                        self.run_fun_state[name] = True
-                        self.lock.release()
-                        return 1
-                else:
-                    if x == name:
-                        if self.run_fun_state[name]:
-                            self.run_fun_state[name] = False
-                            self.lock.release()
-                            return 1
-                        else:
-                            self.lock.release()
-                            return 0
-            if find:
-                self.lock.release()
-                return 0
-            self.run_fun_state[name] = False
-            self.lock.release()
-            return 1
-        else:
-            for x in self.run_fun_state.keys():
-                if x == name:
-                    self.run_fun_state[name] = value
-                    self.lock.release()
-                    return 1
-        return 1
-
-    '运行过程额外操作设置接口'
-
-    def run_fun_process(self, name: str, right_fun, fail_fun):
-        judge = 0
-        if self.run_fun_state_modify(name) == 1:
-            while True:
-                temp1 = self.run_funex(right_fun, fail_fun)
-                if temp1 == 1:
-                    return 1
-                else:
-                    judge = judge + 1
-                if judge == 5:
-                    return 0
-        else:
-            while True:
-                if self.run_fun_state_modify(name, find=True) == 1:
-                    return 1
-                elif judge == 5:
-                    return 0
-
-    '------------------------------------------------------------------------------------------------------------------'
 
     def assem_add(self, num):
         self.worker.worker_add(num)
         self.equip.batch_listthread_add(num)
+
+    @staticmethod
+    def obj_list(func, data, *args):
+        temp1 = []
+        for x in range(len(data)):
+            temp1.append([func, (data[x], *args)])
+        return temp1
 
     '------------------------------------------------------------------------------------------------------------------'
     '找字基础功能设置'
@@ -1253,6 +1017,53 @@ class AssemblyLine:
         temp2 = self.worker.worker[temp1].find_word()
         self.worker.worker_complete(temp1)
         return temp2
+
+    def find_word_right_click(self, data,
+                              find_word_data_coord,
+                              find_word_data_col,
+                              find_word_data_sim,
+                              find_word_data_back,
+                              find_word_data_time,
+                              data1,
+                              min_time,
+                              max_time,
+                              click_temp: bool):
+        temp1 = self.find_word(data,
+                               find_word_data_coord,
+                               find_word_data_col,
+                               find_word_data_sim,
+                               find_word_data_back,
+                               find_word_data_time)
+        if temp1 == 1 and click_temp is True:
+            self.click(data1, min_time=min_time, max_time=max_time)
+            return 1
+        else:
+            return 0
+
+    def find_word_fail_click(self, data,
+                             find_word_data_coord,
+                             find_word_data_col,
+                             find_word_data_sim,
+                             find_word_data_back,
+                             find_word_data_time,
+                             data1,
+                             min_time,
+                             max_time,
+                             click_temp: bool):
+        temp1 = self.find_word(data,
+                               find_word_data_coord,
+                               find_word_data_col,
+                               find_word_data_sim,
+                               find_word_data_back,
+                               find_word_data_time)
+        if temp1 == 1:
+            return 0
+        else:
+            if click_temp:
+                self.click(data1, min_time=min_time, max_time=max_time)
+            return 1
+
+    '------------------------------------------------------------------------------------------------------------------'
 
     def find_wordex(self, data,
                     find_word_data_coord,
@@ -1286,6 +1097,22 @@ class AssemblyLine:
         self.worker.worker_complete(temp1)
         return temp2
 
+    def find_wordex2(self, data,
+                     find_word_data_coord,
+                     find_word_data_col,
+                     find_word_data_sim,
+                     find_word_data_back,
+                     find_word_data_time):
+        temp1 = self.worker.worker_find(1)
+        self.worker.worker[temp1].find_word_data_shezhi(data, find_word_data_coord=find_word_data_coord,
+                                                        find_word_data_col=find_word_data_col,
+                                                        find_word_data_sim=find_word_data_sim,
+                                                        find_word_data_back=find_word_data_back,
+                                                        find_word_data_time=find_word_data_time)
+        temp2 = self.worker.worker[temp1].find_wordex2()
+        self.worker.worker_complete(temp1)
+        return temp2
+
     '------------------------------------------------------------------------------------------------------------------'
     '找图基础功能设置'
 
@@ -1296,7 +1123,7 @@ class AssemblyLine:
         self.worker.worker_complete(temp1)
         return temp2
 
-    def find_pic1(self, data, config,
+    def find_pic1(self, data, config, num,
                   find_pic_data_coord,
                   find_pic_data_sim,
                   find_pic_data_click,
@@ -1312,7 +1139,7 @@ class AssemblyLine:
                                                         find_pic_data_time_out
                                                         =find_pic_data_time_out, find_pic_data_Delay_time=
                                                         find_pic_data_Delay_time)
-        temp2 = self.worker.worker[temp1].find_pic1()
+        temp2 = self.worker.worker[temp1].find_pic1(num=num)
         self.worker.worker_complete(temp1)
         return temp2
 
@@ -1322,3 +1149,302 @@ class AssemblyLine:
         temp2 = self.worker.worker[temp1].find_picex()
         self.worker.worker_complete(temp1)
         return temp2
+
+    def find_picex1(self, data, config, num,
+                    find_pic_data_coord,
+                    find_pic_data_sim,
+                    find_pic_data_click,
+                    find_pic_data_x_cast,
+                    find_pic_data_y_cast,
+                    find_pic_data_time_out,
+                    find_pic_data_Delay_time):
+        temp1 = self.worker.worker_find(1)
+        self.worker.worker[temp1].find_pic_data_shezhi1(data, config=config, find_pic_data_coord=find_pic_data_coord,
+                                                        find_pic_data_sim=find_pic_data_sim, find_pic_data_click=
+                                                        find_pic_data_click, find_pic_data_x_cast=find_pic_data_x_cast,
+                                                        find_pic_data_y_cast=find_pic_data_y_cast,
+                                                        find_pic_data_time_out
+                                                        =find_pic_data_time_out, find_pic_data_Delay_time=
+                                                        find_pic_data_Delay_time)
+        temp2 = self.worker.worker[temp1].find_pic_ex1(num=num)
+        self.worker.worker_complete(temp1)
+        return temp2
+
+    '------------------------------------------------------------------------------------------------------------------'
+    '使用接口'
+
+    # 找字功能
+
+    def find_word_run(self, data, len_state=False,
+                      find_word_data_coord=None,
+                      find_word_data_col=None,
+                      find_word_data_sim=None,
+                      find_word_data_back=None,
+                      find_word_data_time=None):
+        if not len_state:
+            temp1 = self.find_word(data,
+                                   find_word_data_coord,
+                                   find_word_data_col,
+                                   find_word_data_sim,
+                                   find_word_data_back,
+                                   find_word_data_time)
+            return temp1
+        else:
+            temp1 = []
+            for x in range(len(data)):
+                temp1.append([self.find_word, (data[x],
+                                               find_word_data_coord,
+                                               find_word_data_col,
+                                               find_word_data_sim,
+                                               find_word_data_back,
+                                               find_word_data_time)])
+            temp1 = self.equip.take_run1(temp1)
+            return temp1
+
+    def find_wordex2_run(self, data, len_state=False,
+                         find_word_data_coord=None,
+                         find_word_data_col=None,
+                         find_word_data_sim=None,
+                         find_word_data_back=None,
+                         find_word_data_time=None):
+        if not len_state:
+            temp1 = self.find_wordex2(data,
+                                      find_word_data_coord,
+                                      find_word_data_col,
+                                      find_word_data_sim,
+                                      find_word_data_back,
+                                      find_word_data_time)
+            return temp1
+        else:
+            temp1 = []
+            for x in range(len(data)):
+                temp1.append([self.find_wordex2, (data[x],
+                                                  find_word_data_coord,
+                                                  find_word_data_col,
+                                                  find_word_data_sim,
+                                                  find_word_data_back,
+                                                  find_word_data_time)])
+            temp1 = self.equip.take_run1(temp1)
+            return temp1
+
+    def find_word_right_click_run(self, data, data1,
+                                  find_word_data_coord=None,
+                                  find_word_data_col=None,
+                                  find_word_data_sim=None,
+                                  find_word_data_back=None,
+                                  find_word_data_time=None,
+                                  min_time=0,
+                                  max_time=1,
+                                  click_temp: bool = True,
+                                  len_state=False):
+        if len_state:
+            temp1 = self.obj_list(self.find_word_right_click, data,
+                                  find_word_data_coord,
+                                  find_word_data_col,
+                                  find_word_data_sim,
+                                  find_word_data_back,
+                                  find_word_data_time,
+                                  min_time,
+                                  max_time,
+                                  click_temp)
+            temp1 = self.equip.take_run1(temp1)
+            return temp1
+        else:
+            temp1 = self.find_word_right_click(data,
+                                               find_word_data_coord,
+                                               find_word_data_col,
+                                               find_word_data_sim,
+                                               find_word_data_back,
+                                               find_word_data_time,
+                                               data1,
+                                               min_time,
+                                               max_time,
+                                               click_temp)
+            return temp1
+
+    def find_word_fail_click_run(self, data, data1,
+                                 find_word_data_coord=None,
+                                 find_word_data_col=None,
+                                 find_word_data_sim=None,
+                                 find_word_data_back=None,
+                                 find_word_data_time=None,
+                                 min_time=0,
+                                 max_time=1,
+                                 click_temp: bool = True,
+                                 len_state=False):
+        if len_state:
+            temp1 = self.obj_list(self.find_word_fail_click, data,
+                                  find_word_data_coord,
+                                  find_word_data_col,
+                                  find_word_data_sim,
+                                  find_word_data_back,
+                                  find_word_data_time,
+                                  min_time,
+                                  max_time,
+                                  click_temp)
+            temp1 = self.equip.take_run1(temp1)
+            return temp1
+        else:
+            temp1 = self.find_word_fail_click(data,
+                                              find_word_data_coord,
+                                              find_word_data_col,
+                                              find_word_data_sim,
+                                              find_word_data_back,
+                                              find_word_data_time,
+                                              data1,
+                                              min_time,
+                                              max_time,
+                                              click_temp)
+            return temp1
+
+    # 找图功能
+
+    def find_pic1_run_temp(self, data, config,
+                           find_pic_data_coord,
+                           find_pic_data_sim,
+                           find_pic_data_click,
+                           find_pic_data_x_cast,
+                           find_pic_data_y_cast,
+                           find_pic_data_time_out,
+                           find_pic_data_Delay_time,
+                           func=None):
+        if not callable(func):
+            find_num = data[1][1]
+            temp1 = []
+            for x in range(find_num):
+                temp1.append([self.find_pic1, (data, config, int(x) + 1,
+                                               find_pic_data_coord,
+                                               find_pic_data_sim,
+                                               find_pic_data_click,
+                                               find_pic_data_x_cast,
+                                               find_pic_data_y_cast,
+                                               find_pic_data_time_out,
+                                               find_pic_data_Delay_time)])
+            return temp1
+        else:
+            find_num = data[1][1]
+            temp1 = []
+            for x in range(find_num):
+                temp1.append([func, (data, config, int(x) + 1,
+                                     find_pic_data_coord,
+                                     find_pic_data_sim,
+                                     find_pic_data_click,
+                                     find_pic_data_x_cast,
+                                     find_pic_data_y_cast,
+                                     find_pic_data_time_out,
+                                     find_pic_data_Delay_time)])
+            return temp1
+
+    def find_pic1_run(self, data, config,
+                      find_pic_data_coord,
+                      find_pic_data_sim,
+                      find_pic_data_click,
+                      find_pic_data_x_cast,
+                      find_pic_data_y_cast,
+                      find_pic_data_time_out,
+                      find_pic_data_Delay_time):
+        temp1 = self.find_pic1_run_temp(data, config,
+                                        find_pic_data_coord,
+                                        find_pic_data_sim,
+                                        find_pic_data_click,
+                                        find_pic_data_x_cast,
+                                        find_pic_data_y_cast,
+                                        find_pic_data_time_out,
+                                        find_pic_data_Delay_time)
+        temp1 = self.equip.take_run1(temp1)
+        for x in range(len(temp1)):
+            if temp1[x] == 1:
+                return 1
+        return 0
+
+    def find_picex1_run(self, data, config,
+                        find_pic_data_coord,
+                        find_pic_data_sim,
+                        find_pic_data_click,
+                        find_pic_data_x_cast,
+                        find_pic_data_y_cast,
+                        find_pic_data_time_out,
+                        find_pic_data_Delay_time):
+        temp1 = self.find_pic1_run_temp(data, config,
+                                        find_pic_data_coord,
+                                        find_pic_data_sim,
+                                        find_pic_data_click,
+                                        find_pic_data_x_cast,
+                                        find_pic_data_y_cast,
+                                        find_pic_data_time_out,
+                                        find_pic_data_Delay_time,
+                                        func=self.find_picex1)
+        temp1 = self.equip.take_run1(temp1)
+        temp2 = []
+        for x in range(len(temp1)):
+            if temp1[x][0] == 1:
+                temp2 = temp2 + temp1[x][1]
+        if len(temp2) == 0:
+            return [0]
+        else:
+            return [1, temp2]
+
+    def find_pic1_runex(self, data, config,
+                        find_pic_data_coord,
+                        find_pic_data_sim,
+                        find_pic_data_click,
+                        find_pic_data_x_cast,
+                        find_pic_data_y_cast,
+                        find_pic_data_time_out,
+                        find_pic_data_Delay_time,
+                        len_state=False):
+        if not len_state:
+            temp1 = self.find_pic1_run(data, config=config,
+                                       find_pic_data_coord=find_pic_data_coord,
+                                       find_pic_data_sim=find_pic_data_sim,
+                                       find_pic_data_click=find_pic_data_click,
+                                       find_pic_data_x_cast=find_pic_data_x_cast,
+                                       find_pic_data_y_cast=find_pic_data_y_cast,
+                                       find_pic_data_time_out=find_pic_data_time_out,
+                                       find_pic_data_Delay_time=find_pic_data_Delay_time)
+            return temp1
+        else:
+            temp1 = self.obj_list(self.find_pic1_run,
+                                  data, config,
+                                  find_pic_data_coord,
+                                  find_pic_data_sim,
+                                  find_pic_data_click,
+                                  find_pic_data_x_cast,
+                                  find_pic_data_y_cast,
+                                  find_pic_data_time_out,
+                                  find_pic_data_Delay_time)
+            temp1 = self.equip.take_run1(temp1)
+            return temp1
+
+    def find_picex1_runex(self, data, config,
+                          find_pic_data_coord,
+                          find_pic_data_sim,
+                          find_pic_data_click,
+                          find_pic_data_x_cast,
+                          find_pic_data_y_cast,
+                          find_pic_data_time_out,
+                          find_pic_data_Delay_time,
+                          len_state=False):
+        if not len_state:
+            temp1 = self.find_picex1_run(data,
+                                         config=config,
+                                         find_pic_data_coord=find_pic_data_coord,
+                                         find_pic_data_sim=find_pic_data_sim,
+                                         find_pic_data_click=find_pic_data_click,
+                                         find_pic_data_x_cast=find_pic_data_x_cast,
+                                         find_pic_data_y_cast=find_pic_data_y_cast,
+                                         find_pic_data_time_out=find_pic_data_time_out,
+                                         find_pic_data_Delay_time=find_pic_data_Delay_time)
+            return temp1
+        else:
+            temp1 = self.obj_list(self.find_picex1_run,
+                                  data, config,
+                                  find_pic_data_coord,
+                                  find_pic_data_sim,
+                                  find_pic_data_click,
+                                  find_pic_data_x_cast,
+                                  find_pic_data_y_cast,
+                                  find_pic_data_time_out,
+                                  find_pic_data_Delay_time)
+            temp1 = self.equip.take_run1(temp1)
+            return temp1

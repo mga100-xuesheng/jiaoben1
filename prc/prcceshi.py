@@ -21,6 +21,7 @@ class PcrCeshi:
     @staticmethod
     def sd_shujuchuli(data, cz):
         for x in range(len(data)):
+
             if len(data[x]) == 2:
                 continue
             else:
@@ -41,7 +42,7 @@ class PcrCeshi:
             suipian = hutao
             shuffle(suipian)
         else:
-            suipian = jiansheng + kan
+            suipian = kekeluo + peke
             shuffle(suipian)
         print(suipian)
         self.richangjuesesd(suipian)
@@ -63,7 +64,7 @@ class PcrCeshi:
 
     def tansuo(self):
         if self.pcr.tansuo_qr() == 1:
-            # self.tansuomana()
+            self.tansuomana()
             sleep(3)
             self.tansuojingyan()
             self.pcr.tansuo_xieru()
