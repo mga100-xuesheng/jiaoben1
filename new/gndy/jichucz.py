@@ -29,6 +29,7 @@ class JiChu:
         self.find_word_data_time = 0
         self.find_word_data_x = -1
         self.find_word_data_y = -1
+        self.word_path_num = -1
         "--------------------------------------------"
         self.find_pic_data_path = ""
         self.find_pic_data_format = ""
@@ -66,6 +67,13 @@ class JiChu:
             print(mingzi + "绑定成功")
         else:
             print(mingzi + "绑定失败")
+
+    def bangding(self, hwnd, display=5, mouse=4, keypad=4, added=1, mode=0):
+        leidianbang_temp = self.lw.BindWindow(hwnd, display, mouse, keypad, added, mode)
+        if leidianbang_temp == 1:
+            print("绑定成功")
+        else:
+            print("绑定失败")
 
     def jiebang(self):  # 雷电模拟器解绑
         self.lw.ForceUnBindWindow(self.hwnd)
@@ -269,6 +277,15 @@ class JiChu:
     '''格式为：[[第一个数据],[第二个数据]]'''
     '------------------------------------------------------------------------------------------------------------------'
     '找字'
+
+    def setdict(self, data):
+        for x in range(len(data)):
+            self.lw.SetDict(x, data[x])
+
+    def usedict(self, data: int):
+        if self.word_path_num != data:
+            self.word_path_num = data
+            self.lw.UseDict(data)
 
     def find_word_data_shezhi(self, data, find_word_data_coord=None, find_word_data_col=None, find_word_data_sim=None,
                               find_word_data_back=None, find_word_data_time=None):
@@ -679,7 +696,18 @@ class JiChu:
 
 
 class WorK:
-    def __init__(self, config, xm_name, windos_name, add_num, limit_state=False, limit_add_sum=0):
+    def __init__(self, config,
+                 xm_name: str,
+                 windos_name,
+                 add_num,
+                 word_path: list,
+                 display=5,
+                 mouse=4,
+                 keypad=4,
+                 added=1,
+                 mode=0,
+                 limit_state=False,
+                 limit_add_sum=0):
         self.pic_config = config
         self.xm_name = xm_name
         self.stater = []
@@ -691,14 +719,23 @@ class WorK:
         self.limit_add_sum = limit_add_sum
         self.windos_name = windos_name
         self.worker_rec(self.add_num)
+        self.hwnd = -1
+        self.display = display
+        self.mouse = mouse
+        self.keypad = keypad
+        self.added = added
+        self.mode = mode
+        self.word_path = word_path
 
     def worker_add(self, num: int):
         for x in range(num):
             worker_temp1 = x + 1 + self.worker_sum
             self.worker[self.xm_name + str(worker_temp1)] = JiChu(self.pic_config)
             self.stater.append(1)
-            self.worker[self.xm_name + str(worker_temp1)].ldbangding(self.windos_name,
-                                                                     mingzi=self.windos_name + str(worker_temp1))
+            temp1 = self.find_windows_run(self.windos_name)
+            self.worker[self.xm_name + str(worker_temp1)].bangding(temp1, self.display, self.mouse, self.keypad,
+                                                                   self.added, self.mode)
+            self.word_path_run(self.xm_name + str(worker_temp1))
         self.worker_sum = self.worker_sum + num
 
     def worer_distr(self, data: int, name=None, num=None):
@@ -760,6 +797,58 @@ class WorK:
 
     def worker_rec(self, num):
         self.worer_distr(3, num=num)
+
+    '''--------------------------------------------------------------------------------------------------------------'''
+
+    @staticmethod
+    def get_child_windows(parent):
+        """
+        获得parent的所有子窗口句柄
+         返回子窗口句柄列表
+         """
+        if not parent:
+            return
+        hwndChildList = []
+        win32gui.EnumChildWindows(parent, lambda hwnd, param: param.append(hwnd), hwndChildList)
+        return hwndChildList
+
+    def find_Windows(self, father_litle, father_clsname, title, clsname=''):
+        hwnd = win32gui.FindWindow(father_clsname, father_litle)
+        if hwnd != 0:
+            temp1 = self.get_child_windows(hwnd)
+            for x in range(len(temp1)):
+                temp1_title = win32gui.GetWindowText(temp1[x])
+                if clsname != '':
+                    temp1_clsname = win32gui.GetClassName(temp1[x])
+                    if temp1_title == title and temp1_clsname == clsname:
+                        return temp1[x]
+                else:
+                    if temp1_title == title:
+                        return temp1[x]
+
+        return 0
+
+    def find_windows_run(self, father_litle):
+        if self.hwnd < 0 or self.hwnd == 0:
+            temp1 = self.find_Windows(father_litle, 'Qt5QWindowIcon', 'RenderWindowWindow')
+            if temp1 != 0:
+                self.hwnd = temp1
+                return temp1
+            temp1 = self.find_Windows(father_litle, 'LDPlayerMainFrame', 'TheRender')
+            if temp1 != 0:
+                self.hwnd = temp1
+                return temp1
+            return -1
+        else:
+            return self.hwnd
+
+    '''--------------------------------------------------------------------------------------------------------------'''
+
+    def word_path_run(self, data: str):
+        self.worker[data].setdict(data)
+
+    def word_path_mun_usedict(self, obj, num):
+        self.worker[obj].usedict(num)
 
 
 "======================================================================================================================"
@@ -968,8 +1057,15 @@ class ListThread:
 
 
 class AssemblyLine:
-    def __init__(self, config, xm_name, windos_name, add_num, limit_state=False, limit_add_sum=0):
-        self.worker = WorK(config, xm_name, windos_name, add_num, limit_state=limit_state, limit_add_sum=limit_add_sum)
+    def __init__(self, config, word_path: list, xm_name, windos_name, add_num=11, limit_state=False, limit_add_sum=0):
+        self.worker = WorK(config,
+                           xm_name,
+                           windos_name,
+                           add_num,
+                           word_path=word_path,
+                           limit_state=limit_state,
+                           limit_add_sum=limit_add_sum
+                           )
         self.equip = ListThread(limit_state, limit_add_sum, xm_name, add_num)
         self.run_fun_state = {}
         self.lock = threading.Lock()
@@ -1002,6 +1098,12 @@ class AssemblyLine:
     '------------------------------------------------------------------------------------------------------------------'
     '找字基础功能设置'
 
+    def word_path_num(self, obj: str, data):
+        if len(data) >= 7:
+            self.worker.word_path_mun_usedict(obj, data[7])
+        else:
+            self.worker.word_path_mun_usedict(obj, 0)
+
     def find_word(self, data,
                   find_word_data_coord,
                   find_word_data_col,
@@ -1014,6 +1116,7 @@ class AssemblyLine:
                                                         find_word_data_sim=find_word_data_sim,
                                                         find_word_data_back=find_word_data_back,
                                                         find_word_data_time=find_word_data_time)
+        self.word_path_num(temp1, data)
         temp2 = self.worker.worker[temp1].find_word()
         self.worker.worker_complete(temp1)
         return temp2
@@ -1077,6 +1180,7 @@ class AssemblyLine:
                                                         find_word_data_sim=find_word_data_sim,
                                                         find_word_data_back=find_word_data_back,
                                                         find_word_data_time=find_word_data_time)
+        self.word_path_num(temp1, data)
         temp2 = self.worker.worker[temp1].find_wordex()
         self.worker.worker_complete(temp1)
         return temp2
@@ -1093,6 +1197,7 @@ class AssemblyLine:
                                                         find_word_data_sim=find_word_data_sim,
                                                         find_word_data_back=find_word_data_back,
                                                         find_word_data_time=find_word_data_time)
+        self.word_path_num(temp1, data)
         temp2 = self.worker.worker[temp1].find_wordex1()
         self.worker.worker_complete(temp1)
         return temp2
@@ -1109,6 +1214,7 @@ class AssemblyLine:
                                                         find_word_data_sim=find_word_data_sim,
                                                         find_word_data_back=find_word_data_back,
                                                         find_word_data_time=find_word_data_time)
+        self.word_path_num(temp1, data)
         temp2 = self.worker.worker[temp1].find_wordex2()
         self.worker.worker_complete(temp1)
         return temp2
@@ -1384,14 +1490,15 @@ class AssemblyLine:
         else:
             return [1, temp2]
 
-    def find_pic1_runex(self, data, config,
-                        find_pic_data_coord,
-                        find_pic_data_sim,
-                        find_pic_data_click,
-                        find_pic_data_x_cast,
-                        find_pic_data_y_cast,
-                        find_pic_data_time_out,
-                        find_pic_data_Delay_time,
+    def find_pic1_runex(self, data,
+                        config=None,
+                        find_pic_data_coord=None,
+                        find_pic_data_sim=None,
+                        find_pic_data_click=None,
+                        find_pic_data_x_cast=None,
+                        find_pic_data_y_cast=None,
+                        find_pic_data_time_out=None,
+                        find_pic_data_Delay_time=None,
                         len_state=False):
         if not len_state:
             temp1 = self.find_pic1_run(data, config=config,
@@ -1416,14 +1523,75 @@ class AssemblyLine:
             temp1 = self.equip.take_run1(temp1)
             return temp1
 
-    def find_picex1_runex(self, data, config,
-                          find_pic_data_coord,
-                          find_pic_data_sim,
-                          find_pic_data_click,
-                          find_pic_data_x_cast,
-                          find_pic_data_y_cast,
-                          find_pic_data_time_out,
-                          find_pic_data_Delay_time,
+    def find_pic1_runex_right_cilck(self, data, data1,
+                                    config=None,
+                                    find_pic_data_coord=None,
+                                    find_pic_data_sim=None,
+                                    find_pic_data_click=None,
+                                    find_pic_data_x_cast=None,
+                                    find_pic_data_y_cast=None,
+                                    find_pic_data_time_out=None,
+                                    find_pic_data_Delay_time=None,
+                                    min_time=0,
+                                    max_time=1,
+                                    click_temp: bool = True,
+                                    len_state=False):
+        if not len_state:
+            temp1 = self.find_picex1_runex(data,
+                                           config,
+                                           find_pic_data_coord,
+                                           find_pic_data_sim,
+                                           find_pic_data_click,
+                                           find_pic_data_x_cast,
+                                           find_pic_data_y_cast,
+                                           find_pic_data_time_out,
+                                           find_pic_data_Delay_time,
+                                           len_state=False)
+            if temp1 == 1 and click_temp is True:
+                self.click(data1, min_time, max_time)
+                return 1
+            else:
+                return 0
+
+    def find_pic1_runex_fail_cilck(self, data, data1,
+                                   config=None,
+                                   find_pic_data_coord=None,
+                                   find_pic_data_sim=None,
+                                   find_pic_data_click=None,
+                                   find_pic_data_x_cast=None,
+                                   find_pic_data_y_cast=None,
+                                   find_pic_data_time_out=None,
+                                   find_pic_data_Delay_time=None,
+                                   min_time=0,
+                                   max_time=1,
+                                   click_temp: bool = True,
+                                   len_state=False):
+        if not len_state:
+            temp1 = self.find_picex1_runex(data,
+                                           config,
+                                           find_pic_data_coord,
+                                           find_pic_data_sim,
+                                           find_pic_data_click,
+                                           find_pic_data_x_cast,
+                                           find_pic_data_y_cast,
+                                           find_pic_data_time_out,
+                                           find_pic_data_Delay_time,
+                                           len_state=False)
+            if temp1 == 1 and click_temp is True:
+                return 0
+            else:
+                self.click(data1, min_time, max_time)
+                return 1
+
+    def find_picex1_runex(self, data,
+                          config=None,
+                          find_pic_data_coord=None,
+                          find_pic_data_sim=None,
+                          find_pic_data_click=None,
+                          find_pic_data_x_cast=None,
+                          find_pic_data_y_cast=None,
+                          find_pic_data_time_out=None,
+                          find_pic_data_Delay_time=None,
                           len_state=False):
         if not len_state:
             temp1 = self.find_picex1_run(data,
