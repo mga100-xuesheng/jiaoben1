@@ -7,15 +7,14 @@ import time
 
 
 class lw_obj:
-    def __init__(self, pic_path, pic_format, pic_col):
-        self.pic_path = pic_path
-        self.pic_format = pic_format
-        self.pic_col = pic_col
+    def __init__(self):
         pythoncom.CoInitialize()
         self.lw = client.CreateObject('lw.lwsoft3')
         self.hwnd = -1
         self.state = 0
         self.word_path_num = 0
+        self.x = 0
+        self.y = 0
 
     # 雷电模拟器绑定
     def leidianbang(self, data, mingzi=""):
@@ -75,3 +74,83 @@ class lw_obj:
         if self.word_path_num != data:
             self.word_path_num = data
             self.lw.UseDict(data)
+
+    # 普通找字
+    def find_word(self, coord: list, name, col, sim, back, time_out):
+        time_process = 0
+        while True:
+            time_start = time.time()
+            temp = self.lw.FindStr(coord[0], coord[1], coord[2], coord[3],
+                                   name, col, sim, back)
+            if temp == 1:
+                self.x = self.lw.x
+                self.y = self.lw.y
+            else:
+                time_end = time.time()
+                time_process = time_process + time_end - time_start
+                if time_process > time_out or time_process == time_out:
+                    self.x = -1
+                    self.y = -1
+                    return 0
+
+    # 高级找字
+    def find_wordex(self, coord: list, name, col, sim, back, time_out):
+        time_process = 0
+        while True:
+            time_start = time.time()
+            temp = self.lw.FindStrEx(coord[0], coord[1], coord[2], coord[3],
+                                     name, col, sim, back)
+            if len(temp) == 0:
+                time_end = time.time()
+                time_process = time_process + time_end - time_start
+                if time_process > time_out or time_process == time_out:
+                    self.x = -1
+                    self.y = -1
+                    return ""
+            else:
+                return temp
+
+    '------------------------------------------------------------------------------------------------------------------'
+    '找图'
+
+    # 普通找图
+    def find_pic(self, col_cast, coord: list, data, sim, time_out, click, x_cast, y_cast, delay_time):
+        temp = self.lw.findpic(coord[0],
+                               coord[1],
+                               coord[2],
+                               coord[3],
+                               data,
+                               col_cast, sim, 0, time_out, click, x_cast, y_cast,
+                               delay_time)
+        if temp == 1:
+            self.x = self.lw.x
+            self.y = self.lw.y
+            return 1
+        else:
+            return 0
+
+    # 高级找图
+    def find_picex(self, col_cast, coord: list, data, sim, time_out, click, x_cast, y_cast, delay_time):
+        temp = self.lw.findpic(coord[0],
+                               coord[1],
+                               coord[2],
+                               coord[3],
+                               data,
+                               col_cast, sim, 0, time_out, click, x_cast, y_cast,
+                               delay_time)
+        if len(temp) == 0:
+            return ""
+        else:
+            return temp
+
+    '------------------------------------------------------------------------------------------------------------------'
+    '找色'
+
+    # 普通找色
+    def find_col(self, coord: list, col, sim, dire, time_out):
+        temp = self.lw.FindColor(coord[0], coord[1], coord[2], coord[3],
+                                 col,
+                                 sim,
+                                 dire,
+                                 time_out)
+        return temp
