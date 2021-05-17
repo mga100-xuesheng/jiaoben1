@@ -125,12 +125,15 @@ class PcrCeshi:
                 self.pcr.richangdxc_pdjs(PcrData.gtdxc, 4)
                 self.pcr.dxc_xieru()
 
+    def __del__(self):
+        self.pcr.ldjiebang()
+
 
 temp1 = PcrCeshi()
 temp1.pcr.pcr_rizhi_update()
 temp1.gonghuizhijiatili()
 temp1.renwu()
-temp1.suipiansd()
+# temp1.suipiansd()
 temp1.tansuo()
-temp1.richangdxc()
+# temp1.richangdxc()
 temp1.pcr.ldjiebang()

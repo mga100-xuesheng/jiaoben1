@@ -1,62 +1,99 @@
-import win32gui
+import time
+import threading
 
 
-def leidianbang(data, mingzi=""):  # 雷电模拟器绑定
-    hwnd = win32gui.FindWindow("Qt5QWindowIcon", data)
-    print(hwnd)
-    ch_hwnd = win32gui.FindWindowEx(hwnd, 0, "Qt5QWindowIcon", "MainWindowWindow")
-    print(ch_hwnd)
-    ch_hwnd1 = win32gui.FindWindowEx(ch_hwnd, 0, "Qt5QWindowIcon", "CenterWidgetWindow")
-    print(ch_hwnd1)
-    ch_hwnd2 = win32gui.FindWindowEx(ch_hwnd1, 0, "Qt5QWindowIcon", "RenderWindowWindow")
-    print(ch_hwnd2)
-    print('句柄为：' + str(ch_hwnd2))
+def funA(fn):
+    # 定义一个嵌套函数
+    def say(*args, **kwargs):
+        fn(*args, **kwargs)
+
+    return say
 
 
-def get_child_windows(parent):
-    """
-    获得parent的所有子窗口句柄
-     返回子窗口句柄列表
-     """
-    if not parent:
-        return
-    hwndChildList = []
-    win32gui.EnumChildWindows(parent, lambda hwnd, param: param.append(hwnd), hwndChildList)
-    return hwndChildList
+@funA
+def funB(arc):
+    print("C语言中文网：", arc)
 
 
-def find_Windows(father_litle, father_clsname, title, clsname=''):
-    hwnd = win32gui.FindWindow(father_clsname, father_litle)
-    if hwnd != 0:
-        temp1 = get_child_windows(hwnd)
-        for x in range(len(temp1)):
-            temp1_title = win32gui.GetWindowText(temp1[x])
-            if clsname != '':
-                temp1_clsname = win32gui.GetClassName(temp1[x])
-                if temp1_title == title and temp1_clsname == clsname:
-                    return temp1[x]
-            else:
-                if temp1_title == title:
-                    return temp1[x]
-
-    return 0
+@funA
+def other_funB(name, arc, ceshi):
+    print(name, arc, ceshi)
 
 
-# aaa = find_Windows('四叶草', 'Qt5QWindowIcon', 'RenderWindowWindow')
-# print('句柄是:  ' + str(aaa))
+# def bbbb():
+#     print(3333)
 #
-# aaa = find_Windows('公主连结国服', 'LDPlayerMainFrame', 'TheRender')
-# print('句柄是:  ' + str(aaa))
+#
+# aaaa = {'a': 6, 'b': 7, 'c': 8, 'd': 7, 'e': bbbb}
+# for x in aaaa.keys():
+#     if x == "d":
+#         print(aaaa[x])
+#     elif x == "e":
+#         aaaa[x]()
+#     print(isinstance(x, str))
+
+#
+# def ceshi1(fn):
+#     def ceshi2(*args, **kwargs):
+#         fn(*args, **kwargs)
+#         print(args)
+#         print(kwargs)
+#         ceshi3(args, kwargs)
+#         print('98764')
+#         print(kwargs)
+#         return 1
+#
+#     def ceshi3(args, kwargs):
+#         kwargs['c'] = 5
+#         print(time.sleep(5))
+#         print('ceshi3')
+#         print(args)
+#         return 2
+#
+#     return ceshi2
 
 
-def bangding(father_litle):
-    temp1 = find_Windows(father_litle, 'Qt5QWindowIcon', 'RenderWindowWindow')
-    if temp1 != 0:
-        return temp1
-    temp1 = find_Windows(father_litle, 'LDPlayerMainFrame', 'TheRender')
-    if temp1 != 0:
-        return temp1
-    return -1
+class cqw:
+    def __init__(self):
+        self.qwer = 'qwer'
+        self.lock = threading.Lock()
+
+    def ceshi1(fn):
+        def ceshi2(self, *args, **kwargs):
+            print(args)
+            print(kwargs)
+            ceshi3(args, kwargs)
+            print('98764')
+            print(kwargs)
+            test = fn(*args, **kwargs)
+            return test
+
+        def ceshi3(args, kwargs):
+            kwargs['c'] = 5
+            # print(time.sleep(5))
+            print('ceshi3')
+            print(args)
+            return 2
+
+        return ceshi2
+
+    @ceshi1
+    def asd(self, aa=None, *args, **kwargs):
+        print(self.qwer)
+        self.lock.acquire()
+        self.qwer = 'rewq'
+        self.lock.release()
+        print(self.qwer)
+        time.sleep(5)
+        print('aa:  ' + str(aa))
+        print('kwargs:  ')
+        print(kwargs)
+        print('asd                                  asd')
 
 
-print(bangding('公主连结国服'))
+a = cqw()
+# b = threading.Thread(target=a.asd,args=(a,1),kwargs={'c':11})
+# c = threading.Thread(target=a.asd,args=(a,1),kwargs={'c':11})
+# b.start()
+# c.start()
+a.asd(a, aa='asdasd', cc=13)

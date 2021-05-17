@@ -5,6 +5,7 @@ import time
 import math
 import pythoncom
 import threading
+import sys
 
 "乐玩对象池"
 
@@ -1038,7 +1039,7 @@ class ListThread:
             self.thread_list_obj[temp1].mytask(self.many_task, (data,))
         return temp1
 
-    def take_run1(self, data):
+    def task_run1(self, data):
         temp1 = self.findtheard()
         if len(data) == 1:
             self.thread_list_obj[temp1].mytask(self.sing_task, (data,))
@@ -1304,7 +1305,7 @@ class AssemblyLine:
                                                find_word_data_sim,
                                                find_word_data_back,
                                                find_word_data_time)])
-            temp1 = self.equip.take_run1(temp1)
+            temp1 = self.equip.task_run1(temp1)
             return temp1
 
     def find_wordex2_run(self, data, len_state=False,
@@ -1330,7 +1331,7 @@ class AssemblyLine:
                                                   find_word_data_sim,
                                                   find_word_data_back,
                                                   find_word_data_time)])
-            temp1 = self.equip.take_run1(temp1)
+            temp1 = self.equip.task_run1(temp1)
             return temp1
 
     def find_word_right_click_run(self, data, data1,
@@ -1353,7 +1354,7 @@ class AssemblyLine:
                                   min_time,
                                   max_time,
                                   click_temp)
-            temp1 = self.equip.take_run1(temp1)
+            temp1 = self.equip.task_run1(temp1)
             return temp1
         else:
             temp1 = self.find_word_right_click(data,
@@ -1388,7 +1389,7 @@ class AssemblyLine:
                                   min_time,
                                   max_time,
                                   click_temp)
-            temp1 = self.equip.take_run1(temp1)
+            temp1 = self.equip.task_run1(temp1)
             return temp1
         else:
             temp1 = self.find_word_fail_click(data,
@@ -1457,7 +1458,7 @@ class AssemblyLine:
                                         find_pic_data_y_cast,
                                         find_pic_data_time_out,
                                         find_pic_data_Delay_time)
-        temp1 = self.equip.take_run1(temp1)
+        temp1 = self.equip.task_run1(temp1)
         for x in range(len(temp1)):
             if temp1[x] == 1:
                 return 1
@@ -1480,7 +1481,7 @@ class AssemblyLine:
                                         find_pic_data_time_out,
                                         find_pic_data_Delay_time,
                                         func=self.find_picex1)
-        temp1 = self.equip.take_run1(temp1)
+        temp1 = self.equip.task_run1(temp1)
         temp2 = []
         for x in range(len(temp1)):
             if temp1[x][0] == 1:
@@ -1489,6 +1490,8 @@ class AssemblyLine:
             return [0]
         else:
             return [1, temp2]
+
+    '''--------------------------------------------------------------------------------------------------------------'''
 
     def find_pic1_runex(self, data,
                         config=None,
@@ -1520,7 +1523,7 @@ class AssemblyLine:
                                   find_pic_data_y_cast,
                                   find_pic_data_time_out,
                                   find_pic_data_Delay_time)
-            temp1 = self.equip.take_run1(temp1)
+            temp1 = self.equip.task_run1(temp1)
             return temp1
 
     def find_pic1_runex_right_cilck(self, data, data1,
@@ -1537,16 +1540,16 @@ class AssemblyLine:
                                     click_temp: bool = True,
                                     len_state=False):
         if not len_state:
-            temp1 = self.find_picex1_runex(data,
-                                           config,
-                                           find_pic_data_coord,
-                                           find_pic_data_sim,
-                                           find_pic_data_click,
-                                           find_pic_data_x_cast,
-                                           find_pic_data_y_cast,
-                                           find_pic_data_time_out,
-                                           find_pic_data_Delay_time,
-                                           len_state=False)
+            temp1 = self.find_pic1_runex(data,
+                                         config,
+                                         find_pic_data_coord,
+                                         find_pic_data_sim,
+                                         find_pic_data_click,
+                                         find_pic_data_x_cast,
+                                         find_pic_data_y_cast,
+                                         find_pic_data_time_out,
+                                         find_pic_data_Delay_time,
+                                         len_state=False)
             if temp1 == 1 and click_temp is True:
                 self.click(data1, min_time, max_time)
                 return 1
@@ -1567,16 +1570,16 @@ class AssemblyLine:
                                    click_temp: bool = True,
                                    len_state=False):
         if not len_state:
-            temp1 = self.find_picex1_runex(data,
-                                           config,
-                                           find_pic_data_coord,
-                                           find_pic_data_sim,
-                                           find_pic_data_click,
-                                           find_pic_data_x_cast,
-                                           find_pic_data_y_cast,
-                                           find_pic_data_time_out,
-                                           find_pic_data_Delay_time,
-                                           len_state=False)
+            temp1 = self.find_pic1_runex(data,
+                                         config,
+                                         find_pic_data_coord,
+                                         find_pic_data_sim,
+                                         find_pic_data_click,
+                                         find_pic_data_x_cast,
+                                         find_pic_data_y_cast,
+                                         find_pic_data_time_out,
+                                         find_pic_data_Delay_time,
+                                         len_state=False)
             if temp1 == 1 and click_temp is True:
                 return 0
             else:
@@ -1614,5 +1617,261 @@ class AssemblyLine:
                                   find_pic_data_y_cast,
                                   find_pic_data_time_out,
                                   find_pic_data_Delay_time)
-            temp1 = self.equip.take_run1(temp1)
+            temp1 = self.equip.task_run1(temp1)
             return temp1
+
+
+class UseFuncDef:
+    def __init__(self, config, word_path: list, xm_name, windos_name, add_num=11, limit_state=False, limit_add_sum=0):
+        self.woke = AssemblyLine(config, word_path, xm_name, windos_name, add_num, limit_state, limit_add_sum)
+        self.equip = ListThread(True, 30, xm_name, 12)
+
+    def func_process(fn):
+        def gen_interface(self, *args, **kwargs):
+            top_run1 = 1
+            top_run2 = 1
+            top_run3 = 1
+            for x in kwargs.keys():
+                if x == 'top_run1':
+                    top_run1 = kwargs['top_run1']
+                if x == 'top_run2':
+                    top_run2 = kwargs['top_run2']
+                if x == 'top_run3':
+                    top_run3 = kwargs['top_run3']
+            threading_process(self, top_run1, top_run2, top_run3)
+            func_get_result = fn(args, kwargs)
+            return func_get_result
+
+        def threading_process(self, fun_right, fun_fail, fun_test):
+            temp1 = -1
+            temp2 = -1
+            temp3 = -1
+            ex_sum = 0
+            while True:
+                if len(fun_right) == 1:
+                    temp1 = 1
+                if len(fun_fail) == 1:
+                    temp1 = 0
+                if len(temp3) == 1:
+                    temp3 = 2
+
+                '''--------------------------------------------------------------------------------------------------'''
+
+                temp1_temp = ''
+                temp2_temp = ''
+                temp3_temp = ''
+                if temp1 < 1:
+                    temp1_temp = self.equip.task_run(fun_right)
+                if temp2 != 0:
+                    temp2_temp = self.equip.task_run(fun_fail)
+                if temp3 == -1:
+                    temp3_temp = self.equip.task_run(fun_test)
+
+                '''--------------------------------------------------------------------------------------------------'''
+
+                if temp1 < 1:
+                    temp1_temp = self.equip.theard_name_get_result(temp1_temp)
+                    if temp1_temp == 1:
+                        temp1 = 1
+                if temp2 != 0:
+                    temp2_temp = self.equip.theard_name_get_result(temp2_temp)
+                    if temp2_temp == 0:
+                        temp2 = 0
+                if temp3 == -1:
+                    temp3_temp = self.equip.theard_name_get_result(temp3_temp)
+                    temp3 = temp3_temp
+
+                '''--------------------------------------------------------------------------------------------------'''
+
+                if temp1 == 1 and temp2 == 0 and temp3 == 0:
+                    return 1
+                elif temp1 == 1 and temp2 == 0 and temp3 == 1:
+                    return 2
+                elif temp1 == 1 and temp2 == 0 and temp3 == 2:
+                    return 3
+                ex_sum = ex_sum + 1
+                if ex_sum > 100 or ex_sum == 100:
+                    sys.exit()
+
+        return gen_interface
+
+    @func_process
+    def find_word(self, data,
+                  len_state=False,
+                  find_word_data_coord=None,
+                  find_word_data_col=None,
+                  find_word_data_sim=None,
+                  find_word_data_back=None,
+                  find_word_data_time=None,
+                  **kwargs):
+        temp1 = self.woke.find_word_run(data,
+                                        len_state,
+                                        find_word_data_coord,
+                                        find_word_data_col,
+                                        find_word_data_sim,
+                                        find_word_data_back,
+                                        find_word_data_time)
+        return temp1
+
+    @func_process
+    def find_word_right_click(self, data, data1,
+                              len_state=False,
+                              find_word_data_coord=None,
+                              find_word_data_col=None,
+                              find_word_data_sim=None,
+                              find_word_data_back=None,
+                              find_word_data_time=None,
+                              min_time=0,
+                              max_time=1,
+                              click_temp: bool = True,
+                              **kwargs):
+        temp1 = self.woke.find_word_right_click_run(data, data1, find_word_data_coord,
+                                                    find_word_data_col,
+                                                    find_word_data_sim,
+                                                    find_word_data_back,
+                                                    find_word_data_time,
+                                                    min_time,
+                                                    max_time,
+                                                    click_temp,
+                                                    len_state)
+        return temp1
+
+    @func_process
+    def find_word_fail_click(self, data, data1,
+                             len_state=False,
+                             find_word_data_coord=None,
+                             find_word_data_col=None,
+                             find_word_data_sim=None,
+                             find_word_data_back=None,
+                             find_word_data_time=None,
+                             min_time=0,
+                             max_time=1,
+                             click_temp: bool = True,
+                             **kwargs):
+        temp1 = self.woke.find_word_fail_click_run(data, data1, find_word_data_coord,
+                                                   find_word_data_col,
+                                                   find_word_data_sim,
+                                                   find_word_data_back,
+                                                   find_word_data_time,
+                                                   min_time,
+                                                   max_time,
+                                                   click_temp,
+                                                   len_state)
+        return temp1
+
+    @func_process
+    def find_wordEx(self, data, len_state=False,
+                    find_word_data_coord=None,
+                    find_word_data_col=None,
+                    find_word_data_sim=None,
+                    find_word_data_back=None,
+                    find_word_data_time=None,
+                    **kwargs):
+        temp1 = self.woke.find_wordex2_run(data, len_state,
+                                           find_word_data_coord,
+                                           find_word_data_col,
+                                           find_word_data_sim,
+                                           find_word_data_back,
+                                           find_word_data_time)
+        return temp1
+
+    '''--------------------------------------------------------------------------------------------------------------'''
+
+    @func_process
+    def find_pic(self, data,
+                 len_state=False,
+                 config=None,
+                 find_pic_data_coord=None,
+                 find_pic_data_sim=None,
+                 find_pic_data_click=None,
+                 find_pic_data_x_cast=None,
+                 find_pic_data_y_cast=None,
+                 find_pic_data_time_out=None,
+                 find_pic_data_Delay_time=None):
+        temp1 = self.woke.find_pic1_runex(data, config,
+                                          find_pic_data_coord,
+                                          find_pic_data_sim,
+                                          find_pic_data_click,
+                                          find_pic_data_x_cast,
+                                          find_pic_data_y_cast,
+                                          find_pic_data_time_out,
+                                          find_pic_data_Delay_time,
+                                          len_state)
+        return temp1
+
+    @func_process
+    def find_pic_click_right(self, data, data1,
+                             config=None,
+                             len_state=False,
+                             find_pic_data_coord=None,
+                             find_pic_data_sim=None,
+                             find_pic_data_click=None,
+                             find_pic_data_x_cast=None,
+                             find_pic_data_y_cast=None,
+                             find_pic_data_time_out=None,
+                             find_pic_data_Delay_time=None,
+                             min_time=0,
+                             max_time=1,
+                             click_temp: bool = True):
+        temp1 = self.woke.find_pic1_runex_right_cilck(data, data1,
+                                                      config,
+                                                      find_pic_data_coord,
+                                                      find_pic_data_sim,
+                                                      find_pic_data_click,
+                                                      find_pic_data_x_cast,
+                                                      find_pic_data_y_cast,
+                                                      find_pic_data_time_out,
+                                                      find_pic_data_Delay_time,
+                                                      min_time,
+                                                      max_time, click_temp, len_state)
+        return temp1
+
+    @func_process
+    def find_pic_click_fail(self, data, data1,
+                            config=None,
+                            len_state=False,
+                            find_pic_data_coord=None,
+                            find_pic_data_sim=None,
+                            find_pic_data_click=None,
+                            find_pic_data_x_cast=None,
+                            find_pic_data_y_cast=None,
+                            find_pic_data_time_out=None,
+                            find_pic_data_Delay_time=None,
+                            min_time=0,
+                            max_time=1,
+                            click_temp: bool = True):
+        temp1 = self.woke.find_pic1_runex_fail_cilck(data, data1,
+                                                     config,
+                                                     find_pic_data_coord,
+                                                     find_pic_data_sim,
+                                                     find_pic_data_click,
+                                                     find_pic_data_x_cast,
+                                                     find_pic_data_y_cast,
+                                                     find_pic_data_time_out,
+                                                     find_pic_data_Delay_time,
+                                                     min_time,
+                                                     max_time, click_temp, len_state)
+        return temp1
+
+    @func_process
+    def find_picEx(self, data,
+                   len_state=False,
+                   config=None,
+                   find_pic_data_coord=None,
+                   find_pic_data_sim=None,
+                   find_pic_data_click=None,
+                   find_pic_data_x_cast=None,
+                   find_pic_data_y_cast=None,
+                   find_pic_data_time_out=None,
+                   find_pic_data_Delay_time=None):
+        temp1 = self.woke.find_picex1_runex(data,
+                                            config,
+                                            find_pic_data_coord,
+                                            find_pic_data_sim,
+                                            find_pic_data_click,
+                                            find_pic_data_x_cast,
+                                            find_pic_data_y_cast,
+                                            find_pic_data_time_out,
+                                            find_pic_data_Delay_time,
+                                            len_state)
+        return temp1
