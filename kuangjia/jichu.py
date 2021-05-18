@@ -154,3 +154,66 @@ class lw_obj:
                                  dire,
                                  time_out)
         return temp
+
+
+class worker:
+    def __init__(self, pic_path, pic_format, pic_col):
+        self.skill = lw_obj()
+        self.data = {"coord": [],
+                     "word_name": '',
+                     "pic_data": "",
+                     "find_col": "",
+                     "sim": 1,
+                     "time_out": 0,
+                     "pic_click": 0,
+                     "x_cast": 0,
+                     "y_cast": 0,
+                     "delay_time": 0,
+                     "pic_path": pic_path,
+                     "pic_format": pic_format,
+                     "pic_col": pic_col}
+        #  状态变量
+        self.state = 0
+        self.x = -1
+        self.y = -1
+        self.ret_data = ''
+        self.ex_ret_data = {}
+
+    def data_handle(self, data: dict):
+        for x in self.data.keys():
+            if x == "pic_path" or x == "pic_format" or x == "pic_col":
+                continue
+            try:
+                if x == "pic_data":
+                    if data["pic_path"] != "" and data["pic_format"] != "":
+                        self.data[str(x)] = str(data["pic_path"]) + str(data[str(x)]) + str(data["pic_format"])
+                    elif data["pic_path"] != "":
+                        self.data[str(x)] = str(data["pic_path"]) + str(data[str(x)]) + str(self.data["pic_format"])
+                    elif data["pic_format"] != "":
+                        self.data[str(x)] = str(self.data["pic_path"]) + str(data[str(x)]) + str(data["pic_format"])
+                    else:
+                        self.data[str(x)] = str(self.data["pic_path"]) + str(data[str(x)]) + str(
+                            self.data["pic_format"])
+                else:
+                    self.data[str(x)] = data[str(x)]
+            except:
+                if str(x) == "coord":
+                    self.data[str(x)] = []
+                elif str(x) == "word_name":
+                    self.data[str(x)] = ""
+                elif str(x) == "pic_data":
+                    self.data[str(x)] = ""
+                elif str(x) == "find_col":
+                    self.data[str(x)] = ""
+                elif str(x) == "sim":
+                    self.data[str(x)] = 1
+                elif str(x) == "time_out":
+                    self.data[str(x)] = 0
+                elif str(x) == "pic_click":
+                    self.data[str(x)] = 0
+                elif str(x) == "x_cast":
+                    self.data[str(x)] = 0
+                elif str(x) == "y_cast":
+                    self.data[str(x)] = 0
+                elif str(x) == "delay_time":
+                    self.data[str(x)] = 0
