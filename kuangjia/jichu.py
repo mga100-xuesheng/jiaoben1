@@ -280,6 +280,7 @@ class worker:
             temp = 0
             print("")
             print("===================================================================================================")
+            print(self.data["word_data_sum"])
             print(self.data["coord"])
             print(self.data["word_name"])
             print(self.data["cast_col"])
@@ -308,6 +309,7 @@ class worker:
             temp = ""
             print("")
             print("===================================================================================================")
+            print(self.data["word_data_sum"])
             print(self.data["coord"])
             print(self.data["word_name"])
             print(self.data["cast_col"])
@@ -328,10 +330,26 @@ class worker:
     # 普通找图
     def find_pic(self, data: dict):
         self.data_handle_input(data)
-        temp = self.skill.find_pic(self.data["pic_col"], self.data["coord"], self.data["pic_data"], self.data["sim"],
-                                   self.data["time_out"], self.data["pic_click"], self.data["x_cast"],
-                                   self.data["y_cast"]
-                                   , self.data["delay_time"])
+        try:
+            temp = self.skill.find_pic(self.data["pic_col"], self.data["coord"], self.data["pic_data"],
+                                       self.data["sim"],
+                                       self.data["time_out"], self.data["pic_click"], self.data["x_cast"],
+                                       self.data["y_cast"], self.data["delay_time"])
+        except:
+            temp = 0
+            print("")
+            print("===================================================================================================")
+            print(self.data["pic_col"])
+            print(self.data["coord"])
+            print(self.data["pic_data"])
+            print(self.data["sim"])
+            print(self.data["time_out"])
+            print(self.data["pic_click"])
+            print(self.data["x_cast"])
+            print(self.data["y_cast"])
+            print(self.data["delay_time"])
+            print("===================================================================================================")
+            print("")
         if temp == 1:
             self.x = self.skill.x
             self.y = self.skill.y
@@ -340,3 +358,32 @@ class worker:
             self.x = -1
             self.y = -1
             return 0
+
+    # 高级找图
+    def find_picex(self, data: dict):
+        self.data_handle_input(data)
+        try:
+            temp = self.skill.find_picex(self.data["pic_col"], self.data["coord"], self.data["pic_data"],
+                                         self.data["sim"],
+                                         self.data["time_out"], self.data["pic_click"], self.data["x_cast"],
+                                         self.data["y_cast"], self.data["delay_time"])
+        except:
+            temp = ""
+            print("")
+            print("===================================================================================================")
+            print(self.data["pic_col"])
+            print(self.data["coord"])
+            print(self.data["pic_data"])
+            print(self.data["sim"])
+            print(self.data["time_out"])
+            print(self.data["pic_click"])
+            print(self.data["x_cast"])
+            print(self.data["y_cast"])
+            print(self.data["delay_time"])
+            print("===================================================================================================")
+            print("")
+        self.data_handle_output(temp)
+        if len(self.ret_data) == 0:
+            return 0
+        else:
+            return 1
