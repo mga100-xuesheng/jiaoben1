@@ -13,8 +13,8 @@ class lw_obj:
         self.hwnd = -1
         self.state = 0
         self.word_path_num = 0
-        self.x = 0
-        self.y = 0
+        self.x = -1
+        self.y = -1
 
     # 雷电模拟器绑定
     def leidianbang(self, data, mingzi=""):
@@ -38,7 +38,7 @@ class lw_obj:
         cast_y_temp = cast_y.find('|')
         click_temp = 0
         try:
-            if cast_x_temp != -1:
+            if cast_x_temp == -1:
                 cast_x_click = random.randint(int(click_x), int(click_x) + int(cast_x))
             else:
                 cast_temp = cast_x.split('|')
@@ -46,7 +46,7 @@ class lw_obj:
         except:
             cast_x_click = 0
         try:
-            if cast_y_temp != -1:
+            if cast_y_temp == -1:
                 cast_y_click = random.randint(int(click_y), int(click_y) + int(cast_y))
             else:
                 cast_temp = cast_y.split('|')
@@ -85,6 +85,7 @@ class lw_obj:
             if temp == 1:
                 self.x = self.lw.x
                 self.y = self.lw.y
+                return 1
             else:
                 time_end = time.time()
                 time_process = time_process + time_end - time_start
@@ -108,6 +109,8 @@ class lw_obj:
                     self.y = -1
                     return ""
             else:
+                self.x = -1
+                self.y = -1
                 return temp
 
     '------------------------------------------------------------------------------------------------------------------'
@@ -127,6 +130,8 @@ class lw_obj:
             self.y = self.lw.y
             return 1
         else:
+            self.x = -1
+            self.y = -1
             return 0
 
     # 高级找图
@@ -139,8 +144,12 @@ class lw_obj:
                                col_cast, sim, 0, time_out, click, x_cast, y_cast,
                                delay_time)
         if len(temp) == 0:
+            self.x = -1
+            self.y = -1
             return ""
         else:
+            self.x = -1
+            self.y = -1
             return temp
 
     '------------------------------------------------------------------------------------------------------------------'
@@ -163,6 +172,7 @@ class worker:
                      "word_name": '',
                      "pic_data": "",
                      "find_col": "",
+                     "cast_col": "000000",
                      "sim": 1,
                      "time_out": 0,
                      "pic_click": 0,
@@ -171,15 +181,18 @@ class worker:
                      "delay_time": 0,
                      "pic_path": pic_path,
                      "pic_format": pic_format,
-                     "pic_col": pic_col}
+                     "pic_col": pic_col,
+                     "word_data_sum": 0,
+                     "word_back": 0}
         #  状态变量
         self.state = 0
         self.x = -1
         self.y = -1
-        self.ret_data = ''
+        self.ret_data = []
         self.ex_ret_data = {}
 
-    def data_handle(self, data: dict):
+    # 输入数据处理
+    def data_handle_input(self, data: dict):
         for x in self.data.keys():
             if x == "pic_path" or x == "pic_format" or x == "pic_col":
                 continue
@@ -217,3 +230,113 @@ class worker:
                     self.data[str(x)] = 0
                 elif str(x) == "delay_time":
                     self.data[str(x)] = 0
+                elif str(x) == "word_data_sum":
+                    self.data[str(x)] = 0
+                elif str(x) == "cast_col":
+                    self.data[str(x)] = "000000"
+
+    # 输出数据处理
+    def data_handle_output(self, data):
+        if not isinstance(data, str):
+            self.ret_data = []
+            self.ex_ret_data = {}
+        else:
+            if len(data) == 0:
+                self.ret_data = []
+                self.ex_ret_data = {}
+            else:
+                if data.find("|") == -1:
+                    temp = data.split(",")
+                    self.ret_data.append(str(temp[1]) + "," + str(temp[2]))
+                    self.ex_ret_data[str(temp[0])] = [str(temp[1]) + "," + str(temp[2])]
+                else:
+                    temp = data.split("|")
+                    temp_sum = 0
+                    for x in range(len(temp)):
+                        temp_temp = temp[x].split(",")
+                        if int(temp_temp[0]) != temp_sum:
+                            temp_sum = int(temp_temp[0])
+                            self.ret_data.append(str(temp_temp[1]) + "," + str(temp_temp[2]))
+                            self.ex_ret_data[str(temp_temp[0])] = [str(temp_temp[1]) + "," + str(temp_temp[2])]
+                        else:
+                            self.ret_data.append(str(temp_temp[1]) + "," + str(temp_temp[2]))
+                            self.ex_ret_data[str(temp_temp[0])].append(str(temp_temp[1]) + "," + str(temp_temp[2]))
+
+    '''=============================================================================================================='''
+    """找字功能"""
+
+    # 字库绑定
+    def setdict(self, data: list):
+        self.skill.setdict(data)
+
+    # 普通找字
+    def find_word(self, data: dict):
+        self.data_handle_input(data)
+        self.skill.usedict(self.data["word_data_sum"])
+        try:
+            temp = self.skill.find_word(self.data["coord"], self.data["word_name"], self.data["cast_col"],
+                                        self.data["sim"], self.data["word_back"], self.data["time_out"])
+        except:
+            temp = 0
+            print("")
+            print("===================================================================================================")
+            print(self.data["coord"])
+            print(self.data["word_name"])
+            print(self.data["cast_col"])
+            print(self.data["sim"])
+            print(self.data["word_back"])
+            print(self.data["time_out"])
+            print("===================================================================================================")
+            print("")
+        if temp == 0:
+            self.x = -1
+            self.y = -1
+            return 0
+        else:
+            self.x = self.skill.x
+            self.y = self.skill.y
+            return 1
+
+    # 高级找字
+    def find_wordex(self, data: dict):
+        self.data_handle_input(data)
+        self.skill.usedict(self.data["word_data_sum"])
+        try:
+            temp = self.skill.find_wordex(self.data["coord"], self.data["word_name"], self.data["cast_col"],
+                                          self.data["sim"], self.data["word_back"], self.data["time_out"])
+        except:
+            temp = ""
+            print("")
+            print("===================================================================================================")
+            print(self.data["coord"])
+            print(self.data["word_name"])
+            print(self.data["cast_col"])
+            print(self.data["sim"])
+            print(self.data["word_back"])
+            print(self.data["time_out"])
+            print("===================================================================================================")
+            print("")
+        self.data_handle_output(temp)
+        if len(self.ret_data) == 0:
+            return 0
+        else:
+            return 1
+
+    '''=============================================================================================================='''
+    """找图功能"""
+
+    # 普通找图
+    def find_pic(self, data: dict):
+        self.data_handle_input(data)
+        temp = self.skill.find_pic(self.data["pic_col"], self.data["coord"], self.data["pic_data"], self.data["sim"],
+                                   self.data["time_out"], self.data["pic_click"], self.data["x_cast"],
+                                   self.data["y_cast"]
+                                   , self.data["delay_time"])
+        if temp == 1:
+            self.x = self.skill.x
+            self.y = self.skill.y
+            return 1
+        else:
+            self.x = -1
+            self.y = -1
+            return 0
