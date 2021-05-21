@@ -4,6 +4,8 @@ from comtypes import client
 import win32gui
 import random
 import time
+import threading
+import sys
 
 
 class lw_obj:
@@ -25,8 +27,10 @@ class lw_obj:
         leidianbang_temp = self.lw.BindWindow(ch_hwnd, 5, 4, 4, 1, 0)
         if leidianbang_temp == 1:
             print(mingzi + "绑定成功")
+            return 1
         else:
             print(mingzi + "绑定失败")
+            return 0
 
     # 雷电模拟器解绑
     def jiebang(self):
@@ -190,6 +194,20 @@ class worker:
         self.y = -1
         self.ret_data = []
         self.ex_ret_data = {}
+
+    # 窗口绑定
+    def bangding(self, win_name, win_type):
+        temp = 0
+        if self.skill.hwnd != -1:
+            temp = 1
+            pass
+        elif win_type == "leidian":
+            temp = self.skill.leidianbang(win_name)
+        return temp
+
+    # 窗口解绑
+    def jiebang(self):
+        self.skill.jiebang()
 
     # 输入数据处理
     def data_handle_input(self, data: dict):
@@ -387,3 +405,47 @@ class worker:
             return 0
         else:
             return 1
+
+
+class Assign_tasks:
+    def __init__(self, pic_path, pic_format, pic_col, word_path: list, worker_name):
+        self.pic_path = pic_path
+        self.pic_format = pic_format
+        self.pic_col = pic_col
+        self.word_path = word_path
+        # 属性设置
+        self.worker = {}
+        self.worker_name = worker_name
+        self.worker_sum = 0
+
+    # 对象生成
+    def worker_add(self, add_sum):
+        for x in range(add_sum):
+            self.worker[str(self.worker_name) + str(self.worker_sum) + str(x) + "1"] = worker(self.pic_path,
+                                                                                              self.pic_format,
+                                                                                              self.pic_col)
+            self.worker[str(self.worker_name) + str(self.worker_sum) + str(x) + "1"].setdict(self.word_path)
+        self.worker_sum = self.worker_sum + add_sum
+
+    # 窗口绑定
+    def worker_bangding(self, win_name, win_type):
+        for x in self.worker.keys():
+            temp = self.worker[str(x)].bangding(win_name, win_type)
+            if temp == 0:
+                self.worker_jiebang()
+                sys.exit()
+
+    def worker_jiebang(self):
+        for x in self.worker.keys():
+            temp = self.worker[str(x)].jiebang()
+
+
+class MyThread(threading.Thread):
+
+    def __init__(self, thread_name):
+        super().__init__()
+        self.thread_name = thread_name
+        self.result = None
+        self.func = None
+        self.args = None
+        self.state = 0
