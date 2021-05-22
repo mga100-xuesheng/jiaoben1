@@ -417,6 +417,7 @@ class Assign_tasks:
         self.worker = {}
         self.worker_name = worker_name
         self.worker_sum = 0
+        self.lock = threading.Lock()
 
     # 对象生成
     def worker_add(self, add_sum):
@@ -430,14 +431,58 @@ class Assign_tasks:
     # 窗口绑定
     def worker_bangding(self, win_name, win_type):
         for x in self.worker.keys():
-            temp = self.worker[str(x)].bangding(win_name, win_type)
-            if temp == 0:
-                self.worker_jiebang()
-                sys.exit()
+            if self.worker[str(x)].state == 0:
+                temp = self.worker[str(x)].bangding(win_name, win_type)
+                if temp == 0:
+                    self.worker_jiebang()
+                    sys.exit()
 
+    # 窗口解绑
     def worker_jiebang(self):
         for x in self.worker.keys():
             temp = self.worker[str(x)].jiebang()
+
+    # 乐玩对象状态查找更改
+    def obj_find(self, data_type, obj_sum=0, obj_data=None, win_name=None, win_type=None):
+        if obj_data is None:
+            obj_data = []
+        obj = []
+        while True:
+            self.lock.acquire()
+            if data_type == "获取对象":
+                for x in self.worker.keys():
+                    if self.worker[str(x)].state == 0:
+                        obj.append(self.worker[str(x)])
+                        if len(obj) == obj_sum:
+                            self.lock.release()
+                            return obj
+            elif data_type == "回收对象":
+                for x in obj_data:
+                    x.state = 0
+                self.lock.release()
+                return True
+            elif data_type == "新建对象":
+                self.worker_add(obj_sum)
+                self.worker_bangding(win_name, win_type)
+                self.lock.release()
+                return True
+            self.lock.release()
+            while True:
+                for x in self.worker.keys():
+                    if self.worker[str(x)].state == 0:
+                        break
+
+    # 获取运行对象
+    def obtain_obj(self, obj_sum):
+        return self.obj_find("获取对象", obj_sum=obj_sum)
+
+    # 回收运行对象
+    def recovery_obj(self, obj_data: list):
+        return self.obj_find("回收对象", obj_data=obj_data)
+
+    # 新建运行对象
+    def add_obj(self, obj_sum, win_name, win_type):
+        return self.obj_find("新建对象", obj_sum=obj_sum, win_name=win_name, win_type=win_type)
 
 
 class MyThread(threading.Thread):
