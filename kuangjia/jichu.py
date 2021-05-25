@@ -6,6 +6,7 @@ import random
 import time
 import threading
 import sys
+import queue
 
 
 class lw_obj:
@@ -452,6 +453,7 @@ class Assign_tasks:
             if data_type == "获取对象":
                 for x in self.worker.keys():
                     if self.worker[str(x)].state == 0:
+                        self.worker[str(x)].state = 1
                         obj.append(self.worker[str(x)])
                         if len(obj) == obj_sum:
                             self.lock.release()
@@ -466,6 +468,16 @@ class Assign_tasks:
                 self.worker_bangding(win_name, win_type)
                 self.lock.release()
                 return True
+            elif data_type == "获取限量对象":
+                for x in self.worker.keys():
+                    if self.worker[str(x)].state == 0:
+                        self.worker[str(x)].state = 1
+                        obj.append(self.worker[str(x)])
+                        if len(obj) == obj_sum:
+                            self.lock.release()
+                            return obj
+                self.lock.release()
+                return obj
             self.lock.release()
             while True:
                 for x in self.worker.keys():
@@ -475,6 +487,10 @@ class Assign_tasks:
     # 获取运行对象
     def obtain_obj(self, obj_sum):
         return self.obj_find("获取对象", obj_sum=obj_sum)
+
+    # 获取限量运行对象
+    def obtain_limit_obj(self, obj_sum):
+        return self.obj_find("获取限量对象", obj_sum=obj_sum)
 
     # 回收运行对象
     def recovery_obj(self, obj_data: list):
@@ -487,10 +503,137 @@ class Assign_tasks:
 
 class MyThread(threading.Thread):
 
-    def __init__(self, thread_name):
+    def __init__(self):
         super().__init__()
-        self.thread_name = thread_name
         self.result = None
+        self.run_result = False
         self.func = None
         self.args = None
-        self.state = 0
+        self.kwargs = None
+        self.run_state = 0
+        self.bug = False
+        self.stop = False
+        self.event = threading.Event()  # 控制线程等待对象
+
+    def mytask(self, fun, *args, **kwargs):
+        self.func = fun
+        self.args = args
+        self.kwargs = kwargs
+        self.event.set()  # 线程开始运行
+
+    def Thread_stop(self):
+        self.stop = True
+
+    def run(self):
+        self.event.clear()
+        while True:
+            self.event.wait()  # 阻塞运行
+            if self.stop:
+                break
+            self.bug = False
+            self.run_result = False
+            try:
+                self.result = self.func(*self.args, **self.kwargs)
+                self.run_result = True
+            except:
+                self.bug = True
+            self.event.clear()
+
+    def get_result(self):
+        try:
+            for x in range(100):
+                if self.run_result:
+                    return self.result
+                if self.bug:
+                    return None
+                time.sleep(0.2)
+            return None
+        except Exception:
+            return None
+
+
+class ListThread:
+
+    def __init__(self):
+        self.thread = {}
+        self.thread_sum = 0
+        self.lock = threading.Lock()
+
+    def add_thread(self, add_sum: int):
+        for x in range(add_sum):
+            self.thread[str(x + self.thread_sum + 1)] = MyThread()
+            self.thread[str(x + self.thread_sum + 1)].run()
+        self.thread_sum = self.thread_sum + add_sum
+
+    def find_thread(self, data_tape, obj_sum=0, thread_obj=None):
+        obj_data = []
+        while True:
+            self.lock.acquire()
+            if data_tape == "获取对象":
+                for x in self.thread.keys():
+                    if self.thread[str(x)].run_state == 0:
+                        self.thread[str(x)].run_state = 1
+                        obj_data.append(self.thread[str(x)])
+                        if len(obj_data) == obj_sum:
+                            self.lock.release()
+                            return obj_data
+            if data_tape == "回收对象":
+                for x in thread_obj:
+                    x.run_state = 0
+                self.lock.release()
+                return True
+            if data_tape == "新建对象":
+                self.add_thread(obj_sum)
+                self.lock.release()
+                return True
+            if data_tape == "获取限量对象":
+                for x in self.thread.keys():
+                    if self.thread[str(x)].run_state == 0:
+                        self.thread[str(x)].run_state = 1
+                        obj_data.append(self.thread[str(x)])
+                        if len(obj_data) == obj_sum:
+                            self.lock.release()
+                            return obj_data
+                self.lock.release()
+                return obj_data
+            while True:
+                for x in self.thread.keys():
+                    if self.thread[str(x)].run_state == 0:
+                        break
+                    time.sleep(0.2)
+
+    # 获取运行对象
+    def obtain_obj(self, obj_sum):
+        return self.find_thread("获取对象", obj_sum=obj_sum)
+
+    # 获取限量运行对象
+    def obtain_limit_obj(self, obj_sum):
+        return self.find_thread("获取限量对象", obj_sum=obj_sum)
+
+    # 回收运行对象
+    def recovery_obj(self, obj_data: list):
+        return self.find_thread("回收对象", obj_data=obj_data)
+
+    # 新建运行对象
+    def add_obj(self, obj_sum):
+        return self.find_thread("新建对象", obj_sum=obj_sum)
+
+
+class RunPool:
+    def __init__(self, in_data: dict, obj_sum, win_name, win_type):
+        self.worker = Assign_tasks(in_data["pic_path"],
+                                   in_data["pic_format"],
+                                   in_data["pic_col"],
+                                   in_data["word_path"],
+                                   in_data["worker_name"])
+        self.listthread = ListThread()
+        self.woker_equi = ListThread()
+        self.obj_add(obj_sum, win_name, win_type)
+
+    def obj_add(self, add_sum, win_name, win_type):
+        self.worker.add_obj(obj_sum=add_sum, win_name=win_name, win_type=win_type)
+        self.woker_equi.add_obj(add_sum)
+        self.listthread(int(add_sum / 3))
+
+    def worker_run(self, fun, args, kwargs):
+        pass
