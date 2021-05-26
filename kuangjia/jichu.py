@@ -545,6 +545,7 @@ class MyThread(threading.Thread):
                 if self.run_result:
                     return self.result
                 if self.bug:
+                    print("出现bug了")
                     return None
                 time.sleep(0.2)
             return None
@@ -633,7 +634,59 @@ class RunPool:
     def obj_add(self, add_sum, win_name, win_type):
         self.worker.add_obj(obj_sum=add_sum, win_name=win_name, win_type=win_type)
         self.woker_equi.add_obj(add_sum)
-        self.listthread(int(add_sum / 3))
+        if add_sum > 3:
+            self.listthread(int(3))
+        else:
+            self.listthread(int(add_sum / 3))
 
-    def worker_run(self, fun, args, kwargs):
-        pass
+    def worker_run(self, fun, args):
+        res_temp = []
+        fun_sum = len(args)
+        fun_sum1 = 0
+        while True:
+            worker_obj = self.worker.obtain_limit_obj(fun_sum)
+            worker_equi_obj = self.woker_equi.obtain_limit_obj(fun_sum)
+            if len(worker_obj) > len(worker_equi_obj) != 0:
+                for x in range(len(worker_equi_obj)):
+                    worker_equi_obj[x].mytask(fun, worker_obj[x], args[fun_sum1])
+                    fun_sum1 = fun_sum1 + 1
+            elif len(worker_equi_obj) > len(worker_obj) != 0:
+                for x in range(len(worker_obj)):
+                    worker_equi_obj[x].mytask(fun, worker_obj[x], args[fun_sum1])
+                    fun_sum1 = fun_sum1 + 1
+            worker_equi_obj_temp = 0
+            if len(worker_equi_obj) != 0 and len(worker_obj) != 0:
+                while True:
+                    if len(worker_equi_obj) > len(worker_obj):
+                        if worker_equi_obj_temp == len(worker_equi_obj):
+                            break
+                        if worker_equi_obj[worker_equi_obj_temp].run_result:
+                            if worker_equi_obj[worker_equi_obj_temp].get_result() is None:
+                                temp = {"result": 0,
+                                        "ret_data": worker_obj[worker_equi_obj_temp].ret_data,
+                                        "ex_ret_data": worker_obj[worker_equi_obj_temp].ex_ret_data}
+                            else:
+                                temp = {"result": worker_equi_obj[worker_equi_obj_temp].get_result(),
+                                        "ret_data": worker_obj[worker_equi_obj_temp].ret_data,
+                                        "ex_ret_data": worker_obj[worker_equi_obj_temp].ex_ret_data}
+                            res_temp.append(temp)
+                            worker_equi_obj_temp = worker_equi_obj_temp + 1
+                    else:
+                        if worker_equi_obj_temp == len(worker_obj):
+                            break
+                        if worker_equi_obj[worker_equi_obj_temp].run_result:
+                            if worker_equi_obj[worker_equi_obj_temp].get_result() is None:
+                                temp = {"result": 0,
+                                        "ret_data": worker_obj[worker_equi_obj_temp].ret_data,
+                                        "ex_ret_data": worker_obj[worker_equi_obj_temp].ex_ret_data}
+                            else:
+                                temp = {"result": worker_equi_obj[worker_equi_obj_temp].get_result(),
+                                        "ret_data": worker_obj[worker_equi_obj_temp].ret_data,
+                                        "ex_ret_data": worker_obj[worker_equi_obj_temp].ex_ret_data}
+                            res_temp.append(temp)
+                            worker_equi_obj_temp = worker_equi_obj_temp + 1
+            self.worker.recovery_obj(worker_obj)
+            self.woker_equi.recovery_obj(worker_equi_obj)
+            if len(res_temp) == fun_sum:
+                return res_temp
+   

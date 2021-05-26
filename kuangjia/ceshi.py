@@ -37,8 +37,8 @@
 #     ceshi3(x[0], x[1])
 
 aaa = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-bbb = 0
-ccc = 3
+bbb = 7
+ccc = len(aaa)
 for x in range(len(aaa)):
     x = x + bbb
     if x == len(aaa):
