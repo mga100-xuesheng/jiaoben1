@@ -212,6 +212,8 @@ class worker:
 
     # 输入数据处理
     def data_handle_input(self, data: dict):
+        self.x = -1
+        self.y = -1
         for x in self.data.keys():
             if x == "pic_path" or x == "pic_format" or x == "pic_col":
                 continue
@@ -644,8 +646,8 @@ class RunPool:
         fun_sum = len(args)
         fun_sum1 = 0
         while True:
-            worker_obj = self.worker.obtain_limit_obj(fun_sum)
-            worker_equi_obj = self.woker_equi.obtain_limit_obj(fun_sum)
+            worker_obj = self.worker.obtain_limit_obj(fun_sum - len(res_temp))
+            worker_equi_obj = self.woker_equi.obtain_limit_obj(fun_sum - len(res_temp))
             if len(worker_obj) > len(worker_equi_obj) != 0:
                 for x in range(len(worker_equi_obj)):
                     worker_equi_obj[x].mytask(fun, worker_obj[x], args[fun_sum1])
@@ -663,10 +665,14 @@ class RunPool:
                         if worker_equi_obj[worker_equi_obj_temp].run_result:
                             if worker_equi_obj[worker_equi_obj_temp].get_result() is None:
                                 temp = {"result": 0,
+                                        "x": -1,
+                                        "y": -1,
                                         "ret_data": worker_obj[worker_equi_obj_temp].ret_data,
                                         "ex_ret_data": worker_obj[worker_equi_obj_temp].ex_ret_data}
                             else:
                                 temp = {"result": worker_equi_obj[worker_equi_obj_temp].get_result(),
+                                        "x": worker_obj[worker_equi_obj_temp].x,
+                                        "y": worker_obj[worker_equi_obj_temp].y,
                                         "ret_data": worker_obj[worker_equi_obj_temp].ret_data,
                                         "ex_ret_data": worker_obj[worker_equi_obj_temp].ex_ret_data}
                             res_temp.append(temp)
@@ -677,10 +683,14 @@ class RunPool:
                         if worker_equi_obj[worker_equi_obj_temp].run_result:
                             if worker_equi_obj[worker_equi_obj_temp].get_result() is None:
                                 temp = {"result": 0,
+                                        "x": -1,
+                                        "y": -1,
                                         "ret_data": worker_obj[worker_equi_obj_temp].ret_data,
                                         "ex_ret_data": worker_obj[worker_equi_obj_temp].ex_ret_data}
                             else:
                                 temp = {"result": worker_equi_obj[worker_equi_obj_temp].get_result(),
+                                        "x": worker_obj[worker_equi_obj_temp].x,
+                                        "y": worker_obj[worker_equi_obj_temp].y,
                                         "ret_data": worker_obj[worker_equi_obj_temp].ret_data,
                                         "ex_ret_data": worker_obj[worker_equi_obj_temp].ex_ret_data}
                             res_temp.append(temp)
@@ -689,4 +699,24 @@ class RunPool:
             self.woker_equi.recovery_obj(worker_equi_obj)
             if len(res_temp) == fun_sum:
                 return res_temp
-   
+
+    def run1(self, data: list):
+        res_temp = []
+        obj_sum = len(data)
+        data_obj_num = 0
+        while True:
+            run_obj = self.listthread.obtain_limit_obj(obj_sum - len(res_temp))
+            for x in run_obj:
+                x.mytask(self.worker_run, data[data_obj_num][0], data[data_obj_num][1])
+                data_obj_num = data_obj_num + 1
+            run_obj_temp_sum = 0
+            if len(run_obj) != 0:
+                while True:
+                    if len(run_obj) == run_obj_temp_sum:
+                        break
+                    if run_obj[run_obj_temp_sum].run_result:
+                        res_temp.append(run_obj[run_obj_temp_sum].get_result())
+                        run_obj_temp_sum = run_obj_temp_sum + 1
+                self.listthread.recovery_obj(obj_data=run_obj)
+            if obj_sum == data_obj_num:
+                return res_temp
