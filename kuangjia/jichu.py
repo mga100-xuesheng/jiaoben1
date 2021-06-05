@@ -181,6 +181,7 @@ class worker:
                      "sim": 1,
                      "time_out": 0,
                      "pic_click": 0,
+                     "click": 0,
                      "x_cast": 0,
                      "y_cast": 0,
                      "delay_time": 0,
@@ -255,6 +256,8 @@ class worker:
                     self.data[str(x)] = 0
                 elif str(x) == "cast_col":
                     self.data[str(x)] = "000000"
+                elif str(x) == "click":
+                    self.data[str(x)] = 0
 
     # 输出数据处理
     def data_handle_output(self, data):
@@ -282,6 +285,24 @@ class worker:
                         else:
                             self.ret_data.append(str(temp_temp[1]) + "," + str(temp_temp[2]))
                             self.ex_ret_data[str(temp_temp[0])].append(str(temp_temp[1]) + "," + str(temp_temp[2]))
+
+    @staticmethod
+    def random_time(min_data, max_data):  # 时间随机
+        random_time_temp = random.randint(min_data * 1000, max_data * 1000) / 1000
+        time.sleep(random_time_temp)
+        return random_time_temp
+
+    # 点击功能
+    def click(self, click_x, click_y, delay_time):
+        if self.data["click"] == 1:
+            if delay_time == 1 or delay_time > 1:
+                self.random_time(int(delay_time) - 1, int(delay_time))
+            else:
+                self.random_time(0, int(delay_time))
+            temp = self.skill.click(click_x, click_y, str(self.data["x_cast"]), str(self.data["y_cast"]))
+            self.ret_data = []
+            self.ex_ret_data = {}
+            return temp
 
     '''=============================================================================================================='''
     """找字功能"""
@@ -720,3 +741,55 @@ class RunPool:
                 self.listthread.recovery_obj(obj_data=run_obj)
             if obj_sum == data_obj_num:
                 return res_temp
+
+    def run2(self, data: list):
+        res_temp = []
+        obj_sum = len(data)
+        data_obj_num = 0
+        while True:
+            run_obj = self.listthread.obtain_limit_obj(obj_sum - len(res_temp))
+            for x in run_obj:
+                x.mytask(data[data_obj_num][0], data[data_obj_num][1])
+                data_obj_num = data_obj_num + 1
+            run_obj_temp_sum = 0
+            if len(run_obj) != 0:
+                while True:
+                    if len(run_obj) == run_obj_temp_sum:
+                        break
+                    if run_obj[run_obj_temp_sum].run_result:
+                        res_temp.append(run_obj[run_obj_temp_sum].get_result())
+                        run_obj_temp_sum = run_obj_temp_sum + 1
+                self.listthread.recovery_obj(obj_data=run_obj)
+            if obj_sum == data_obj_num:
+                return res_temp
+
+
+class RunObj:
+
+    @staticmethod
+    def findword(obj, data: dict):
+        return obj.find_word(data)
+
+    @staticmethod
+    def findwordex(obj, data: dict):
+        return obj.find_wordex(data)
+
+    @staticmethod
+    def findpic(obj, data: dict):
+        return obj.find_pic(data)
+
+    @staticmethod
+    def findpicex(obj, data: dict):
+        return obj.find_picex(data)
+
+
+class RunLw:
+    def __init__(self, in_data: dict, obj_sum, win_name, win_type):
+        self.runpool = RunPool(in_data, obj_sum, win_name, win_type)
+        self.runobj = RunObj()
+        self.lw_obj = Assign_tasks(in_data["pic_path"],
+                                   in_data["pic_format"],
+                                   in_data["pic_col"],
+                                   in_data["word_path"],
+                                   in_data["worker_name"])
+        self.lw_obj.add_obj(15, win_name, win_type)
