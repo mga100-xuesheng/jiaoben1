@@ -62,6 +62,6 @@ def aaa(aa, bbb=None):
         print(222)
 
 
-asd = {}
-print(aaa(12, asd))
-print(asd)
+# asd = {}
+# print(aaa(12, asd))
+print(1 in [1, 2, 3, 4, 5])

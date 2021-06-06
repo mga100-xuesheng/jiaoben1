@@ -122,14 +122,13 @@ class lw_obj:
     '找图'
 
     # 普通找图
-    def find_pic(self, col_cast, coord: list, data, sim, time_out, click, x_cast, y_cast, delay_time):
+    def find_pic(self, col_cast, coord: list, data, sim, time_out):
         temp = self.lw.findpic(coord[0],
                                coord[1],
                                coord[2],
                                coord[3],
                                data,
-                               col_cast, sim, 0, time_out, click, x_cast, y_cast,
-                               delay_time)
+                               col_cast, sim, 0, time_out, 0)
         if temp == 1:
             self.x = self.lw.x
             self.y = self.lw.y
@@ -140,14 +139,13 @@ class lw_obj:
             return 0
 
     # 高级找图
-    def find_picex(self, col_cast, coord: list, data, sim, time_out, click, x_cast, y_cast, delay_time):
-        temp = self.lw.findpic(coord[0],
-                               coord[1],
-                               coord[2],
-                               coord[3],
-                               data,
-                               col_cast, sim, 0, time_out, click, x_cast, y_cast,
-                               delay_time)
+    def find_picex(self, col_cast, coord: list, data, sim):
+        temp = self.lw.findpicex(coord[0],
+                                 coord[1],
+                                 coord[2],
+                                 coord[3],
+                                 data,
+                                 col_cast, sim, 0, )
         if len(temp) == 0:
             self.x = -1
             self.y = -1
@@ -244,7 +242,7 @@ class worker:
                     self.data[str(x)] = 1
                 elif str(x) == "time_out":
                     self.data[str(x)] = 0
-                elif str(x) == "pic_click":
+                elif str(x) == "click":
                     self.data[str(x)] = 0
                 elif str(x) == "x_cast":
                     self.data[str(x)] = 0
@@ -286,20 +284,28 @@ class worker:
                             self.ret_data.append(str(temp_temp[1]) + "," + str(temp_temp[2]))
                             self.ex_ret_data[str(temp_temp[0])].append(str(temp_temp[1]) + "," + str(temp_temp[2]))
 
+    # 时间随机
     @staticmethod
-    def random_time(min_data, max_data):  # 时间随机
+    def random_time(min_data, max_data):
         random_time_temp = random.randint(min_data * 1000, max_data * 1000) / 1000
         time.sleep(random_time_temp)
         return random_time_temp
 
     # 点击功能
-    def click(self, click_x, click_y, delay_time):
+    def click(self, click_x, click_y, delay_time, x_cast="0", y_cast="0"):
         if self.data["click"] == 1:
             if delay_time == 1 or delay_time > 1:
                 self.random_time(int(delay_time) - 1, int(delay_time))
             else:
                 self.random_time(0, int(delay_time))
-            temp = self.skill.click(click_x, click_y, str(self.data["x_cast"]), str(self.data["y_cast"]))
+            if x_cast != "0" and y_cast == "0":
+                temp = self.skill.click(click_x, click_y, str(x_cast), str(self.data["y_cast"]))
+            elif x_cast == "0" and y_cast != "0":
+                temp = self.skill.click(click_x, click_y, str(self.data["x_cast"]), str(y_cast))
+            elif x_cast != "0" and y_cast != "0":
+                temp = self.skill.click(click_x, click_y, str(x_cast), str(y_cast))
+            else:
+                temp = self.skill.click(click_x, click_y, str(self.data["x_cast"]), str(self.data["y_cast"]))
             self.ret_data = []
             self.ex_ret_data = {}
             return temp
@@ -326,6 +332,7 @@ class worker:
             print(self.data["coord"])
             print(self.data["word_name"])
             print(self.data["cast_col"])
+            print(self.data["click"])
             print(self.data["sim"])
             print(self.data["word_back"])
             print(self.data["time_out"])
@@ -355,6 +362,7 @@ class worker:
             print(self.data["coord"])
             print(self.data["word_name"])
             print(self.data["cast_col"])
+            print(self.data["click"])
             print(self.data["sim"])
             print(self.data["word_back"])
             print(self.data["time_out"])
@@ -375,8 +383,7 @@ class worker:
         try:
             temp = self.skill.find_pic(self.data["pic_col"], self.data["coord"], self.data["pic_data"],
                                        self.data["sim"],
-                                       self.data["time_out"], self.data["pic_click"], self.data["x_cast"],
-                                       self.data["y_cast"], self.data["delay_time"])
+                                       self.data["time_out"])
         except:
             temp = 0
             print("")
@@ -386,7 +393,7 @@ class worker:
             print(self.data["pic_data"])
             print(self.data["sim"])
             print(self.data["time_out"])
-            print(self.data["pic_click"])
+            print(self.data["click"])
             print(self.data["x_cast"])
             print(self.data["y_cast"])
             print(self.data["delay_time"])
@@ -407,8 +414,7 @@ class worker:
         try:
             temp = self.skill.find_picex(self.data["pic_col"], self.data["coord"], self.data["pic_data"],
                                          self.data["sim"],
-                                         self.data["time_out"], self.data["pic_click"], self.data["x_cast"],
-                                         self.data["y_cast"], self.data["delay_time"])
+                                         self.data["time_out"])
         except:
             temp = ""
             print("")
@@ -418,7 +424,7 @@ class worker:
             print(self.data["pic_data"])
             print(self.data["sim"])
             print(self.data["time_out"])
-            print(self.data["pic_click"])
+            print(self.data["click"])
             print(self.data["x_cast"])
             print(self.data["y_cast"])
             print(self.data["delay_time"])
@@ -793,3 +799,67 @@ class RunLw:
                                    in_data["word_path"],
                                    in_data["worker_name"])
         self.lw_obj.add_obj(15, win_name, win_type)
+
+    def find_pic(self, data: list):
+        temp = self.lw_obj.obtain_obj(1)
+        click_list = []
+        x_cast_list = []
+        y_cast_list = []
+        d_time_list = []
+        for x in data:
+            try:
+                click_list.append(x["click"])
+            except:
+                pass
+            try:
+                x_cast_list.append(x["x_cast"])
+            except:
+                pass
+            try:
+                y_cast_list.append(x["y_cast"])
+            except:
+                pass
+            try:
+                d_time_list.append(x["delay_time"])
+            except:
+                pass
+        data_temp = self.runpool.worker_run(self.runobj.findpic, data)
+        if 1 in click_list:
+            for x in data_temp:
+                if x["result"] == 1:
+                    temp[0].click(x["x"], x["y"], d_time_list[0], cast_x=x_cast_list[0], cast_y=y_cast_list[0])
+                    break
+        self.lw_obj.recovery_obj(temp)
+        return data_temp
+
+    def find_word(self, data: list):
+        temp = self.lw_obj.obtain_obj(1)
+        click_list = []
+        x_cast_list = []
+        y_cast_list = []
+        d_time_list = []
+        for x in data:
+            try:
+                click_list.append(x["click"])
+            except:
+                pass
+            try:
+                x_cast_list.append(x["x_cast"])
+            except:
+                pass
+            try:
+                y_cast_list.append(x["y_cast"])
+            except:
+                pass
+            try:
+                d_time_list.append(x["delay_time"])
+            except:
+                pass
+        data_temp = self.runpool.worker_run(self.runobj.findword, data)
+        if 1 in click_list:
+            for x in data_temp:
+                if x["result"] == 1:
+                    temp[0].click(x["x"], x["y"], d_time_list[0], cast_x=x_cast_list[0], cast_y=y_cast_list[0])
+                    break
+        self.lw_obj.recovery_obj(temp)
+        return data_temp
