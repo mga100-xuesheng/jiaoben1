@@ -126,14 +126,17 @@
 # 参数对应：行，列，值，字体样式(可以没有) sheet1.write(column, row, i, setStyle('Times New Roman', 400, i, False))
 # 这里主要为了控制输入每行十个内容。为了查看 row = row + 1 if row % 10 ==0: column = column + 1 row = 0
 # f.save(r'E:\xlwtExCEL.xls') # 保存文档
+#
+# import time
+#
+# time_process = 0
+# for x in range(5):
+#     time_start = time.time()
+#     time.sleep(2)
+#     time_end = time.time()
+#     time_process = time_process + time_end - time_start
+#     print(time_process)
+# print(time_process > 10)
+import os
 
-import time
-
-time_process = 0
-for x in range(5):
-    time_start = time.time()
-    time.sleep(2)
-    time_end = time.time()
-    time_process = time_process + time_end - time_start
-    print(time_process)
-print(time_process > 10)
+print(os.path.join(os.path.dirname(__file__), 'ceshi1.py'))

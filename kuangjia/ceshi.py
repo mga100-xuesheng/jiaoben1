@@ -48,20 +48,19 @@
 #     print(aaa[x])
 import os
 
-
-def aaa(aa, bbb=None):
-    if bbb is None:
-        bbb = {}
-    try:
-        print(aa)
-        bbb['fanhui'] = 333
-        return 111
-    except:
-        print(333)
-    finally:
-        print(222)
-
-
-# asd = {}
-# print(aaa(12, asd))
-print(1 in [1, 2, 3, 4, 5])
+# def aaa(aa, bbb=None):
+#     if bbb is None:
+#         bbb = {}
+#     try:
+#         print(aa)
+#         bbb['fanhui'] = 333
+#         return 111
+#     except:
+#         print(333)
+#     finally:
+#         print(222)
+#
+#
+# # asd = {}
+# # print(aaa(12, asd))
+# print(1 in [1, 2, 3, 4, 5])

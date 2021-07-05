@@ -800,6 +800,26 @@ class RunLw:
                                    in_data["worker_name"])
         self.lw_obj.add_obj(15, win_name, win_type)
 
+    @staticmethod
+    def ex_data_handle(data):
+        result = []
+        ret_data = []
+        ex_ret_data = {}
+        for x in range(len(data)):
+            result.append(data[x]["result"])
+            for y in data[x]["ret_data"]:
+                if y in ret_data:
+                    pass
+                else:
+                    ret_data.append(y)
+            for y in data[x]["ex_ret_data"].keys():
+                ex_ret_data[str(len(ex_ret_data) + 1)] = data[x]["ex_ret_data"][y]
+        if 1 in result or "1" in result:
+            result_temp = 1
+        else:
+            result_temp = 0
+        return {"result": result_temp, "ret_data": ret_data, "ex_ret_data": ex_ret_data}
+
     def find_pic(self, data: list):
         temp = self.lw_obj.obtain_obj(1)
         click_list = []
@@ -830,6 +850,11 @@ class RunLw:
                     temp[0].click(x["x"], x["y"], d_time_list[0], cast_x=x_cast_list[0], cast_y=y_cast_list[0])
                     break
         self.lw_obj.recovery_obj(temp)
+        return data_temp
+
+    def find_picex(self, data: list):
+        data_temp = self.runpool.worker_run(self.runobj.findpic, data)
+        data_temp = self.ex_data_handle(data_temp)
         return data_temp
 
     def find_word(self, data: list):
